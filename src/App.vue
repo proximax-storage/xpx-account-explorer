@@ -11,6 +11,7 @@
 <script>
 export default {
   mounted () {
+    console.log('Welcome to ExplorerRRHH')
     console.log('Config', this.$config)
     console.log('Persistence', this.$localStorage)
     console.log('Persistence', this.$sessionStorage)
