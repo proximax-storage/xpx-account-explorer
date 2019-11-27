@@ -17,10 +17,11 @@ export default {
   methods: {
     runApp () {
       console.log('Welcome to ExplorerRRHH')
-      console.log('LocalStorage', this.$localStorage)
-      console.log('SessionStorage', this.$sessionStorage)
-      console.log('Config', this.$config)
-      console.log('Provider', this.$proxProvider)
+      // console.log('LocalStorage', this.$localStorage)
+      // console.log('SessionStorage', this.$sessionStorage)
+      // console.log('Config', this.$config)
+      // console.log('Provider', this.$proxProvider)
+      console.log()
     }
   }
 }

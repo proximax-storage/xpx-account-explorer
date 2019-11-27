@@ -6,8 +6,8 @@ import store from './store'
 import { Persistence } from './services/persistence'
 import Utils from './services/utils'
 import axios from 'axios'
-import { Config } from './services/config.js'
-import ProximaxProvider from './services/proximaxProvider'
+import { Config } from './services/config'
+import { ConnectionData, Connections } from './services/connection'
 
 let currentNode = localStorage.getItem('currentNode')
 
@@ -20,11 +20,16 @@ const configIntegration = async (currentNodeExist = false) => {
   try {
     let configInfo = await axios.get('../config/config.json')
     Vue.prototype.$config = new Config(configInfo.data)
+    let protocol = window.location.protocol.replace(':', '')
     if (currentNodeExist === false) {
       localStorage.setItem('currentNode', configInfo.data.Nodes[0])
-      Vue.prototype.$proxProvider = new ProximaxProvider(configInfo.data.Nodes[0])
+      let nodeUrl = ConnectionData.getBuildUrl(configInfo.data.Nodes[0], protocol)
+      localStorage.setItem('currentBuildNode', nodeUrl)
+      Vue.prototype.$provider = new Connections(nodeUrl)
     } else {
-      Vue.prototype.$proxProvider = new ProximaxProvider(currentNode)
+      let nodeUrl = ConnectionData.getBuildUrl(currentNode, protocol)
+      localStorage.setItem('currentBuildNode', nodeUrl)
+      Vue.prototype.$provider = new Connections(nodeUrl)
     }
   } catch (e) {
     console.error(e)
