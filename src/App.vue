@@ -3,6 +3,9 @@
     <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
+      <div>
+        <h1>Version: {{ this.$config.version }}</h1>
+      </div>
     </div>
     <router-view/>
   </div>
@@ -17,11 +20,10 @@ export default {
   methods: {
     runApp () {
       console.log('Welcome to ExplorerRRHH')
-      // console.log('LocalStorage', this.$localStorage)
-      // console.log('SessionStorage', this.$sessionStorage)
-      // console.log('Config', this.$config)
-      // console.log('Provider', this.$proxProvider)
-      console.log()
+      console.log('LocalStorage', this.$localStorage)
+      console.log('SessionStorage', this.$sessionStorage)
+      console.log('Config', this.$config)
+      console.log('Provider', this.$provider)
     }
   }
 }
