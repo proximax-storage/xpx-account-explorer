@@ -12,9 +12,12 @@
 </template>
 
 <script>
+import { PublicAccount } from 'tsjs-xpx-chain-sdk'
+
 export default {
   mounted () {
     this.runApp()
+    this.example()
   },
 
   methods: {
@@ -24,6 +27,17 @@ export default {
       console.log('SessionStorage', this.$sessionStorage)
       console.log('Config', this.$config)
       console.log('Provider', this.$provider)
+    },
+
+    async example () {
+      let publicAccount = PublicAccount.createFromPublicKey('EC2633D9A9344E48D24776C532FC80A9D5E6347527290152AA6A95A4A32798DD', this.$config.network.number)
+      console.log(publicAccount)
+      try {
+        let accountInfo = await this.$provider.accountHttp.getAccountInfo(publicAccount.address).toPromise()
+        console.log(accountInfo)
+      } catch (error) {
+        console.warn(error)
+      }
     }
   }
 }
