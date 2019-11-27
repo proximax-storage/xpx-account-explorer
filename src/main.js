@@ -44,9 +44,3 @@ if (currentNode === null) {
   console.log('Current Node is', currentNode)
   configIntegration(true)
 }
-
-new Vue({
-  router,
-  store,
-  render: function (h) { return h(App) }
-}).$mount('#app')
