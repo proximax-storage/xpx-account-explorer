@@ -25,7 +25,12 @@
 
     <!-- Lower section -->
     <div class="down">
-      <div class="nav-item" v-for="(item, index) in navList" :key="index">{{ item.name }}</div>
+      <div class="nav-item" :class="item.class"
+      v-for="(item, index) in navList" :key="index"
+      :route="item.route"
+      @click="buttonAction">
+        {{ item.name }}
+      </div>
     </div>
     <!-- End Lower section -->
 
@@ -47,18 +52,41 @@ export default {
       },
       softwareVersion: `v${this.$config.version}`,
       navList: [
-        { name: 'Home' },
-        { name: 'Example' },
-        { name: 'Example' }
+        { name: 'Home', class: 'nav-item-active', route: '' },
+        { name: 'Example', class: '', route: 'about' }
       ]
     }
   },
 
   mounted () {
     this.defineDate()
+    this.verifyRoute()
   },
 
   methods: {
+    buttonAction (e) {
+      let objectRoute = e.target.getAttribute('route')
+
+      this.navList.forEach(el => {
+        el.class = ''
+        if (el.route === objectRoute) {
+          el.class = 'nav-item-active'
+        }
+      })
+
+      this.redirectAction(`/${objectRoute}`)
+      // this.cleanError()
+    },
+
+    changeClass (route) {
+      for (let i = 0; i < this.navList.length; i++) {
+        this.navList[i].class = ''
+        if (this.navList[i].route === route) {
+          this.navList[i].class = 'nav-item-active'
+        }
+      }
+    },
+
     defineDate () {
       let time = new Date()
       let allMonths = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May.', 'Jun.', 'Jul.', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.']
@@ -69,6 +97,18 @@ export default {
       this.date.year = year
       this.date.militarHour = `${time.getHours()}:${(time.getMinutes() < 10) ? `0${time.getMinutes()}` : time.getMinutes()}`
       this.date.dayName = allDays[time.getDay()]
+    },
+
+    redirectAction (itemRoute) {
+      this.$router.push(itemRoute)
+    },
+
+    verifyRoute () {
+      let currentPath = window.location.hash
+      currentPath = currentPath.slice(2)
+      console.log('Rute', currentPath)
+      this.redirectAction(currentPath)
+      this.changeClass(currentPath)
     }
   }
 }
