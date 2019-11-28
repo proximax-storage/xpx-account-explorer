@@ -1,0 +1,171 @@
+:root {
+  --main: #306eb5;
+  --degrade-up: #388bd1;
+  --degrade-down: #225691;
+}
+
+/* Fonts */
+@font-face {
+  src: url('./assets/fonts/Lato.ttf');
+  font-family: 'Lato';
+}
+
+/* Global */
+body {
+  margin: 0px
+}
+
+p {
+  margin: 0px !important;
+}
+
+figure {
+  margin: 0px !important;
+}
+
+/* APP */
+#app {
+  font-family: 'Lato';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+
+/* Generic */
+.highlighted {
+  color: var(--main)
+}
+
+/* ---------- COMPONENTS ---------- */
+
+/* AppHeader */
+.app-header {
+  background: transparent;
+}
+
+.app-header > .up {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+.app-header > .down {
+  background: -webkit-linear-gradient(bottom, var(--degrade-down), var(--degrade-up));
+  color: white;
+  padding: 0px 0px;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-item {
+  color: white;
+  font-weight: bold;
+  padding: 5px 30px;
+  text-transform: uppercase;
+}
+
+.header-img-cont {
+  display: flex;
+}
+
+.header-img-cont > .logo {
+  width: 120px;
+  padding: 10px 2px;
+}
+
+.header-img-cont > .version {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding: 10px 0px;
+  color: var(--main-color);
+  position: relative;
+  width: 50px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.header-date {
+  display: flex;
+  flex-flow: column;
+}
+
+.header-date > .day {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.header-date > .day > div {
+  font-size: 25px;
+  padding: 0px 3px;
+}
+
+.header-date > .hours {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.header-date > .hours > div {
+  padding: 0px 3px;
+}
+
+/* AppFooter */
+.app-footer {
+  font-size: 15px;
+  padding: 10px;
+}
+
+/* Media Queries */
+@media screen and (min-width: 1367px) {
+  .view-container {
+    background: red;
+    display: flex;
+    flex-flow: row nowrap;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    margin: 0px;
+  }
+
+  .view-container > .view {
+    width: 100%;
+    max-width: 1366px;
+  }
+
+}
+
+@media screen and (max-width: 1366px) {
+  .view-container {
+    background: yellow;
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .view-container > .view {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .view-container {
+    background: blue;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .view-container > .view {
+    width: 100%
+  }
+}
+
+@media screen and (max-width: 960px) {
+  .view-container > .view {
+    width: 100%;
+  }
+}

@@ -26,10 +26,12 @@ const configIntegration = async (currentNodeExist = false) => {
       let nodeUrl = ConnectionData.getBuildUrl(configInfo.data.Nodes[0], protocol)
       localStorage.setItem('currentBuildNode', nodeUrl)
       Vue.prototype.$provider = new Connections(nodeUrl)
+      console.log(new Connections(nodeUrl))
     } else {
       let nodeUrl = ConnectionData.getBuildUrl(currentNode, protocol)
       localStorage.setItem('currentBuildNode', nodeUrl)
       Vue.prototype.$provider = new Connections(nodeUrl)
+      console.log(new Connections(nodeUrl))
     }
   } catch (e) {
     console.error(e)

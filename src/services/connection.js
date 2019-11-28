@@ -10,20 +10,26 @@ import {
   // NetworkType
   AccountHttp,
   BlockHttp,
+  DiagnosticHttp,
   ChainHttp,
+  MetadataHttp,
   MosaicHttp,
   NamespaceHttp,
+  // RestrictionHttp,
   TransactionHttp
 } from 'tsjs-xpx-chain-sdk'
 
 class Connections {
   constructor (node) {
     this.node = node
-    this.mosaicHttp = new MosaicHttp(this.node)
+    this.accountHttp = new AccountHttp(this.node)
     this.blockHttp = new BlockHttp(this.node)
     this.chainHttp = new ChainHttp(this.node)
-    this.accountHttp = new AccountHttp(this.node)
+    this.diagnosticHttp = new DiagnosticHttp(this.node)
+    this.metadataHttp = new MetadataHttp(this.node)
+    this.mosaicHttp = new MosaicHttp(this.node)
     this.namespaceHttp = new NamespaceHttp(this.node)
+    // this.restrictionHttp = new RestrictionHttp(this.node)
     this.transactionHttp = new TransactionHttp(this.node)
   }
 }

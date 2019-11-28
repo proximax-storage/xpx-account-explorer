@@ -1,20 +1,31 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-      <div>
-        <h1>Version: {{ this.$config.version }}</h1>
-      </div>
+
+    <app-header/>
+
+    <div class="view-container">
+      <router-view class="view"/>
     </div>
-    <router-view/>
+
+    <app-footer/>
+
   </div>
 </template>
 
 <script>
+// Components
+import AppHeader from './components/Global/app-header'
+import AppFooter from './components/Global/app-footer'
+
+// Libraries
 import { PublicAccount } from 'tsjs-xpx-chain-sdk'
 
 export default {
+  components: {
+    AppHeader,
+    AppFooter
+  },
+
   mounted () {
     this.runApp()
     this.example()
@@ -43,25 +54,6 @@ export default {
 }
 </script>
 
-<style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
+<style lang="sass">
+@import url('./style.css')
 </style>
