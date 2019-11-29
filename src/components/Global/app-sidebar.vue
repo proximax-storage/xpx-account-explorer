@@ -29,7 +29,8 @@ export default {
       softwareVersion: `v${this.$config.version}`,
       navList: [
         { name: 'Home', class: 'nav-item-active', route: '' },
-        { name: 'Nodes', class: '', route: 'nodes' }
+        { name: 'Nodes', class: '', route: 'nodes' },
+        { name: 'Customizing', class: '', route: 'customizing' }
       ]
     }
   },

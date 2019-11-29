@@ -17,6 +17,21 @@ const routes = [
     path: '/nodes',
     name: 'Nodes',
     component: load('Nodes')
+  },
+  {
+    path: '/customizing',
+    name: 'Customizing',
+    component: load('Customizing')
+  },
+  {
+    path: '/publickey/:id',
+    name: 'Publickey',
+    component: load('Publickey')
+  },
+  {
+    path: '/address/:id',
+    name: 'Address',
+    component: load('Address')
   }
 ]
 

@@ -14,7 +14,7 @@
 
       <div class="search-error" v-if="errorActive">{{ errorMessage }}</div>
 
-      <input type="submit" class="proximax-btn" @click.prevent="" value="Search">
+      <input type="submit" class="proximax-btn" @click.prevent="performSearch" value="Search">
     </form>
   </div>
 </template>
@@ -67,9 +67,9 @@ export default {
       let valid = false
       let path = ''
 
-      console.log('isHex', this.isHex(this.valueSearch))
-      console.log('OnlyNumber', this.isOnlyNumber(this.valueSearch))
-      console.log('Length', this.valueSearch.length)
+      // console.log('isHex', this.isHex(this.valueSearch))
+      // console.log('OnlyNumber', this.isOnlyNumber(this.valueSearch))
+      // console.log('Length', this.valueSearch.length)
 
       switch (this.typeSearch) {
         case 'Basic':
@@ -116,12 +116,17 @@ export default {
       }
       this.pathSearch = path
       this.validSearch = valid
-    }
-  },
+    },
 
-  performSearch () {
-    if (this.validSearch === true) {
-
+    performSearch () {
+      let lowerValue = this.valueSearch.toLowerCase()
+      if (this.validSearch === true) {
+        let routeData = this.$router.resolve({
+          path: `/${this.pathSearch}/${lowerValue}`
+        })
+        console.log(this.pathSearch, routeData)
+        window.open(routeData.href, '_blank')
+      }
     }
   }
 }
