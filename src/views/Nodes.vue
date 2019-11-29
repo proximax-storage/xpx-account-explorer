@@ -1,29 +1,30 @@
 <template>
-  <div class="Home">
+  <div class="Nodes">
     <module-header :name="moduleName"/>
     <node-info/>
-    <app-searchbar/>
   </div>
 </template>
 
 <script>
 import ModuleHeader from '@/components/Global/module-header'
 import NodeInfo from '@/components/Global/app-node-info'
-import AppSearchbar from '@/components/Global/app-searchbar'
 
 export default {
-  name: 'Home',
+  name: 'Nodes',
 
   components: {
     ModuleHeader,
-    NodeInfo,
-    AppSearchbar
+    NodeInfo
   },
 
   data () {
     return {
-      moduleName: 'Home'
+      moduleName: 'Nodes'
     }
   }
 }
 </script>
+
+<style scoped>
+  @import url('../style.css');
+</style>

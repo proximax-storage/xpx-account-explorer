@@ -1,0 +1,84 @@
+<template>
+  <div class="app-sidebar">
+
+    <!-- LOGO -->
+    <figure class="main-logo">
+      <img :src="require('@/assets/images/logo-proximax-sirius-explorer.svg')" alt="Proximax Logo" class="logo">
+    </figure>
+    <!-- END LOGO -->
+
+    <!-- ITEM LIST -->
+    <div class="links-list">
+      <div class="nav-item" v-for="(item, index) in navList" :key="index"
+      :class="item.class" :route="item.route" @click="buttonAction(item.route)">
+        <img :src="require('@/assets/icons/account.svg')" class="icon">
+        <div class="name">{{ item.name }}</div>
+      </div>
+    </div>
+    <!-- END ITEM LIST -->
+
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'AppSidebar',
+
+  data () {
+    return {
+      softwareVersion: `v${this.$config.version}`,
+      navList: [
+        { name: 'Home', class: 'nav-item-active', route: '' },
+        { name: 'Nodes', class: '', route: 'nodes' }
+      ]
+    }
+  },
+
+  mounted () {
+    this.verifyRoute()
+  },
+
+  methods: {
+    buttonAction (route) {
+      let objectRoute = route
+
+      this.navList.forEach(el => {
+        el.class = ''
+        if (el.route === objectRoute) {
+          el.class = 'nav-item-active'
+        }
+      })
+
+      this.redirectAction(`/${objectRoute}`)
+      // this.cleanError()
+    },
+
+    changeClass (route) {
+      for (let i = 0; i < this.navList.length; i++) {
+        this.navList[i].class = ''
+        if (this.navList[i].route === route) {
+          this.navList[i].class = 'nav-item-active'
+        }
+      }
+    },
+
+    redirectAction (itemRoute) {
+      if (itemRoute !== this.$route.path) {
+        this.$router.push(itemRoute)
+      }
+    },
+
+    verifyRoute () {
+      let currentPath = window.location.hash
+      currentPath = currentPath.slice(2)
+      console.log('Rute', currentPath)
+      this.redirectAction(currentPath)
+      this.changeClass(currentPath)
+    }
+  }
+}
+</script>
+
+<style scoped>
+  @import url('../../style.css');
+</style>

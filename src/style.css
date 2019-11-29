@@ -1,14 +1,19 @@
 /* ---------- GLOBAL ---------- */
 :root {
-  --main: #306eb5;
-  --degrade-up: #388bd1;
-  --degrade-down: #225691;
+  --main: #f06623;
+  --grey-back: #f4f4f4;
+  --grey-accent: #ddd;
 }
 
 /* Fonts */
 @font-face {
-  src: url('./assets/fonts/Lato.ttf');
-  font-family: 'Lato';
+  src: url('./assets/fonts/Poppins.ttf');
+  font-family: 'font1';
+}
+
+@font-face {
+  src: url('./assets/fonts/OpenSans.ttf');
+  font-family: 'font2';
 }
 
 body {
@@ -29,10 +34,59 @@ figure {
   color: var(--main)
 }
 
+.proximax-btn {
+  border: 0px;
+  background: var(--main);
+  padding: 10px 30px;
+  color: white;
+  font-family: 'font1';
+  border-radius: 20px;
+  font-weight: bold;
+  outline: none;
+}
+
 .link:hover {
-  color: #2BA1B9;
+  color: var(--main);
   text-decoration: underline;
   cursor: pointer;
+}
+
+.box-grey {
+  background: var(--grey-back);
+  padding: 20px;
+  border-radius: 20px;
+}
+
+.subtitle {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: grey
+}
+
+.value {
+  color: black;
+  font-size: 14px;
+}
+
+.lower {
+  text-transform: lowercase;
+}
+
+.upper {
+  text-transform: uppercase;
+}
+
+.txt-left {
+  text-align: left;
+}
+
+.txt-right {
+  text-align: right;
+}
+
+.txt-center {
+  text-align: center;
 }
 /* ---------- END GENERIC ---------- */
 
@@ -40,111 +94,191 @@ figure {
 
 /* APP */
 #app {
-  font-family: 'Lato';
+  font-family: 'font2';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
 }
 
-/* AppHeader */
-.app-header {
+/* App Header */
+.app-sidebar {
   background: transparent;
+  position: fixed;
+  width: 200px;
+  height: 100%;
+  background: #000;
+  box-sizing: border-box;
 }
 
-.app-header > .up {
-  display: flex;
-  justify-content: space-between;
-  padding: 10px;
+.main-logo {
+  padding: 20px 10px;
 }
 
-.app-header > .down {
-  background: -webkit-linear-gradient(bottom, var(--degrade-down), var(--degrade-up));
-  color: white;
-  padding: 0px 0px;
-  display: flex;
-  justify-content: center;
+.main-logo > .logo {
+  width: 150px;
+}
+
+.links-list {
+  height: 300px;
 }
 
 .nav-item {
   color: white;
   font-weight: bold;
-  padding: 5px 30px;
+  text-align: left;
+  padding: 10px;
   text-transform: uppercase;
   transition: all ease 0.3s;
-  border-bottom: solid transparent 2px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.nav-item:hover {
+  background: var(--main);
 }
 
 .nav-item-active {
-  border-bottom: solid white 2px;
+  background: white;
+  color: black
 }
 
-.header-img-cont {
+.nav-item > .icon {
+  width: 40px;
+}
+
+.nav-item > .name {
+  padding-left: 10px;
+  font-size: 14px;
+}
+
+/* Module Header */
+.module-header {
+  background: transparent;
+  width: auto;
   display: flex;
+  font-family: 'font1';
 }
 
-.header-img-cont > .logo {
-  width: 120px;
-  padding: 10px 2px;
-}
-
-.header-img-cont > .version {
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-end;
-  padding: 10px 0px;
+.header-title {
+  width: 100%;
   color: var(--main);
-  position: relative;
-  width: 50px;
-  font-size: 12px;
+  font-size: 20px;
   font-weight: bold;
+  padding: 10px;
+  text-align: left;
+  text-transform: uppercase;
 }
 
-.header-date {
+.header-title-module {
+  width: 100%;
+  color: black;
+  font-size: 20px;
+  font-weight: bold;
+  padding: 10px;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+/* Node Info */
+.node-info {
+  padding: 10px
+}
+
+.node-info > .supercont {
+  margin-bottom: 10px;
+
+}
+
+.node-info > .cont {
   display: flex;
-  flex-flow: column;
+  margin-bottom: 10px;
 }
 
-.header-date > .day {
+.node-info > .cont > .box-grey:first-child {
+  margin-right: 5px;
   flex-grow: 1;
+}
+
+.node-info > .cont > .box-grey:last-child {
+  margin-left: 5px;
+  flex-grow: 1;
+}
+/* App Searchbar */
+.app-searchbar {
+  padding: 10px;
+}
+
+.input-cont {
+  padding: 20px;
+}
+
+.input-cont > .selector {
+  width: 100%;
   display: flex;
   justify-content: center;
 }
 
-.header-date > .day > div {
-  font-size: 25px;
-  padding: 0px 3px;
+.input-cont > .selector > .selector-item {
+  background: var(--grey-accent);
+  padding: 7px 25px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all ease 0.3s;
 }
 
-.header-date > .hours {
-  display: flex;
-  justify-content: flex-end;
-  font-size: 13px;
+.selector-active {
+  background: var(--main) !important;
+  color: white;
+}
+
+.input-cont > .selector > .selector-item:first-child {
+  border-radius: 20px 0px 0px 20px;
+}
+
+.input-cont > .selector > .selector-item:last-child {
+  border-radius: 0px 20px 20px 0px;
+}
+
+.input-cont > .field {
+  padding: 5px 0px;
+  width: 100%;
+  background: transparent;
+  outline: none;
+  border: 0px;
+  border-bottom: 1px solid grey;
+  margin: 5px 0px;
+  font-size: 17px;
+}
+
+.input-cont > .field:focus {
+  border-bottom: 1px solid var(--main);
+}
+
+.search-error {
+  background: red;
+  color: white;
   font-weight: bold;
+  border-radius: 20px;
+  padding: 2px 10px;
+  transition: all ease 0.3s;
+  margin: 10px 0px;
 }
 
-.header-date > .hours > div {
-  padding: 0px 3px;
-}
-
-/* AppFooter */
-.app-footer {
-  font-size: 15px;
-  padding: 10px;
-}
 /* ---------- END COMPONENTS ---------- */
 
 /* ---------- MEDIA QUERIES ---------- */
 @media screen and (min-width: 1367px) {
   .view-container {
-    background: red;
     display: flex;
     flex-flow: row nowrap;
     width: 100%;
     justify-content: center;
     align-items: center;
     margin: 0px;
+    box-sizing: border-box;
+    padding-left: 200px;
   }
 
   .view-container > .view {
@@ -155,11 +289,12 @@ figure {
 
 @media screen and (max-width: 1366px) {
   .view-container {
-    background: yellow;
     display: flex;
     width: 100%;
     justify-content: center;
     align-items: center;
+    box-sizing: border-box;
+    padding-left: 200px;
   }
 
   .view-container > .view {
@@ -169,9 +304,10 @@ figure {
 
 @media screen and (max-width: 1024px) {
   .view-container {
-    background: blue;
     justify-content: center;
     align-items: center;
+    box-sizing: border-box;
+    padding-left: 200px;
   }
 
   .view-container > .view {

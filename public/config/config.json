@@ -2,7 +2,7 @@
   "Coin": {
     "name": "XPX",
     "mosaic": {
-      "id": "402b2f579faebc59",
+      "id": "13bfc518e40549d7",
       "name": "xpx"
     },
     "namespace": {
@@ -16,7 +16,7 @@
     "13.251.128.180"
   ],
   "NetworkType": {
-    "name": "publicTest",
+    "name": "PublicTest",
     "number": 168
   },
   "RentalFeeInfo": {

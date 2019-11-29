@@ -1,34 +1,34 @@
 <template>
   <div id="app">
 
-    <app-header/>
+    <!-- APP SIDEBAR -->
+    <app-sidebar/>
+    <!-- END APP SIDEBAR -->
 
+    <!-- VIEW CONTAINER -->
     <div class="view-container">
       <router-view class="view"/>
     </div>
-
-    <app-footer/>
+    <!-- VIEW CONTAINER -->
 
   </div>
 </template>
 
 <script>
 // Components
-import AppHeader from './components/Global/app-header'
-import AppFooter from './components/Global/app-footer'
+import AppSidebar from '@/components/Global/app-sidebar'
 
 // Libraries
 import { PublicAccount } from 'tsjs-xpx-chain-sdk'
 
 export default {
   components: {
-    AppHeader,
-    AppFooter
+    AppSidebar
   },
 
   mounted () {
-    this.runApp()
-    this.example()
+    // this.runApp()
+    // this.example()
   },
 
   methods: {

@@ -10,13 +10,13 @@ const load = view => {
 const routes = [
   {
     path: '/',
-    name: 'home',
+    name: 'Home',
     component: load('Home')
   },
   {
-    path: '/about',
-    name: 'about',
-    component: load('About')
+    path: '/nodes',
+    name: 'Nodes',
+    component: load('Nodes')
   }
 ]
 
