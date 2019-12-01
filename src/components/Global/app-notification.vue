@@ -1,11 +1,11 @@
 <template>
-  <div class="Error">
-    <div class="error-cont" v-if="getNotification.active && getNotification.type == 'error'">
+  <div class="Notification">
+    <div class="notif-cont" v-if="getNotification.active && getNotification.type == 'error'">
       <div class="title white-color">{{ getNotification.title }}</div>
       <div class="value white-color">{{ getNotification.message }}</div>
     </div>
 
-    <div class="error-cont" v-if="getNotification.active && getNotification.type == 'success'">
+    <div class="notif-cont" v-if="getNotification.active && getNotification.type == 'success'">
       <div class="title white-color">{{ getNotification.title }}</div>
       <div class="value white-color">{{ getNotification.message }}</div>
     </div>

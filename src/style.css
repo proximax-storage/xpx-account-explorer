@@ -134,13 +134,7 @@ figure {
 }
 
 /* ERROR */
-.AppError {
-  padding-left: 200px;
-  box-sizing: border-box;
-  transition: all ease 0.3s;
-}
-
-.error-cont {
+.notif-cont {
   background: red;
   position: fixed;
   bottom: 0px;
@@ -148,9 +142,12 @@ figure {
   box-sizing: border-box;
 }
 
-.error-cont > .title,
-.error-cont > .value {
-  padding: 10px;
+.notif-cont > .title {
+  padding: 20px 10px 5px 10px;
+}
+
+.notif-cont > .value {
+  padding: 0px 10px 20px 10px;
 }
 
 /* ---------- END GENERIC ---------- */
