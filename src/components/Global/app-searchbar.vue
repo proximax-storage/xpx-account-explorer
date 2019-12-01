@@ -1,8 +1,6 @@
 <template>
   <div class="app-searchbar">
-
     <form class="input-cont box-grey">
-
       <div class="selector">
         <div v-for="(item, index) in searchTypeList" :key="index"
         class="selector-item" :class="item.class" @click="changeSearchType(item.name)">

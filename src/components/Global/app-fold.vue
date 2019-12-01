@@ -32,7 +32,6 @@ export default {
       if (this.run !== null) {
         this.run()
       }
-      console.log(this.active)
     }
   }
 }

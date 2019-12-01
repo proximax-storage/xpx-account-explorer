@@ -11,44 +11,35 @@
     </div>
     <!-- VIEW CONTAINER -->
 
+    <app-notification/>
   </div>
 </template>
 
 <script>
 // Components
 import AppSidebar from '@/components/Global/app-sidebar'
-
-// Libraries
-import { PublicAccount } from 'tsjs-xpx-chain-sdk'
+import AppNotification from '@/components/Global/app-notification'
 
 export default {
   components: {
-    AppSidebar
+    AppSidebar,
+    AppNotification
   },
 
   mounted () {
-    // this.runApp()
+    this.runApp()
     // this.example()
   },
 
   methods: {
     runApp () {
-      console.log('Welcome to ExplorerRRHH')
-      console.log('LocalStorage', this.$localStorage)
-      console.log('SessionStorage', this.$sessionStorage)
-      console.log('Config', this.$config)
-      console.log('Provider', this.$provider)
-    },
-
-    async example () {
-      let publicAccount = PublicAccount.createFromPublicKey('EC2633D9A9344E48D24776C532FC80A9D5E6347527290152AA6A95A4A32798DD', this.$config.network.number)
-      console.log(publicAccount)
-      try {
-        let accountInfo = await this.$provider.accountHttp.getAccountInfo(publicAccount.address).toPromise()
-        console.log(accountInfo)
-      } catch (error) {
-        console.warn(error)
+      let tmpObj = {
+        type: 'error',
+        active: false,
+        title: '',
+        message: ''
       }
+      this.$store.dispatch('newNotification', tmpObj)
     }
   }
 }

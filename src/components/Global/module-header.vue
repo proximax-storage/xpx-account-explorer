@@ -1,7 +1,7 @@
 <template>
   <div class="module-header">
-    <div class="header-title">Accounting - Human Resourse</div>
-    <div class="header-title-module">{{ this.name }}</div>
+    <div class="header-title">{{ this.name }}</div>
+    <div class="header-title-module">Accounting - Human Resourse</div>
   </div>
 </template>
 
