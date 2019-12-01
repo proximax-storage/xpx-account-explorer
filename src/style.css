@@ -70,6 +70,12 @@ figure {
   border-radius: 20px;
 }
 
+.box-orange {
+  border: 2px solid orange;
+  padding: 20px;
+  border-radius: 20px;
+}
+
 .title {
   font-size: 14px;
   font-weight: bold;
@@ -133,9 +139,8 @@ figure {
   color: white !important;
 }
 
-/* ERROR */
+/* Notif */
 .notif-cont {
-  background: red;
   position: fixed;
   bottom: 0px;
   width: 100%;
@@ -148,6 +153,14 @@ figure {
 
 .notif-cont > .value {
   padding: 0px 10px 20px 10px;
+}
+
+.error {
+  background: red;
+}
+
+.success {
+  background: green;
 }
 
 /* ---------- END GENERIC ---------- */

@@ -86,13 +86,22 @@ export default {
               resultNode = resultNode[0]
             }
 
+            let successNotif = {
+              type: 'success',
+              active: true,
+              title: 'Added node.',
+              message: 'The node was added successfully.'
+            }
+
             if (customNodes === null) {
               let customNodeArray = JSON.stringify([resultNode])
               this.$localStorage.set('customNodes', customNodeArray)
-            } else {
+              this.$store.dispatch('newNotification', successNotif)
+            } else if (customNodes !== null) {
               let customNodeArray = JSON.parse(customNodes)
               customNodeArray.push(resultNode)
               this.$localStorage.set('customNodes', customNodeArray)
+              this.$store.dispatch('newNotification', successNotif)
             }
           } else {
             throw 'Invalid node network type' // eslint-disable-line
@@ -119,7 +128,12 @@ export default {
   computed: {
     allNodes (nv, ov) {
       let customNodes = JSON.parse(this.$localStorage.get('customNodes'))
-      let totalNodes = this.nodes.concat(customNodes)
+      let totalNodes
+      if (customNodes !== null) {
+        totalNodes = this.nodes.concat(customNodes)
+      } else {
+        totalNodes = this.nodes
+      }
 
       return totalNodes
     }
