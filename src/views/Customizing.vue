@@ -77,13 +77,25 @@ export default {
           networktype: publicAccount.address.networkType
         }
 
+        let tmpObj = {
+          active: true,
+          type: 'success',
+          title: 'Account added',
+          message: 'Your account has been successfully added'
+        }
+
         if (myAccounts === null) {
           this.$localStorage.set('myAccounts', [newAccount])
+          this.$store.dispatch('newNotification', tmpObj)
         } else {
           myAccounts = JSON.parse(myAccounts)
           myAccounts.push(newAccount)
           this.$localStorage.set('myAccounts', myAccounts)
+          this.$store.dispatch('newNotification', tmpObj)
         }
+
+        this.inputValue = ''
+        this.valid = false
       }
     }
   }

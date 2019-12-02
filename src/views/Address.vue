@@ -2,18 +2,20 @@
   <div class="Publickey">
     <module-header :name="moduleName"/>
 
-    <div class="separator"></div>
+    <app-fold :description="foldLabel" :run="toggleNodeInfo"/>
+    <div v-if="nodeInfoVisible" class="animate fade">
+      <node-info/>
+    </div>
 
     <div class="accountInfo" v-if="accountInfo !== null">
-      <h1 class="title txt-left">Account Info</h1>
-      <div class="accountInfo-cont">
+      <div>
         <div class="box-grey">
-          <div class="txt-left subtitle">Address</div>
-          <div class="txt-left value">{{ accountInfo.publicAccount.address.pretty() }}</div>
+          <div>Address</div>
+          <div>{{ accountInfo.publicAccount.address.pretty() }}</div>
         </div>
         <div class="box-grey">
-          <div class="txt-left subtitle">Public Key</div>
-          <div class="txt-left value">{{ accountInfo.publicAccount.publicKey }}</div>
+          <div>Public Key</div>
+          <div>{{ accountInfo.publicAccount.publicKey }}</div>
         </div>
       </div>
     </div>
@@ -21,16 +23,28 @@
     <div class="accountInfo" v-if="accountInfo !== null">
       <div>
         <div class="box-grey">
-          <div class="txt-center subtitleHigh">Balance</div>
-          <div class="txt-center valueHigh" v-if="balance == 0" v-html="this.$utils.fmtAmountValue(balance)"></div>
-          <div class="txt-center valueHigh" v-if="balance !== 0" v-html="this.$utils.fmtAmountValue(balance)"></div>
+          <div>Balance</div>
+          <div class="txt-left" v-if="balance == 0" v-html="this.$utils.fmtAmountValue(balance)"></div>
+          <div class="txt-left" v-if="balance !== 0" v-html="this.$utils.fmtAmountValue(balance)"></div>
         </div>
       </div>
     </div>
 
-    <app-fold :description="foldLabel" :run="toggleNodeInfo"/>
-    <div v-if="nodeInfoVisible" class="animate fade">
-      <node-info/>
+    <div class="accountInfo" v-if="accountInfo !== null">
+      <h1 class="title txt-left">Account Info</h1>
+      <table class="table-setting">
+        <tr>
+          <th class="txt-left">Address</th>
+          <th class="txt-left">Public Key</th>
+          <th class="txt-left">Balance</th>
+        </tr>
+        <tr>
+          <td class="txt-left">{{ accountInfo.publicAccount.address.pretty() }}</td>
+          <td class="txt-left">{{ accountInfo.publicAccount.publicKey }}</td>
+          <td class="txt-left" v-if="balance == 0" v-html="this.$utils.fmtAmountValue(balance)"></td>
+          <td class="txt-left" v-if="balance !== 0" v-html="this.$utils.fmtAmountValue(balance)"></td>
+        </tr>
+      </table>
     </div>
 
     <div class="accountInfo" v-if="accountInfo !== null">
@@ -60,7 +74,7 @@ import NodeInfo from '@/components/Global/app-node-info'
 import { PublicAccount, QueryParams } from 'tsjs-xpx-chain-sdk'
 
 export default {
-  name: 'Publickey',
+  name: 'Address',
 
   components: {
     ModuleHeader,
@@ -70,7 +84,7 @@ export default {
 
   data () {
     return {
-      moduleName: 'Public Key',
+      moduleName: 'Address',
       accountInfo: null,
       foldLabel: 'More Info',
       nodeInfoVisible: false,
@@ -83,13 +97,14 @@ export default {
   },
 
   mounted () {
-    this.init()
+    // this.init()
   },
 
   methods: {
     async init () {
-      let publickey = this.$route.params.id
-      let publicAccount = PublicAccount.createFromPublicKey(publickey, this.$config.network.number)
+      let address = this.$route.params.id
+      console.log(address)
+      let publicAccount = PublicAccount.createFromPublicKey(address, this.$config.network.number)
       console.log(publicAccount)
       try {
         let accountInfo = await this.$provider.accountHttp.getAccountInfo(publicAccount.address).toPromise()

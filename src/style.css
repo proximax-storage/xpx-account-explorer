@@ -3,6 +3,7 @@
   --main: #f06623;
   --grey-back: #f4f4f4;
   --grey-accent: #ddd;
+  --grey-dark: #656668
 }
 
 /* Fonts */
@@ -90,9 +91,22 @@ figure {
   color: grey
 }
 
+.subtitleHigh {
+  font-size: 15px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: grey
+}
+
 .value {
   color: black;
   font-size: 14px;
+  word-break: break-all;
+}
+
+.valueHigh {
+  color: black;
+  font-size: 30px;
   word-break: break-all;
 }
 
@@ -122,6 +136,31 @@ figure {
 
 .table-setting {
   width: 100%;
+}
+
+.table-setting > tr:nth-child(even) {
+  background: var(--grey-back);
+  color: black !important;
+  font-size: 13;
+  font-weight: normal;
+}
+
+.table-setting > tr:nth-child(odd) {
+  background: var(--grey-accent);
+  color: black !important;
+  font-size: 13;
+  font-weight: normal;
+}
+
+.table-setting > tr:first-child {
+  background: black;
+  color: white !important;
+  font-size: 14;
+}
+
+.table-setting > tr > th,
+.table-setting > tr > td {
+  padding: 5px;
 }
 
 .mb-10 {
@@ -163,6 +202,16 @@ figure {
   background: green;
 }
 
+.table-width-480 {
+  width: 480px;
+}
+
+.separator {
+  width: 100%;
+  height: 1px;
+  background: grey;
+}
+
 /* ---------- END GENERIC ---------- */
 
 /* ---------- COMPONENTS ---------- */
@@ -175,6 +224,24 @@ figure {
   text-align: center;
   color: #2c3e50;
   box-sizing: border-box;
+}
+
+/* HOME */
+.home-indicator {
+  padding: 10px;
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+}
+
+.child-indicator {
+  display: flex !important;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.cont-button {
+  margin: 0px 7px !important;
 }
 
 /* FOLD */
@@ -343,18 +410,18 @@ figure {
 }
 
 .field {
-  padding: 5px 0px;
-  width: 100%;
-  background: transparent;
+  padding: 5px 10px;
+  background: white;
   outline: none;
-  border: 0px;
-  border-bottom: 1px solid grey;
-  margin: 5px 0px;
+  border: 1px solid grey;
+  border-radius: 20px;
+  margin: 5px;
   font-size: 17px;
+  width: 800px;
 }
 
 .field:focus {
-  border-bottom: 1px solid var(--main);
+  border: 1px solid var(--main);
 }
 
 .search-error {
@@ -367,9 +434,29 @@ figure {
   margin: 10px 0px;
 }
 
+/* MY ACCOUNT TRANSACTIONS HOME */
+
+
 /* PublicKey / Address */
 .accountInfo {
   padding: 10px
+}
+
+.accountInfo-cont {
+  display: flex;
+  flex-flow: row;
+}
+
+.accountInfo-cont > .box-grey {
+  flex-grow: 1;
+}
+
+.accountInfo-cont > .box-grey:first-child {
+  margin-right: 5px;
+}
+
+.accountInfo-cont > .box-grey:last-child {
+  margin-left: 5px;
 }
 
 /* ---------- END COMPONENTS ---------- */

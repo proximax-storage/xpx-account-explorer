@@ -1,6 +1,6 @@
 <template>
   <div class="app-searchbar">
-    <form class="input-cont box-grey">
+    <form class="input-cont">
       <div class="selector">
         <div v-for="(item, index) in searchTypeList" :key="index"
         class="selector-item" :class="item.class" @click="changeSearchType(item.name)">
@@ -8,11 +8,11 @@
         </div>
       </div>
 
-      <input type="text" :placeholder="placeholder" class="field" autocomplete="off" @keyup="isValid" @focusout="isValid" @change="isValid" v-model="valueSearch"/>
-
+      <div class="input-cont">
+        <input type="text" :placeholder="placeholder" class="field" autocomplete="off" @keyup="isValid" @focusout="isValid" @change="isValid" v-model="valueSearch"/>
+        <input type="submit" class="proximax-btn" @click.prevent="performSearch" value="Search">
+      </div>
       <div class="search-error" v-if="errorActive">{{ errorMessage }}</div>
-
-      <input type="submit" class="proximax-btn" @click.prevent="performSearch" value="Search">
     </form>
   </div>
 </template>
