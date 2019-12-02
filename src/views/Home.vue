@@ -43,6 +43,7 @@
 import ModuleHeader from '@/components/Global/module-header'
 import AppSearchbar from '@/components/Global/app-searchbar'
 import MyAccountTrans from '@/components/Home/home-my-account-trans'
+import AppFold from '@/components/Global/app-fold'
 
 export default {
   name: 'Home',
@@ -50,7 +51,8 @@ export default {
   components: {
     ModuleHeader,
     AppSearchbar,
-    MyAccountTrans
+    MyAccountTrans,
+    AppFold
   },
 
   data () {

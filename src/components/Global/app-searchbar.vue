@@ -127,6 +127,7 @@ export default {
 
         this.pathSearch = ''
         this.validSearch = false
+        this.valueSearch = ''
       }
     }
   }
