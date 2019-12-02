@@ -2,6 +2,8 @@
   <div class="Publickey">
     <module-header :name="moduleName"/>
 
+    <app-searchbar/>
+
     <div class="separator"></div>
 
     <div class="accountInfo" v-if="accountInfo !== null">
@@ -37,16 +39,20 @@
       <h1 class="title txt-left">Transactions</h1>
       <table class="table-setting">
         <tr>
-          <th class="txt-left table-width-300">Signer</th>
-          <th class="txt-left table-width-300">Recipient</th>
+          <th class="txt-left">Signer</th>
+          <th class="txt-left">Recipient</th>
+          <th class="txt-left">Transaction</th>
           <th class="txt-left">Deadline</th>
           <th class="txt-left">Amount</th>
+          <th class="txt-left">Info</th>
         </tr>
         <tr v-for="(item, index) in transactions" :key="index">
-          <th class="txt-left table-width-300">{{ item.signer.address.pretty() }}</th>
-          <th class="txt-left table-width-300">{{ (item.recipient) ? item.recipient.pretty() : 'No Recipient' }}</th>
-          <th class="txt-left">{{ $utils.fmtTime(item.deadline.value) }}</th>
-          <th class="txt-left" v-html="$utils.fmtAmountValue(item.totalAmount)"></th>
+          <td class="txt-left">{{ $utils.maskAddress(item.signer.address.pretty()) }}</td>
+          <td class="txt-left">{{ (item.recipient) ? $utils.maskAddress(item.recipient.pretty()) : 'No Recipient' }}</td>
+          <td class="txt-left">{{ $utils.getNameTypeTransaction(item.type) }}</td>
+          <td class="txt-left">{{ $utils.fmtTime(item.deadline.value) }}</td>
+          <td class="txt-left" v-html="$utils.fmtAmountValue(item.totalAmount)"></td>
+          <td class="txt-left"><img class="icon20" :src="require('@/assets/icons/information.svg')"></td>
         </tr>
       </table>
     </div>
@@ -55,6 +61,7 @@
 
 <script>
 import ModuleHeader from '@/components/Global/module-header'
+import AppSearchbar from '@/components/Global/app-searchbar'
 import AppFold from '@/components/Global/app-fold'
 import NodeInfo from '@/components/Global/app-node-info'
 import { PublicAccount, QueryParams } from 'tsjs-xpx-chain-sdk'
@@ -64,6 +71,7 @@ export default {
 
   components: {
     ModuleHeader,
+    AppSearchbar,
     AppFold,
     NodeInfo
   },

@@ -124,6 +124,9 @@ export default {
         })
         console.log(this.pathSearch, routeData)
         window.open(routeData.href, '_blank')
+
+        this.pathSearch = ''
+        this.validSearch = false
       }
     }
   }

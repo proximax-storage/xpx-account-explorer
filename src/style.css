@@ -141,26 +141,27 @@ figure {
 .table-setting > tr:nth-child(even) {
   background: var(--grey-back);
   color: black !important;
-  font-size: 13;
+  font-size: 12px;
   font-weight: normal;
 }
 
 .table-setting > tr:nth-child(odd) {
   background: var(--grey-accent);
   color: black !important;
-  font-size: 13;
+  font-size: 12px;
   font-weight: normal;
 }
 
 .table-setting > tr:first-child {
-  background: black;
+  background: var(--grey-dark);
   color: white !important;
-  font-size: 14;
+  font-size: 12px;
 }
 
 .table-setting > tr > th,
 .table-setting > tr > td {
-  padding: 5px;
+  padding-left: 5px;
+  border: 0px;
 }
 
 .mb-10 {
@@ -273,11 +274,30 @@ figure {
 }
 
 .main-logo {
-  padding: 20px 10px;
+  padding: 20px 10px 40px 10px;
 }
 
 .main-logo > .logo {
   width: 150px;
+}
+
+.project-name {
+  padding: 10px;
+}
+
+.project-name > div:first-child {
+  color: white;
+  font-family: 'font1';
+  font-size: 16px;
+  text-align: left;
+}
+
+.project-name > div:nth-child(2) {
+  color: white;
+  font-family: 'font1';
+  font-size: 10px;
+  text-align: left;
+  padding-bottom: 10px;
 }
 
 .links-list {
@@ -431,7 +451,7 @@ figure {
   border-radius: 20px;
   padding: 2px 10px;
   transition: all ease 0.3s;
-  margin: 10px 0px;
+  margin: 0px 10px;
 }
 
 /* MY ACCOUNT TRANSACTIONS HOME */

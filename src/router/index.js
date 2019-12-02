@@ -32,6 +32,10 @@ const routes = [
     path: '/address/:id',
     name: 'Address',
     component: load('Address')
+  },
+  {
+    path: '*',
+    redirect: '/'
   }
 ]
 

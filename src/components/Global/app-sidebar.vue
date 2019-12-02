@@ -7,6 +7,12 @@
     </figure>
     <!-- END LOGO -->
 
+    <div class="project-name">
+      <div>Account Explorer</div>
+      <div>Administartion System</div>
+      <div class="separator"></div>
+    </div>
+
     <!-- ITEM LIST -->
     <div class="links-list">
       <div class="nav-item" v-for="(item, index) in navList" :key="index"
@@ -28,7 +34,7 @@ export default {
     return {
       softwareVersion: `v${this.$config.version}`,
       navList: [
-        { name: 'Home', class: 'nav-item-active', route: '' },
+        { name: 'Dashboard', class: 'nav-item-active', route: '' },
         { name: 'Nodes', class: '', route: 'nodes' },
         { name: 'Customizing', class: '', route: 'customizing' }
       ]

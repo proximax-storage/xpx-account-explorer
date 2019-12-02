@@ -8,10 +8,10 @@
 
     <div class="separator"></div>
 
-    <!-- <app-fold :description="foldLabel" :run="toggleNodeInfo"/>
+    <app-fold :description="foldLabel" :run="toggleNodeInfo"/>
     <div v-if="nodeInfoVisible" class="animate fade">
       <node-info/>
-    </div> -->
+    </div>
 
     <div class="home-indicator">
       <div class="child-indicator">

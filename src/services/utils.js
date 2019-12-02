@@ -1,3 +1,5 @@
+import { TransactionType } from 'tsjs-xpx-chain-sdk'
+
 /**
  * Class to format the data in the explorer
  */
@@ -88,5 +90,78 @@ export default class Utils {
     seconds -= mnts * 60
     const response = days + ' days, ' + hrs + ' Hrs, ' + mnts + ' Minutes, ' + seconds + ' Seconds'
     return response
+  }
+
+  static maskAddress (_address, end = 10) {
+    if (_address == null) return false
+    let address = _address
+      .toString()
+      .toUpperCase()
+      .replace(/-/g, '')
+    if (!address || address.length !== 40) return false
+    let addressForm = address
+      .toUpperCase()
+      .replace(/-/g, '')
+      .match(/.{1,6}/g)
+      .join('-')
+    let onePart = ''
+    let twoPart = ''
+    let mask = ''
+    onePart = addressForm.slice(0, end)
+    twoPart = addressForm.slice(
+      addressForm.length - onePart.length,
+      addressForm.length
+    )
+    mask = `${onePart}****${twoPart}`
+    return mask
+  }
+
+  static getNameTypeTransaction (transactionId) {
+    const arraTypeTransaction = {
+      transfer: {
+        id: TransactionType.TRANSFER,
+        name: 'Transfer'
+      },
+      registerNameSpace: {
+        id: TransactionType.REGISTER_NAMESPACE,
+        name: 'Register namespace'
+      },
+      mosaicDefinition: {
+        id: TransactionType.MOSAIC_DEFINITION,
+        name: 'Mosaic definition'
+      },
+      mosaicSupplyChange: {
+        id: TransactionType.MOSAIC_SUPPLY_CHANGE,
+        name: 'Mosaic supply change'
+      },
+      modifyMultisigAccount: {
+        id: TransactionType.MODIFY_MULTISIG_ACCOUNT,
+        name: 'Modify multisig account'
+      },
+      aggregateComplete: {
+        id: TransactionType.AGGREGATE_COMPLETE,
+        name: 'Aggregate complete'
+      },
+      aggregateBonded: {
+        id: TransactionType.AGGREGATE_BONDED,
+        name: 'Aggregate bonded'
+      },
+      lock: {
+        id: TransactionType.LOCK,
+        name: 'Lock'
+      },
+      secretLock: {
+        id: TransactionType.SECRET_LOCK,
+        name: 'Secret lock'
+      },
+      secretProof: {
+        id: TransactionType.SECRET_PROOF,
+        name: 'Secret proof'
+      }
+    }
+    const x = Object.keys(arraTypeTransaction).find(element => {
+      return arraTypeTransaction[element].id === transactionId
+    })
+    return arraTypeTransaction[x].name
   }
 }

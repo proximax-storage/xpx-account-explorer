@@ -3,18 +3,20 @@
     <div class="fold" v-if="mainActive === true">
       <table class="table-setting">
         <tr>
-          <th class="txt-left table-width-300">Signer</th>
-          <th class="txt-left table-width-300">Recipient</th>
+          <th class="txt-left">Sender</th>
+          <th class="txt-left">Recipient</th>
+          <th class="txt-left">Transaction</th>
           <th class="txt-left">Deadline</th>
           <th class="txt-left">Amount</th>
           <th class="txt-left">Info</th>
         </tr>
         <tr v-for="(item, index) in transactions" :key="index">
-          <td class="txt-left table-width-300">{{ item.signer.address.pretty() }}</td>
-          <td class="txt-left table-width-300">{{ (item.recipient) ? item.recipient.pretty() : 'No Recipient' }}</td>
+          <td class="txt-left">{{ $utils.maskAddress(item.signer.address.pretty()) }}</td>
+          <td class="txt-left">{{ (item.recipient) ? $utils.maskAddress(item.recipient.pretty()) : 'No Recipient' }}</td>
+          <td class="txt-left">{{ $utils.getNameTypeTransaction(item.type) }}</td>
           <td class="txt-left">{{ $utils.fmtTime(item.deadline.value) }}</td>
           <td class="txt-left" v-html="$utils.fmtAmountValue(item.totalAmount)"></td>
-          <td class="txt-left"><img :src="require('@/assets/icons/information.svg')"></td>
+          <td class="txt-left"><img class="icon20" :src="require('@/assets/icons/information.svg')"></td>
         </tr>
       </table>
     </div>
