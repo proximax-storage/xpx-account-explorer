@@ -354,7 +354,7 @@ figure {
 
 .header-title-module {
   width: 100%;
-  color: black;
+  color: transparent;
   font-size: 20px;
   font-weight: bold;
   padding: 10px;

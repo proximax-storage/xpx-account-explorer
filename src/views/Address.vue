@@ -2,6 +2,8 @@
   <div class="Publickey">
     <module-header :name="moduleName"/>
 
+    <div class="separator"></div>
+
     <app-searchbar/>
 
     <div class="separator"></div>
