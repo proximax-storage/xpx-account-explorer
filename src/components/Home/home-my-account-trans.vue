@@ -59,9 +59,9 @@ export default {
       if (myAccounts !== null) {
         try {
           let result = await this.$provider.accountHttp.transactions(publicAccount, new QueryParams(100)).toPromise()
-          let filteredTransactions = result.filter(el => el.type === 16724 || el.type === 16961)
+          // let filteredTransactions = result.filter(el => el.type === 16724 || el.type === 16961)
 
-          filteredTransactions.forEach(el => {
+          result.forEach(el => {
             el.totalAmount = 0
             if (el.type === 16724) {
               console.log(el)
@@ -77,7 +77,7 @@ export default {
             }
           })
 
-          this.transactions = filteredTransactions
+          this.transactions = result
 
           this.mainActive = true
         } catch (error) {

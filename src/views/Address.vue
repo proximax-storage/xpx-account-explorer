@@ -64,7 +64,7 @@ import ModuleHeader from '@/components/Global/module-header'
 import AppSearchbar from '@/components/Global/app-searchbar'
 import AppFold from '@/components/Global/app-fold'
 import NodeInfo from '@/components/Global/app-node-info'
-// import { Address, QueryParams } from 'tsjs-xpx-chain-sdk'
+import { Address } from 'tsjs-xpx-chain-sdk'
 
 export default {
   name: 'Publickey',
@@ -78,7 +78,7 @@ export default {
 
   data () {
     return {
-      moduleName: 'Public Key',
+      moduleName: 'Address',
       accountInfo: null,
       foldLabel: 'More Info',
       nodeInfoVisible: false,
@@ -96,8 +96,16 @@ export default {
 
   methods: {
     async init () {
-      let address = this.$route.params.id
+      let address = new Address(this.$route.params.id, this.$config.network.number)
       console.log(address)
+
+      try {
+        let accountInfo = await this.$provider.accountHttp.getAccountInfo(address).toPromise()
+        console.log(accountInfo)
+      } catch (error) {
+        console.warn(error)
+      }
+
       // try {
       //   let accountInfo = await this.$provider.accountHttp.getAccountInfo(publicAccount.address).toPromise()
       //   console.log(accountInfo)
