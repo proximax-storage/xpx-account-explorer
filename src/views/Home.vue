@@ -8,11 +8,6 @@
 
     <div class="separator"></div>
 
-    <app-fold :description="foldLabel" :run="toggleNodeInfo"/>
-    <div v-if="nodeInfoVisible" class="animate fade">
-      <node-info/>
-    </div>
-
     <div class="home-indicator">
       <div class="child-indicator">
         <div>Recent transaction</div>
@@ -33,6 +28,11 @@
       </div>
     </div>
     <div class="separator"></div>
+
+    <app-fold :description="foldLabel" :run="toggleNodeInfo"/>
+    <div v-if="nodeInfoVisible" class="animate fade">
+      <node-info/>
+    </div>
 
     <my-account-trans/>
 
