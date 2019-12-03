@@ -45,6 +45,7 @@ export default {
         el.class = ''
         if (el.name === type) {
           el.class = 'selector-active'
+          this.placeholder = (el.name === 'Basic') ? 'Public Key / Address' : 'Hash / Tx ID'
         }
       })
 
@@ -65,22 +66,15 @@ export default {
       let valid = false
       let path = ''
 
-      // console.log('isHex', this.isHex(this.valueSearch))
-      // console.log('OnlyNumber', this.isOnlyNumber(this.valueSearch))
-      // console.log('Length', this.valueSearch.length)
-
       switch (this.typeSearch) {
         case 'Basic':
           if (this.valueSearch.length === 64 && this.isHex(this.valueSearch) === true) {
-            console.log('PK')
             path = 'publicKey'
             valid = true
           } else if (this.valueSearch.length === 40 || this.valueSearch.length === 46) {
-            console.log('ADD')
             path = 'address'
             valid = true
           } else if (this.isOnlyNumber(this.valueSearch) === true) {
-            console.log('BLK')
             path = 'block'
             valid = true
           } else {
@@ -98,8 +92,6 @@ export default {
           break
       }
 
-      console.log('Valid', valid)
-      console.log('----------')
       if (valid === false) {
         if (this.valueSearch !== '') {
           this.errorActive = true

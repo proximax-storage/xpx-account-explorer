@@ -56,7 +56,7 @@
           <td class="txt-left">{{ $utils.getNameTypeTransaction(item.type) }}</td>
           <td class="txt-left">{{ item.block }}</td>
           <td class="txt-left" v-html="$utils.fmtAmountValue(item.totalAmount)"></td>
-          <td class="txt-left"><img class="icon20" :src="require('@/assets/icons/information.svg')"></td>
+          <td class="txt-left" @click="goToHash(item.transactionInfo.hash)"><img class="icon20" :src="require('@/assets/icons/icon-info-on.svg')"></td>
         </tr>
       </table>
     </div>
@@ -124,6 +124,11 @@ export default {
       } catch (error) {
         console.warn(error)
       }
+    },
+
+    goToHash (hash) {
+      let routeData = this.$router.resolve({ path: `/hash/${hash}` })
+      window.open(routeData.href, '_blank')
     },
 
     toggleNodeInfo () {
