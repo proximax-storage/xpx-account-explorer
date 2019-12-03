@@ -34,6 +34,11 @@ const routes = [
     component: load('Address')
   },
   {
+    path: '/hash/:id',
+    name: 'Hash',
+    component: load('Hash')
+  },
+  {
     path: '*',
     redirect: '/'
   }

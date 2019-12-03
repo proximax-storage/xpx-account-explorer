@@ -15,7 +15,7 @@
 
       <div>
         <div class="child-indicator">
-          <div class="cont-button">
+          <div class="cont-button" v-if="myAccounts !== null">
             <span>Export to:</span>
           </div>
           <div class="cont-button">
@@ -30,7 +30,7 @@
     <div class="separator"></div>
 
     <app-fold :description="foldLabel" :run="toggleNodeInfo"/>
-    <div v-if="nodeInfoVisible" class="animate fade">
+    <div v-if="nodeInfoVisible">
       <node-info/>
     </div>
 
@@ -61,7 +61,8 @@ export default {
     return {
       moduleName: 'Dashboard',
       foldLabel: 'More Info',
-      nodeInfoVisible: false
+      nodeInfoVisible: false,
+      myAccounts: this.$localStorage.get('myAccounts')
     }
   },
 

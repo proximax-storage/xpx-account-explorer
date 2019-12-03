@@ -23,7 +23,7 @@
 
     <div class="fold" v-if="mainActive === false">
       <div class="box-grey">
-        <span>You have not added a custom account yet</span>
+        <span>You have not added a custom account yet!</span>
       </div>
     </div>
 
@@ -58,13 +58,14 @@ export default {
       if (myAccounts !== null) {
         let publicAccount = PublicAccount.createFromPublicKey(myAccounts[0].publicKey, this.$config.network.number)
         try {
+          let publicAccount = PublicAccount.createFromPublicKey(myAccounts[0].publicKey, this.$config.network.number)
+
           let result = await this.$provider.accountHttp.transactions(publicAccount, new QueryParams(100)).toPromise()
           // let filteredTransactions = result.filter(el => el.type === 16724 || el.type === 16961)
 
           result.forEach(el => {
             el.totalAmount = 0
             if (el.type === 16724) {
-              console.log(el)
               el.mosaics.forEach(mosaic => {
                 mosaic.id = mosaic.id.toHex()
                 mosaic.amount = mosaic.amount.compact()
@@ -81,7 +82,7 @@ export default {
 
           this.mainActive = true
         } catch (error) {
-          console.log(error)
+          console.warn(error)
         }
       } else {
         this.mainActive = false

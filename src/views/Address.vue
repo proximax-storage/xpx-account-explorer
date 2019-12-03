@@ -2,6 +2,8 @@
   <div class="Publickey">
     <module-header :name="moduleName"/>
 
+    <div class="separator"></div>
+
     <app-searchbar/>
 
     <div class="separator"></div>
@@ -42,7 +44,7 @@
           <th class="txt-left">Signer</th>
           <th class="txt-left">Recipient</th>
           <th class="txt-left">Transaction</th>
-          <th class="txt-left">Deadline</th>
+          <th class="txt-left">Timestamp</th>
           <th class="txt-left">Amount</th>
           <th class="txt-left">Info</th>
         </tr>
@@ -50,7 +52,7 @@
           <td class="txt-left">{{ $utils.maskAddress(item.signer.address.pretty()) }}</td>
           <td class="txt-left">{{ (item.recipient) ? $utils.maskAddress(item.recipient.pretty()) : 'No Recipient' }}</td>
           <td class="txt-left">{{ $utils.getNameTypeTransaction(item.type) }}</td>
-          <td class="txt-left">{{ $utils.fmtTime(item.deadline.value) }}</td>
+          <td class="txt-left">{{ item.block }}</td>
           <td class="txt-left" v-html="$utils.fmtAmountValue(item.totalAmount)"></td>
           <td class="txt-left"><img class="icon20" :src="require('@/assets/icons/information.svg')"></td>
         </tr>
@@ -64,7 +66,7 @@ import ModuleHeader from '@/components/Global/module-header'
 import AppSearchbar from '@/components/Global/app-searchbar'
 import AppFold from '@/components/Global/app-fold'
 import NodeInfo from '@/components/Global/app-node-info'
-import { Address } from 'tsjs-xpx-chain-sdk'
+import { Address, QueryParams, Deadline } from 'tsjs-xpx-chain-sdk'
 
 export default {
   name: 'Publickey',
@@ -96,52 +98,56 @@ export default {
 
   methods: {
     async init () {
-      let address = new Address(this.$route.params.id, this.$config.network.number)
+      let address = Address.createFromRawAddress(this.$route.params.id, this.$config.network.number)
       console.log(address)
 
       try {
         let accountInfo = await this.$provider.accountHttp.getAccountInfo(address).toPromise()
         console.log(accountInfo)
+        this.accountInfo = accountInfo
+
+        let mosaics = accountInfo.mosaics
+        mosaics.forEach(el => {
+          el.amount = el.amount.compact()
+          el.id = el.id.toHex()
+
+          if (el.id === this.mosaicXPX || el.id === this.namespaceXPX) {
+            this.balance = el.amount
+          }
+        })
+
+        let transactions = await this.$provider.accountHttp.transactions(accountInfo.publicAccount, new QueryParams(100)).toPromise()
+        console.log(transactions)
+        // transactions = transactions.filter(el => el.type === 16724)
+        transactions.forEach(async el => {
+          el.totalAmount = 0
+
+          try {
+            let block = await this.$provider.blockHttp.getBlockByHeight(el.transactionInfo.height.compact()).toPromise()
+
+            el.block = this.$utils.fmtTime(block.timestamp.compact() + (Deadline.timestampNemesisBlock * 1000))
+            console.log()
+          } catch (error) {
+            console.warn('Error in block')
+          }
+
+          if (el.type === 16724) {
+            el.mosaics.forEach(mosaic => {
+              mosaic.id = mosaic.id.toHex()
+              mosaic.amount = mosaic.amount.compact()
+              if (mosaic.id === this.$config.coin.mosaic.id) {
+                el.totalAmount += mosaic.amount
+              } else if (mosaic.id === this.$config.coin.namespace.id) {
+                el.totalAmount += mosaic.amount
+              }
+            })
+          }
+        })
+
+        this.transactions = transactions
       } catch (error) {
         console.warn(error)
       }
-
-      // try {
-      //   let accountInfo = await this.$provider.accountHttp.getAccountInfo(publicAccount.address).toPromise()
-      //   console.log(accountInfo)
-      //   this.accountInfo = accountInfo
-      //   let mosaics = accountInfo.mosaics
-      //   mosaics.forEach(el => {
-      //     el.amount = el.amount.compact()
-      //     el.id = el.id.toHex()
-
-      //     if (el.id === this.mosaicXPX || el.id === this.namespaceXPX) {
-      //       this.balance = el.amount
-      //     }
-      //   })
-
-      //   let transactions = await this.$provider.accountHttp.transactions(publicAccount, new QueryParams(100)).toPromise()
-      //   console.log(transactions)
-      //   transactions = transactions.filter(el => el.type === 16724)
-      //   transactions.forEach(el => {
-      //     el.totalAmount = 0
-      //     el.mosaics.forEach(mosaic => {
-      //       mosaic.id = mosaic.id.toHex()
-      //       mosaic.amount = mosaic.amount.compact()
-      //       if (mosaic.id === this.$config.coin.mosaic.id) {
-      //         el.totalAmount += mosaic.amount
-      //       } else if (mosaic.id === this.$config.coin.namespace.id) {
-      //         el.totalAmount += mosaic.amount
-      //       }
-      //     })
-      //   })
-
-      //   this.transactions = transactions
-
-      //   console.log(mosaics)
-      // } catch (error) {
-      //   console.warn(error)
-      // }
     },
 
     toggleNodeInfo () {
