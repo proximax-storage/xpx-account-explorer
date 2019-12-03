@@ -173,7 +173,7 @@ export default class Utils {
 
   static async getStructureDashboard (transaction, config, provider) {
     let dataStructure = []
-    for (let element of transaction) {
+    transaction.forEach(async element => {
       try {
         let block = await provider.blockHttp.getBlockByHeight(element.transactionInfo.height.compact()).toPromise()
         element.block = this.fmtTime(block.timestamp.compact() + (Deadline.timestampNemesisBlock * 1000))
@@ -190,6 +190,7 @@ export default class Utils {
             mosaic.amount = mosaic.amount.compact()
             if (mosaic.id === config.coin.mosaic.id) {
               element.totalAmount += mosaic.amount
+              element.lllll = mosaic.amount
             } else if (mosaic.id === config.coin.namespace.id) {
               element.totalAmount += mosaic.amount
             }
@@ -206,6 +207,7 @@ export default class Utils {
                   mosaic.amount = mosaic.amount.compact()
                   if (mosaic.id === config.coin.mosaic.id) {
                     element.totalAmount += mosaic.amount
+                    element.lllll = mosaic.amount
                   } else if (mosaic.id === config.coin.namespace.id) {
                     element.totalAmount += mosaic.amount
                   }
@@ -216,7 +218,7 @@ export default class Utils {
           dataStructure.push(element)
           break
       }
-    }
+    })
     return dataStructure
   }
   static getStructureCsv (data) {
@@ -224,7 +226,6 @@ export default class Utils {
     for (let element of data) {
       switch (element.type) {
         case TransactionType.TRANSFER:
-          console.log(element.message.type)
           const message = (element.message.type === 0) ? element.message.payload : '<encrypted>'
           const transactionName = this.getNameTypeTransaction(element.type)
           dataStructure.push({

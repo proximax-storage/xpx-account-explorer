@@ -119,7 +119,9 @@ export default {
         })
         let transactions = await this.$provider.accountHttp.transactions(accountInfo.publicAccount, new QueryParams(100)).toPromise()
         this.transactions = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
+        console.log('this.transactions', this.transactions)
         this.trasform = this.$utils.getStructureCsv(this.transactions)
+        console.log('this.trasform', this.trasform)
       } catch (error) {
         console.warn(error)
       }
