@@ -17,7 +17,7 @@
     <div class="links-list">
       <div class="nav-item" v-for="(item, index) in navList" :key="index"
       :class="item.class" :route="item.route" @click="buttonAction(item.route)">
-        <img :src="require('@/assets/icons/account.svg')" class="icon">
+        <img :src="require(`@/assets/icons/${item.icon}.svg`)" class="icon">
         <div class="name">{{ item.name }}</div>
       </div>
     </div>
@@ -34,9 +34,9 @@ export default {
     return {
       softwareVersion: `v${this.$config.version}`,
       navList: [
-        { name: 'Dashboard', class: 'nav-item-active', route: '' },
-        { name: 'Nodes', class: '', route: 'nodes' },
-        { name: 'Customizing', class: '', route: 'customizing' }
+        { name: 'Dashboard', class: 'nav-item-active', route: '', icon: 'icon-dashboard-on' },
+        { name: 'Nodes', class: '', route: 'nodes', icon: 'icon-nodes-off' },
+        { name: 'Customizing', class: '', route: 'customizing', icon: 'icon-accounts-off' }
       ]
     }
   },
@@ -51,8 +51,10 @@ export default {
 
       this.navList.forEach(el => {
         el.class = ''
+        el.icon = el.icon.replace('-on', '-off')
         if (el.route === objectRoute) {
           el.class = 'nav-item-active'
+          el.icon = el.icon.replace('-off', '-on')
         }
       })
 

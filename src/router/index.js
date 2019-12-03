@@ -38,6 +38,11 @@ const routes = [
     name: 'Hash',
     component: load('Hash')
   },
+  // {
+  //   path: '/block/:id',
+  //   name: 'Block',
+  //   component: load('Block')
+  // },
   {
     path: '*',
     redirect: '/'
