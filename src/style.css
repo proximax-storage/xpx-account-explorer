@@ -71,6 +71,12 @@ figure {
   border-radius: 20px;
 }
 
+.box-white {
+  background: white;
+  padding: 20px;
+  border-radius: 20px;
+}
+
 .box-orange {
   border: 2px solid orange;
   padding: 20px;
@@ -119,15 +125,15 @@ figure {
 }
 
 .txt-left {
-  text-align: left;
+  text-align: left !important;
 }
 
 .txt-right {
-  text-align: right;
+  text-align: right !important;
 }
 
 .txt-center {
-  text-align: center;
+  text-align: center !important;
 }
 
 .icon20 {
@@ -213,6 +219,30 @@ figure {
   background: grey;
 }
 
+.bold {
+  font-weight: bold;
+}
+
+.fs20 {
+ font-size: 20px !important;
+}
+
+.fs16 {
+ font-size: 16px !important;
+}
+
+.fs14 {
+ font-size: 14px !important;
+}
+
+.fs12 {
+ font-size: 12px !important;
+}
+
+.fs10 {
+ font-size: 10px !important;
+}
+
 /* ---------- END GENERIC ---------- */
 
 /* ---------- COMPONENTS ---------- */
@@ -258,6 +288,7 @@ figure {
   justify-content: space-between;
   transition: all ease 0.3s;
   cursor: pointer;
+  border-radius: 15px;
 }
 
 .fold > .cont:hover {
@@ -454,7 +485,46 @@ figure {
   margin: 0px 10px;
 }
 
-/* MY ACCOUNT TRANSACTIONS HOME */
+/* hash */
+.hash-info {
+  display: flex;
+  padding: 10px;
+  flex-flow: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.item-left {
+  text-align: left;
+}
+
+.item-rigth {
+  text-align: right;
+}
+
+.transaction-info {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.transaction-info > div:first-child {
+  width: 25%;
+  box-sizing: border-box;
+  margin-right: 5px;
+}
+
+.transaction-info > div:first-child > div {
+  font-size: 10px;
+  word-break: break-all;
+}
+
+.transaction-info > div:last-child {
+  width: 75%;
+  box-sizing: border-box;
+  margin-left: 5px;
+}
 
 
 /* PublicKey / Address */
