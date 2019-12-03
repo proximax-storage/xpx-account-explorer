@@ -114,24 +114,7 @@ export default {
         })
 
         let transactions = await this.$provider.accountHttp.transactions(publicAccount, new QueryParams(100)).toPromise()
-        console.log(transactions)
-        // transactions = transactions.filter(el => el.type === 16724)
-        transactions.forEach(el => {
-          el.totalAmount = 0
-          el.mosaics.forEach(mosaic => {
-            mosaic.id = mosaic.id.toHex()
-            mosaic.amount = mosaic.amount.compact()
-            if (mosaic.id === this.$config.coin.mosaic.id) {
-              el.totalAmount += mosaic.amount
-            } else if (mosaic.id === this.$config.coin.namespace.id) {
-              el.totalAmount += mosaic.amount
-            }
-          })
-        })
-
-        this.transactions = transactions
-
-        console.log(mosaics)
+        this.transactions = this.$utils.getStructureDashboard(transactions, this.$config)
       } catch (error) {
         console.warn(error)
       }

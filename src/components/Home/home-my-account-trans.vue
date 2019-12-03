@@ -55,14 +55,11 @@ export default {
   methods: {
     async getAccounts () {
       let myAccounts = JSON.parse(this.$localStorage.get('myAccounts'))
-
       if (myAccounts !== null) {
+        let publicAccount = PublicAccount.createFromPublicKey(myAccounts[0].publicKey, this.$config.network.number)
         try {
-          let publicAccount = PublicAccount.createFromPublicKey(myAccounts[0].publicKey, this.$config.network.number)
-
           let result = await this.$provider.accountHttp.transactions(publicAccount, new QueryParams(100)).toPromise()
           // let filteredTransactions = result.filter(el => el.type === 16724 || el.type === 16961)
-
           result.forEach(el => {
             el.totalAmount = 0
             if (el.type === 16724) {
