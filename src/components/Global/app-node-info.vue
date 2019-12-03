@@ -1,12 +1,5 @@
 <template>
   <div class="node-info">
-    <div class="supercont">
-      <div class="box-grey">
-        <div class="subtitle txt-left">Current Node</div>
-        <div class="value txt-left">{{ currentNode }}</div>
-      </div>
-    </div>
-
     <div class="cont">
       <div class="box-grey">
         <div class="subtitle txt-left">Network Name</div>
