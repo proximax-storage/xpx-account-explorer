@@ -20,6 +20,12 @@ export default class Utils {
       return r + ".</strong><span class='dim'>" + b[1] + '</span>'
     }
   }
+  static amountFormatterSimple (amount) {
+    const amountDivisibility = Number(amount) / Math.pow(10, 6)
+    return amountDivisibility.toLocaleString('en-us', {
+      minimumFractionDigits: 6
+    })
+  }
 
   /**
    * Method to format integer with thousands separator
@@ -208,6 +214,30 @@ export default class Utils {
             }
           }
           dataStructure.push(element)
+          break
+      }
+    }
+    return dataStructure
+  }
+  static getStructureCsv (data) {
+    let dataStructure = []
+    for (let element of data) {
+      switch (element.type) {
+        case TransactionType.TRANSFER:
+          console.log(element.message.type)
+          const message = (element.message.type === 0) ? element.message.payload : '<encrypted>'
+          const transactionName = this.getNameTypeTransaction(element.type)
+          dataStructure.push({
+            Sender: element.signer.address.pretty(),
+            Recipient: element.recipient.address,
+            Transaction: transactionName,
+            Amount: this.amountFormatterSimple(element.totalAmount),
+            Message: message,
+            Hash: element.transactionInfo.hash,
+            Fee: this.amountFormatterSimple(element.maxFee.compact()),
+            Mosaic: 'XPX',
+            Timestamp: element.block
+          })
           break
       }
     }

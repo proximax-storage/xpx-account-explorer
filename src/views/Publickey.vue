@@ -31,7 +31,7 @@
       <node-info/>
     </div>
     <div class="separator"></div>
-    <app-export-format :dataExport="transactions" :description="foldLabel"/>
+    <app-export-format :dataTx="trasform"/>
     <div class="separator"></div>
     <div class="accountInfo" v-if="accountInfo !== null">
       <h1 class="title txt-left">Transactions</h1>
@@ -86,7 +86,8 @@ export default {
       namespaceXPX: this.$config.coin.namespace.id,
       balance: 0,
       otherMosaics: null,
-      transactions: null
+      transactions: null,
+      trasform: [{}]
     }
   },
 
@@ -111,6 +112,7 @@ export default {
         })
         let transactions = await this.$provider.accountHttp.transactions(publicAccount, new QueryParams(100)).toPromise()
         this.transactions = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
+        this.trasform = this.$utils.getStructureCsv(this.transactions)
       } catch (error) {
         console.warn(error)
       }

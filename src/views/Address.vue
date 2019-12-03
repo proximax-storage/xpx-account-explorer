@@ -36,7 +36,9 @@
     <div v-if="nodeInfoVisible" class="animate fade">
       <node-info/>
     </div>
-
+  <div class="separator"></div>
+    <app-export-format :dataTx="trasform"/>
+    <div class="separator"></div>
     <div class="accountInfo" v-if="accountInfo !== null">
       <h1 class="title txt-left">Transactions</h1>
       <table class="table-setting">
@@ -67,7 +69,7 @@ import AppSearchbar from '@/components/Global/app-searchbar'
 import AppFold from '@/components/Global/app-fold'
 import NodeInfo from '@/components/Global/app-node-info'
 import { Address, QueryParams } from 'tsjs-xpx-chain-sdk'
-
+import AppExportFormat from '@/components/Global/app-export-format'
 export default {
   name: 'Publickey',
 
@@ -75,7 +77,8 @@ export default {
     ModuleHeader,
     AppSearchbar,
     AppFold,
-    NodeInfo
+    NodeInfo,
+    AppExportFormat
   },
 
   data () {
@@ -88,7 +91,8 @@ export default {
       namespaceXPX: this.$config.coin.namespace.id,
       balance: 0,
       otherMosaics: null,
-      transactions: null
+      transactions: null,
+      trasform: [{}]
     }
   },
 
@@ -115,6 +119,7 @@ export default {
         })
         let transactions = await this.$provider.accountHttp.transactions(accountInfo.publicAccount, new QueryParams(100)).toPromise()
         this.transactions = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
+        this.trasform = this.$utils.getStructureCsv(this.transactions)
       } catch (error) {
         console.warn(error)
       }
