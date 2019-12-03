@@ -164,4 +164,45 @@ export default class Utils {
     })
     return arraTypeTransaction[x].name
   }
+
+  static getStructureDashboard (transaction, config) {
+    let dataStructure = []
+    for (let element of transaction) {
+      switch (element.type) {
+        case TransactionType.TRANSFER:
+          element.totalAmount = 0
+          element.mosaics.forEach(mosaic => {
+            mosaic.id = mosaic.id.toHex()
+            mosaic.amount = mosaic.amount.compact()
+            if (mosaic.id === config.coin.mosaic.id) {
+              element.totalAmount += mosaic.amount
+            } else if (mosaic.id === config.coin.namespace.id) {
+              element.totalAmount += mosaic.amount
+            }
+          })
+          dataStructure.push(element)
+          break
+        case TransactionType.AGGREGATE_BONDED:
+          element.totalAmount = 0
+          if (element.innerTransactions.length > 0) {
+            for (let init of element.innerTransactions) {
+              if (init.type === TransactionType.TRANSFER) {
+                init.mosaics.forEach(mosaic => {
+                  mosaic.id = mosaic.id.toHex()
+                  mosaic.amount = mosaic.amount.compact()
+                  if (mosaic.id === config.coin.mosaic.id) {
+                    element.totalAmount += mosaic.amount
+                  } else if (mosaic.id === config.coin.namespace.id) {
+                    element.totalAmount += mosaic.amount
+                  }
+                })
+              }
+            }
+          }
+          dataStructure.push(element)
+          break
+      }
+    }
+    return dataStructure
+  }
 }
