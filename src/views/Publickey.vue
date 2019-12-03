@@ -1,11 +1,7 @@
 <template>
   <div class="Publickey">
     <module-header :name="moduleName"/>
-
     <app-searchbar/>
-
-    <div class="separator"></div>
-
     <div class="accountInfo" v-if="accountInfo !== null">
       <h1 class="title txt-left">Account Info</h1>
       <div class="accountInfo-cont">
@@ -34,7 +30,9 @@
     <div v-if="nodeInfoVisible" class="animate fade">
       <node-info/>
     </div>
-
+    <div class="separator"></div>
+    <app-export-format :dataExport="transactions" :description="foldLabel"/>
+    <div class="separator"></div>
     <div class="accountInfo" v-if="accountInfo !== null">
       <h1 class="title txt-left">Transactions</h1>
       <table class="table-setting">
@@ -42,7 +40,7 @@
           <th class="txt-left">Signer</th>
           <th class="txt-left">Recipient</th>
           <th class="txt-left">Transaction</th>
-          <th class="txt-left">Deadline</th>
+          <th class="txt-left">Timestamp</th>
           <th class="txt-left">Amount</th>
           <th class="txt-left">Info</th>
         </tr>
@@ -50,7 +48,7 @@
           <td class="txt-left">{{ $utils.maskAddress(item.signer.address.pretty()) }}</td>
           <td class="txt-left">{{ (item.recipient) ? $utils.maskAddress(item.recipient.pretty()) : 'No Recipient' }}</td>
           <td class="txt-left">{{ $utils.getNameTypeTransaction(item.type) }}</td>
-          <td class="txt-left">{{ $utils.fmtTime(item.deadline.value) }}</td>
+          <td class="txt-left">{{ item.block }}</td>
           <td class="txt-left" v-html="$utils.fmtAmountValue(item.totalAmount)"></td>
           <td class="txt-left"><img class="icon20" :src="require('@/assets/icons/information.svg')"></td>
         </tr>
@@ -65,6 +63,7 @@ import AppSearchbar from '@/components/Global/app-searchbar'
 import AppFold from '@/components/Global/app-fold'
 import NodeInfo from '@/components/Global/app-node-info'
 import { PublicAccount, QueryParams } from 'tsjs-xpx-chain-sdk'
+import AppExportFormat from '@/components/Global/app-export-format'
 
 export default {
   name: 'Publickey',
@@ -73,7 +72,8 @@ export default {
     ModuleHeader,
     AppSearchbar,
     AppFold,
-    NodeInfo
+    NodeInfo,
+    AppExportFormat
   },
 
   data () {
@@ -98,23 +98,19 @@ export default {
     async init () {
       let publickey = this.$route.params.id
       let publicAccount = PublicAccount.createFromPublicKey(publickey, this.$config.network.number)
-      console.log(publicAccount)
       try {
         let accountInfo = await this.$provider.accountHttp.getAccountInfo(publicAccount.address).toPromise()
-        console.log(accountInfo)
         this.accountInfo = accountInfo
         let mosaics = accountInfo.mosaics
         mosaics.forEach(el => {
           el.amount = el.amount.compact()
           el.id = el.id.toHex()
-
           if (el.id === this.mosaicXPX || el.id === this.namespaceXPX) {
             this.balance = el.amount
           }
         })
-
         let transactions = await this.$provider.accountHttp.transactions(publicAccount, new QueryParams(100)).toPromise()
-        this.transactions = this.$utils.getStructureDashboard(transactions, this.$config)
+        this.transactions = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
       } catch (error) {
         console.warn(error)
       }

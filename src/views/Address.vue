@@ -66,7 +66,7 @@ import ModuleHeader from '@/components/Global/module-header'
 import AppSearchbar from '@/components/Global/app-searchbar'
 import AppFold from '@/components/Global/app-fold'
 import NodeInfo from '@/components/Global/app-node-info'
-import { Address, QueryParams, Deadline } from 'tsjs-xpx-chain-sdk'
+import { Address, QueryParams } from 'tsjs-xpx-chain-sdk'
 
 export default {
   name: 'Publickey',
@@ -105,46 +105,16 @@ export default {
         let accountInfo = await this.$provider.accountHttp.getAccountInfo(address).toPromise()
         console.log(accountInfo)
         this.accountInfo = accountInfo
-
         let mosaics = accountInfo.mosaics
         mosaics.forEach(el => {
           el.amount = el.amount.compact()
           el.id = el.id.toHex()
-
           if (el.id === this.mosaicXPX || el.id === this.namespaceXPX) {
             this.balance = el.amount
           }
         })
-
         let transactions = await this.$provider.accountHttp.transactions(accountInfo.publicAccount, new QueryParams(100)).toPromise()
-        console.log(transactions)
-        // transactions = transactions.filter(el => el.type === 16724)
-        transactions.forEach(async el => {
-          el.totalAmount = 0
-
-          try {
-            let block = await this.$provider.blockHttp.getBlockByHeight(el.transactionInfo.height.compact()).toPromise()
-
-            el.block = this.$utils.fmtTime(block.timestamp.compact() + (Deadline.timestampNemesisBlock * 1000))
-            console.log()
-          } catch (error) {
-            console.warn('Error in block')
-          }
-
-          if (el.type === 16724) {
-            el.mosaics.forEach(mosaic => {
-              mosaic.id = mosaic.id.toHex()
-              mosaic.amount = mosaic.amount.compact()
-              if (mosaic.id === this.$config.coin.mosaic.id) {
-                el.totalAmount += mosaic.amount
-              } else if (mosaic.id === this.$config.coin.namespace.id) {
-                el.totalAmount += mosaic.amount
-              }
-            })
-          }
-        })
-
-        this.transactions = transactions
+        this.transactions = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
       } catch (error) {
         console.warn(error)
       }

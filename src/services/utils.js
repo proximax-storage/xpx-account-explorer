@@ -1,4 +1,4 @@
-import { TransactionType } from 'tsjs-xpx-chain-sdk'
+import { TransactionType, Deadline } from 'tsjs-xpx-chain-sdk'
 
 /**
  * Class to format the data in the explorer
@@ -165,9 +165,17 @@ export default class Utils {
     return arraTypeTransaction[x].name
   }
 
-  static getStructureDashboard (transaction, config) {
+  static async getStructureDashboard (transaction, config, provider) {
     let dataStructure = []
     for (let element of transaction) {
+      try {
+        let block = await provider.blockHttp.getBlockByHeight(element.transactionInfo.height.compact()).toPromise()
+        element.block = this.fmtTime(block.timestamp.compact() + (Deadline.timestampNemesisBlock * 1000))
+      } catch (error) {
+        element.block = null
+        console.warn('Error in block', error)
+      }
+
       switch (element.type) {
         case TransactionType.TRANSFER:
           element.totalAmount = 0
