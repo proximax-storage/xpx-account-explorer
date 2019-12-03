@@ -173,6 +173,10 @@ export default class Utils {
 
   static async getStructureDashboard (transaction, config, provider) {
     let dataStructure = []
+    let structureCsv = []
+    let structureTx = []
+    let message = ''
+    let transactionName = ''
     transaction.forEach(async element => {
       try {
         let block = await provider.blockHttp.getBlockByHeight(element.transactionInfo.height.compact()).toPromise()
@@ -181,7 +185,6 @@ export default class Utils {
         element.block = null
         console.warn('Error in block', error)
       }
-
       switch (element.type) {
         case TransactionType.TRANSFER:
           element.totalAmount = 0
@@ -195,9 +198,23 @@ export default class Utils {
               element.totalAmount += mosaic.amount
             }
           })
-          dataStructure.push(element)
+          message = (element.message.type === 0) ? element.message.payload : '<encrypted>'
+          transactionName = this.getNameTypeTransaction(element.type)
+          structureCsv.push({
+            Sender: element.signer.address.pretty(),
+            Recipient: element.recipient.address,
+            Transaction: transactionName,
+            Amount: this.amountFormatterSimple(element.totalAmount),
+            Message: message,
+            Hash: element.transactionInfo.hash,
+            Fee: this.amountFormatterSimple(element.maxFee.compact()),
+            Mosaic: 'XPX',
+            Timestamp: element.block
+          })
+          structureTx.push(element)
           break
         case TransactionType.AGGREGATE_BONDED:
+          console.log('AGGREGATE_BONDED:', element)
           element.totalAmount = 0
           if (element.innerTransactions.length > 0) {
             for (let init of element.innerTransactions) {
@@ -215,15 +232,35 @@ export default class Utils {
               }
             }
           }
-          dataStructure.push(element)
+          console.log('element.type', element.innerTransactions[0].type)
+          message = (element.innerTransactions[0].message.type === 0) ? element.innerTransactions[0].message.payload : '<encrypted>'
+          transactionName = this.getNameTypeTransaction(element.type)
+          structureCsv.push({
+            Sender: element.signer.address.pretty(),
+            Recipient: element.innerTransactions[0].recipient.address,
+            Transaction: transactionName,
+            Amount: this.amountFormatterSimple(element.totalAmount),
+            Message: message,
+            Hash: element.transactionInfo.hash,
+            Fee: this.amountFormatterSimple(element.maxFee.compact()),
+            Mosaic: 'XPX',
+            Timestamp: element.block
+          })
+          structureTx.push(element)
           break
       }
     })
-    return dataStructure
+    console.log('dataStructure', dataStructure)
+    return {
+      transactions: structureTx,
+      structureCsv: structureCsv
+    }
   }
   static getStructureCsv (data) {
+    console.log('datadatadatadata', data.length)
     let dataStructure = []
     for (let element of data) {
+      console.log('element', element)
       switch (element.type) {
         case TransactionType.TRANSFER:
           const message = (element.message.type === 0) ? element.message.payload : '<encrypted>'
