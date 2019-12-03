@@ -47,6 +47,18 @@ figure {
   /* text-transform: uppercase; */
 }
 
+.proximax-btn-white {
+  border: 1px solid grey;
+  background: white;
+  padding: 10px 30px;
+  color: black;
+  border-radius: 20px;
+  font-weight: bold;
+  outline: none;
+  font-size: 14px;
+  /* text-transform: uppercase; */
+}
+
 .proximax-btn-disabled {
   border: 0px;
   background: var(--grey-accent);
@@ -348,12 +360,13 @@ figure {
 }
 
 .nav-item:hover {
-  background: var(--main);
+  background: var(--grey-accent);
+  color: black;
 }
 
 .nav-item-active {
   background: white;
-  color: black
+  color: var(--main)
 }
 
 .nav-item > .icon {
@@ -553,6 +566,41 @@ figure {
 .block-cont {
   padding: 10px;
 }
+
+/* Filter */
+.filter {
+  padding: 10px;
+}
+
+.filter-cont {
+  background: var(--grey-back);
+  display: flex;
+  justify-content: space-between;
+}
+
+.filter-cont > div:first-child {
+  background: grey;
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+  color: white;
+  font-weight: bold;
+}
+
+.filter-cont > div:nth-child(2) {
+  background: var(--grey-back);
+  flex-grow: 4;
+  padding: 10px;
+}
+
+option {
+  background: white;
+  color: black;
+}
+
+
 
 /* ---------- END COMPONENTS ---------- */
 
