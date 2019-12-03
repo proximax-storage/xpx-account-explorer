@@ -81,7 +81,7 @@ export default {
             valid = true
           } else if (this.isOnlyNumber(this.valueSearch) === true) {
             console.log('BLK')
-            path = 'blockHeight'
+            path = 'block'
             valid = true
           } else {
             valid = false

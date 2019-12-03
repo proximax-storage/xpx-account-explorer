@@ -549,6 +549,11 @@ figure {
   margin-left: 5px;
 }
 
+/* BLOCK */
+.block-cont {
+  padding: 10px;
+}
+
 /* ---------- END COMPONENTS ---------- */
 
 /* ---------- MEDIA QUERIES ---------- */
