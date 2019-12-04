@@ -23,6 +23,18 @@
     </div>
     <!-- END ITEM LIST -->
 
+    <div class="project-name">
+      <div class="separator"></div>
+    </div>
+
+    <div class="accounts-list" v-if="customAccounts.length > 0">
+      <div class="nav-item" v-for="(item, index) in customAccounts" :key="index"
+      :class="item.class" :route="item.route" @click="goToPublicKey(item.publicKey)">
+        <img :src="require(`@/assets/icons/${item.icon}.svg`)" class="icon">
+        <div class="name">{{ item.name }}</div>
+      </div>
+    </div>
+
   </div>
 </template>
 
@@ -34,15 +46,17 @@ export default {
     return {
       softwareVersion: `v${this.$config.version}`,
       navList: [
-        { name: 'Dashboard', class: '', route: '', icon: 'icon-dashboard-on' },
+        { name: 'Dashboard', class: '', route: '', icon: 'icon-dashboard-off' },
         { name: 'Nodes', class: '', route: 'nodes', icon: 'icon-nodes-off' },
         { name: 'Customize', class: '', route: 'customizing', icon: 'icon-accounts-off' }
-      ]
+      ],
+      customAccounts: []
     }
   },
 
   mounted () {
     this.verifyRoute()
+    this.loadCustomAccounts()
   },
 
   methods: {
@@ -82,6 +96,29 @@ export default {
       currentPath = currentPath.slice(2)
       this.redirectAction(currentPath)
       this.changeClass(currentPath)
+    },
+
+    loadCustomAccounts () {
+      let myAccounts = JSON.parse(this.$localStorage.get('myAccounts'))
+      console.log(myAccounts)
+
+      if (myAccounts !== null) {
+        myAccounts.forEach(el => {
+          let tmpObj = {
+            name: el.name,
+            publicKey: el.publicAccount.publicKey,
+            class: '',
+            icon: 'icon-accounts-off'
+          }
+          this.customAccounts.push(tmpObj)
+        })
+      }
+    },
+
+    goToPublicKey (pk) {
+      console.log(pk)
+      let routeData = this.$router.resolve({ path: `/publicKey/${pk}` })
+      window.open(routeData.href, '_blank')
     }
   }
 }
