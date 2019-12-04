@@ -7,11 +7,11 @@
     <div v-if="nodeInfoVisible" class="fold">
       <div class="box-grey mb-10 node-card" v-for="(item, index) in allNodes" :key="index">
         <div>{{ item }}</div>
-        <div v-if="!(item === currentNode)">
-          <input type="button" class="proximax-btn" value="Select" @click="changeNode(item)">
-        </div>
-        <div v-if="item === currentNode">
-          <input type="button" class="proximax-btn-disabled" value="Select">
+        <div >
+          <input v-if="!(item === currentNode)" type="button" class="proximax-btn" value="Select" @click="changeNode(item)">
+          <input v-if="item === currentNode" type="button" class="proximax-btn-disabled" value="Select">
+          <input v-if="nodes.includes(item) === false" type="button" class="proximax-btn-red ml-10" value="Delete" @click="deleteNode(index)">
+          <input v-if="nodes.includes(item) === true" type="button" class="proximax-btn-disabled ml-10" value="Delete">
         </div>
       </div>
     </div>
@@ -65,6 +65,19 @@ export default {
     changeNode (node) {
       this.$localStorage.set('currentNode', node)
       window.location.reload()
+    },
+
+    deleteNode (index) {
+      let customNodes = JSON.parse(this.$localStorage.get('customNodes'))
+      if (index > this.nodes.length && customNodes !== null) {
+        console.log(index)
+        let realIndex = this.nodes.length - index
+        console.log(realIndex)
+        console.log(customNodes)
+        customNodes.splice(realIndex, 1)
+        console.log(customNodes)
+        this.$localStorage.set('customNodes', JSON.stringify())
+      }
     },
 
     async addNode () {
