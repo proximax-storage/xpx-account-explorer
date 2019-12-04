@@ -1,9 +1,15 @@
 <template>
   <div class="account-transactions">
 
+    <div class="separator"></div>
+
+    <app-export-format :dataTx="trasform"/>
+
+    <div class="separator"></div>
+
     <app-filter />
 
-    <div class="fold" v-if="mainActive === true">
+    <div class="accountInfo" v-if="mainActive === true">
       <table class="table-setting">
         <tr>
           <th class="txt-left">Sender</th>
@@ -41,18 +47,21 @@
 <script>
 import { PublicAccount, QueryParams } from 'tsjs-xpx-chain-sdk'
 import AppFilter from '@/components/Global/app-filter'
+import AppExportFormat from '@/components/Global/app-export-format'
 
 export default {
   name: 'MyAccountTrans',
 
   components: {
-    AppFilter
+    AppFilter,
+    AppExportFormat
   },
 
   data () {
     return {
       mainActive: null,
-      transactions: null
+      transactions: null,
+      trasform: [{}]
     }
   },
 

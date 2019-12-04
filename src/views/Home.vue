@@ -8,27 +8,6 @@
 
     <div class="separator"></div>
 
-    <div class="home-indicator">
-      <div class="child-indicator">
-        <div>Recent transaction</div>
-      </div>
-
-      <div>
-        <div class="child-indicator">
-          <div class="cont-button" v-if="myAccounts !== null">
-            <span>Export to:</span>
-          </div>
-          <div class="cont-button">
-            <input type="button" value="PDF" class="proximax-btn">
-          </div>
-          <div class="cont-button">
-            <input type="button" value="CSV" class="proximax-btn">
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="separator"></div>
-
     <app-fold :description="foldLabel" :run="toggleNodeInfo"/>
     <div v-if="nodeInfoVisible">
       <node-info/>
