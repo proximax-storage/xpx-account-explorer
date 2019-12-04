@@ -1,9 +1,15 @@
 <template>
   <div class="account-transactions">
 
-    <app-filter />
+    <div class="separator"></div>
 
-    <div class="fold" v-if="mainActive === true">
+    <app-export-format :dataTx="trasform"/>
+
+    <div class="separator"></div>
+
+    <app-filter @transactionType="getTransactionType"/>
+
+    <div class="accountInfo" v-if="mainActive === true">
       <table class="table-setting">
         <tr>
           <th class="txt-left">Sender</th>
@@ -13,7 +19,7 @@
           <th class="txt-left">Amount</th>
           <th class="txt-left">Info</th>
         </tr>
-        <tr v-for="(item, index) in transactions" :key="index">
+        <tr v-for="(item, index) in transactions" :key="index" v-show="showType.includes(item.type) === true">
           <td class="txt-left">{{ $utils.maskAddress(item.signer.address.pretty()) }}</td>
           <td class="txt-left">{{ (item.recipient) ? $utils.maskAddress(item.recipient.pretty()) : 'No Recipient' }}</td>
           <td class="txt-left">{{ $utils.getNameTypeTransaction(item.type) }}</td>
@@ -41,18 +47,45 @@
 <script>
 import { PublicAccount, QueryParams } from 'tsjs-xpx-chain-sdk'
 import AppFilter from '@/components/Global/app-filter'
+import AppExportFormat from '@/components/Global/app-export-format'
 
 export default {
   name: 'MyAccountTrans',
 
   components: {
-    AppFilter
+    AppFilter,
+    AppExportFormat
   },
 
   data () {
     return {
       mainActive: null,
-      transactions: null
+      transactions: null,
+      trasform: [{}],
+      showType: [
+        16724,
+        16718,
+        16974,
+        17230,
+        16717,
+        16973,
+        16725,
+        16705,
+        16961,
+        16712,
+        16722,
+        16978,
+        16720,
+        16976,
+        17232,
+        16716,
+        16701,
+        16957,
+        17213,
+        16727,
+        16728,
+        16729
+      ]
     }
   },
 
@@ -93,6 +126,10 @@ export default {
     goToHash (hash) {
       let routeData = this.$router.resolve({ path: `/hash/${hash}` })
       window.open(routeData.href, '_blank')
+    },
+
+    getTransactionType (data) {
+      this.showType = data
     }
   }
 }
