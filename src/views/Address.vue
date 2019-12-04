@@ -68,9 +68,13 @@
         </tr>
       </table>
     </div>
-     <!-- <div class='cont-button'>
-            <button   style="cursor: pointer;"  class='proximax-btn' v-on:click="loadmore()">LOAD MORE  </button>
-          </div> -->
+
+    <div class="fold mb-10">
+      <button class="proximax-btn pointer" @click="loadmore()">
+        <span v-if="!loadActive">LOAD MORE</span>
+        <div v-if="loadActive"><img :src="require('@/assets/icons/loading.svg')" class="loader"></div>
+      </button>
+    </div>
   </div>
 </template>
 
@@ -113,6 +117,7 @@ export default {
       errorTitle: 'Address error.',
       errorText: 'The value provided is invalid or has not been found.',
       errorActive: false,
+      loadActive: false,
       showType: [
         16724,
         16718,
@@ -158,7 +163,7 @@ export default {
             this.balance = el.amount
           }
         })
-        const queryParams = 100
+        const queryParams = 10
         const query = (id) ? new QueryParams(queryParams, id) : new QueryParams(queryParams)
         let transactions = await this.$provider.accountHttp.transactions(accountInfo.publicAccount, query).toPromise()
         const dataStructure = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
@@ -174,13 +179,35 @@ export default {
       let routeData = this.$router.resolve({ path: `/hash/${hash}` })
       window.open(routeData.href, '_blank')
     },
+
     toggleNodeInfo () {
       this.nodeInfoVisible = !this.nodeInfoVisible
     },
-    loadmore () {
-      const lastTransactionId = (this.transactions[0].length > 0) ? this.transactions[0][this.transactions[0].length - 1].transactionInfo.id : null
+
+    async loadmore () {
+      this.loadActive = true
+      const lastTransactionId = (this.transactions[0].length !== 0) ? this.transactions[this.transactions.length - 1].transactionInfo.id : null
       console.log('lastTransactionId', lastTransactionId)
-      this.loadTransactions(lastTransactionId)
+      try {
+        const queryParams = 10
+        const query = (lastTransactionId) ? new QueryParams(queryParams, lastTransactionId) : new QueryParams(queryParams)
+        let transactions = await this.$provider.accountHttp.transactions(this.accountInfo.publicAccount, query).toPromise()
+        const dataStructure = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
+        setTimeout(() => {
+          console.log(dataStructure)
+          dataStructure.transactions.forEach(el => {
+            this.transactions.push(el)
+          })
+          dataStructure.structureCsv.forEach(el => {
+            this.trasform.push(el)
+          })
+          this.loadActive = false
+        }, 2000)
+      } catch (error) {
+        console.warn(error)
+        this.errorActive = true
+      }
+      // this.loadTransactions(lastTransactionId)
     },
     getTransactionType (data) {
       this.showType = data

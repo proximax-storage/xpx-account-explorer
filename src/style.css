@@ -93,6 +93,10 @@ figure {
   cursor: pointer;
 }
 
+.pointer {
+  cursor: pointer;
+}
+
 .box-grey {
   background: var(--grey-back);
   padding: 20px;
@@ -640,9 +644,24 @@ option {
   margin: 0px;
 }
 
-
-
 /* ---------- END COMPONENTS ---------- */
+
+
+
+.loader {
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
 /* ---------- MEDIA QUERIES ---------- */
 @media screen and (min-width: 1367px) {
