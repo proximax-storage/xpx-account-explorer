@@ -9,13 +9,13 @@
           <div class='cont-button' >
             <span>Export to:</span>
           </div>
-          <!-- <div class='cont-button'>
-            <input type='button' value='PDF' class='proximax-btn'>
-          </div> -->
+          <div class='cont-button'>
+            <button   style="cursor: pointer;"  class='proximax-btn' v-on:click="createPDF()"> PDF </button>
+          </div>
           <div class='cont-button'>
 
             <download-csv :data="dataTx" :name="dataFile" :labels="labels" :fields="fields">
-              <input type='button' value='CSV' class='proximax-btn'>
+              <input style="cursor: pointer;"  type='button' value='CSV' class='proximax-btn'>
             </download-csv>
           <!-- <button class='button'  v-on:click='exportCsv()' >CSV</button> -->
             <!-- <download-csv class='proximax-btn' :data='dataExport' :name='dataFile' :labels='labels' :fields='fields'>
@@ -29,7 +29,6 @@
 <script>
 export default {
   name: 'AppExportFormat',
-
   props: {
     dataTx: Array
 
@@ -48,11 +47,13 @@ export default {
         fname: 'First Name',
         lname: 'Last Name'
       },
-
       isExported: false
     }
   },
   methods: {
+    createPDF () {
+      window.print()
+    }
   }
 }
 </script>
