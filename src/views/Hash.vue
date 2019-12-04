@@ -73,6 +73,30 @@
       </div>
     </div>
 
+    <div class="inner" v-if="innerTrans !== null">
+      <h1 class="title txt-left mb-10">Inner Transactions</h1>
+      <div class="box-grey mb-10 innerCard" v-for="(item, index) in innerTrans" :key="index" @click="activeModal(index)">
+        <div>
+          <div class="title">#</div>
+          <div class="value">{{ index }}</div>
+        </div>
+        <div>
+          <div class="title">Type</div>
+          <div class="value">{{ $utils.getNameTypeTransaction(item.type) }}</div>
+        </div>
+        <div>
+          <div class="title">Height</div>
+          <div class="value">{{ item.transactionInfo.height.compact() }}</div>
+        </div>
+        <div>
+          <div class="title">Version</div>
+          <div class="value">{{ item.version }}</div>
+        </div>
+      </div>
+    </div>
+
+    <inner-modal :params="innerParams" @closeTransaction="modalCom"/>
+
   </div>
 </template>
 
@@ -82,6 +106,7 @@ import AppSearchbar from '@/components/Global/app-searchbar'
 import AppFold from '@/components/Global/app-fold'
 import NodeInfo from '@/components/Global/app-node-info'
 import { Deadline } from 'tsjs-xpx-chain-sdk'
+import InnerModal from '@/components/Hash/innerModal'
 
 export default {
   name: 'HashTransaction',
@@ -90,7 +115,8 @@ export default {
     ModuleHeader,
     AppSearchbar,
     AppFold,
-    NodeInfo
+    NodeInfo,
+    InnerModal
   },
 
   data () {
@@ -102,7 +128,9 @@ export default {
       timestamp: null,
       block: null,
       amount: 0,
-      fee: 0
+      fee: 0,
+      innerTrans: null,
+      innerParams: null
     }
   },
 
@@ -118,16 +146,18 @@ export default {
         console.log(transactionInfo)
         this.transaction = transactionInfo
 
-        transactionInfo.mosaics.forEach(mosaic => {
-          mosaic.id = mosaic.id.toHex()
-          mosaic.amount = mosaic.amount.compact()
-          console.log(mosaic)
-          if (mosaic.id === this.$config.coin.mosaic.id) {
-            this.amount += mosaic.amount
-          } else if (mosaic.id === this.$config.coin.namespace.id) {
-            this.amount += mosaic.amount
-          }
-        })
+        if ([undefined, null].includes(transactionInfo.mosaics) === false) {
+          transactionInfo.mosaics.forEach(mosaic => {
+            mosaic.id = mosaic.id.toHex()
+            mosaic.amount = mosaic.amount.compact()
+            console.log(mosaic)
+            if (mosaic.id === this.$config.coin.mosaic.id) {
+              this.amount += mosaic.amount
+            } else if (mosaic.id === this.$config.coin.namespace.id) {
+              this.amount += mosaic.amount
+            }
+          })
+        }
 
         this.block = transactionInfo.transactionInfo.height.compact()
         let block = await this.$provider.blockHttp.getBlockByHeight(
@@ -139,6 +169,8 @@ export default {
         )
 
         this.fee = block.feeMultiplier * transactionInfo.size
+        console.log(transactionInfo.innerTransactions)
+        this.innerTrans = ([null, undefined].includes(transactionInfo.innerTransactions) === false) ? transactionInfo.innerTransactions : null
       } catch (error) {
         console.warn(error)
       }
@@ -149,6 +181,22 @@ export default {
     },
     createPDF () {
       window.print()
+    },
+
+    activeModal (index) {
+      console.log(index, this.innerTrans[index])
+
+      let tmpObj = {
+        active: true,
+        transaction: this.innerTrans[index]
+      }
+
+      this.innerParams = tmpObj
+    },
+
+    modalCom (data) {
+      console.log(data)
+      this.innerParams = data
     }
   }
 }

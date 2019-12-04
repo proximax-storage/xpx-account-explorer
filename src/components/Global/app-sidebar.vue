@@ -34,7 +34,7 @@ export default {
     return {
       softwareVersion: `v${this.$config.version}`,
       navList: [
-        { name: 'Dashboard', class: 'nav-item-active', route: '', icon: 'icon-dashboard-on' },
+        { name: 'Dashboard', class: '', route: '', icon: 'icon-dashboard-on' },
         { name: 'Nodes', class: '', route: 'nodes', icon: 'icon-nodes-off' },
         { name: 'Customize', class: '', route: 'customizing', icon: 'icon-accounts-off' }
       ]
@@ -80,7 +80,6 @@ export default {
     verifyRoute () {
       let currentPath = window.location.hash
       currentPath = currentPath.slice(2)
-      console.log('Rute', currentPath)
       this.redirectAction(currentPath)
       this.changeClass(currentPath)
     }
