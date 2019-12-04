@@ -1,6 +1,6 @@
 <template>
   <div class="Error box-grey">
-    <div class="error">
+    <div class="error-comp">
       <h1>{{ title }}</h1>
       <p>{{ text }}</p>
     </div>

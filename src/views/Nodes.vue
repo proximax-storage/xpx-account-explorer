@@ -73,6 +73,7 @@ export default {
           let validNode = await axios.get(`${this.addNodeValue}/node/info`)
           validNode = validNode.data
           let customNodes = this.$localStorage.get('customNodes')
+          let allNodes = this.nodes.concat(customNodes)
           let resultNode = ''
 
           if (validNode && validNode.networkIdentifier === this.$config.network.number) {
@@ -94,17 +95,26 @@ export default {
             }
 
             if (customNodes === null) {
-              let customNodeArray = JSON.stringify([resultNode])
-              this.$localStorage.set('customNodes', customNodeArray)
-              this.$store.dispatch('newNotification', successNotif)
+              if (allNodes.includes(resultNode) === true) {
+                throw String('Existing node')
+              } else {
+                let customNodeArray = JSON.stringify([resultNode])
+                this.$localStorage.set('customNodes', customNodeArray)
+                this.$store.dispatch('newNotification', successNotif)
+              }
             } else if (customNodes !== null) {
               let customNodeArray = JSON.parse(customNodes)
-              customNodeArray.push(resultNode)
-              this.$localStorage.set('customNodes', customNodeArray)
-              this.$store.dispatch('newNotification', successNotif)
+
+              if (allNodes.includes(resultNode) === true) {
+                throw String('Existing node')
+              } else {
+                customNodeArray.push(resultNode)
+                this.$localStorage.set('customNodes', customNodeArray)
+                this.$store.dispatch('newNotification', successNotif)
+              }
             }
           } else {
-            throw 'Invalid node network type' // eslint-disable-line
+            throw String('Invalid node network type')
           }
         } catch (error) {
           console.log(error)
@@ -117,6 +127,9 @@ export default {
 
           if (error === 'Invalid node network type') {
             tmpObj.message = 'Invalid node network type'
+          } else if (error === 'Existing node') {
+            console.warn(error)
+            tmpObj.message = 'Existing node'
           }
 
           this.$store.dispatch('newNotification', tmpObj)
