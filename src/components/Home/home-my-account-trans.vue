@@ -29,7 +29,8 @@
         </tr>
       </table>
     </div>
-    <div class="fold mb-10">
+
+    <div class="fold mb-10" v-if="mainActive === true">
       <button class="proximax-btn pointer" @click="loadmore()">
         <span v-if="!loadActive">LOAD MORE</span>
         <div v-if="loadActive"><img :src="require('@/assets/icons/loading.svg')" class="loader"></div>
