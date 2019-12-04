@@ -7,7 +7,7 @@
 
     <div class="separator"></div>
 
-    <app-filter />
+    <app-filter @transactionType="getTransactionType"/>
 
     <div class="accountInfo" v-if="mainActive === true">
       <table class="table-setting">
@@ -19,7 +19,7 @@
           <th class="txt-left">Amount</th>
           <th class="txt-left">Info</th>
         </tr>
-        <tr v-for="(item, index) in transactions" :key="index">
+        <tr v-for="(item, index) in transactions" :key="index" v-show="showType.includes(item.type) === true">
           <td class="txt-left">{{ $utils.maskAddress(item.signer.address.pretty()) }}</td>
           <td class="txt-left">{{ (item.recipient) ? $utils.maskAddress(item.recipient.pretty()) : 'No Recipient' }}</td>
           <td class="txt-left">{{ $utils.getNameTypeTransaction(item.type) }}</td>
@@ -61,7 +61,31 @@ export default {
     return {
       mainActive: null,
       transactions: null,
-      trasform: [{}]
+      trasform: [{}],
+      showType: [
+        16724,
+        16718,
+        16974,
+        17230,
+        16717,
+        16973,
+        16725,
+        16705,
+        16961,
+        16712,
+        16722,
+        16978,
+        16720,
+        16976,
+        17232,
+        16716,
+        16701,
+        16957,
+        17213,
+        16727,
+        16728,
+        16729
+      ]
     }
   },
 
@@ -102,6 +126,10 @@ export default {
     goToHash (hash) {
       let routeData = this.$router.resolve({ path: `/hash/${hash}` })
       window.open(routeData.href, '_blank')
+    },
+
+    getTransactionType (data) {
+      this.showType = data
     }
   }
 }

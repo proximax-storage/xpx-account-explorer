@@ -45,6 +45,8 @@
 
     <app-error v-if="errorActive === true" :title="errorTitle" :text="errorText"/>
 
+    <app-filter @transactionType="getTransactionType"/>
+
     <div class="accountInfo" v-if="accountInfo !== null">
       <h1 class="title txt-left">Transactions</h1>
       <table class="table-setting">
@@ -56,7 +58,7 @@
           <th class="txt-left">Amount</th>
           <th class="txt-left">Info</th>
         </tr>
-        <tr v-for="(item, index) in transactions" :key="index">
+        <tr v-for="(item, index) in transactions" :key="index" v-show="showType.includes(item.type) === true">
           <td class="txt-left">{{ $utils.maskAddress(item.signer.address.pretty()) }}</td>
           <td class="txt-left">{{ (item.recipient) ? $utils.maskAddress(item.recipient.pretty()) : 'No Recipient' }}</td>
           <td class="txt-left">{{ $utils.getNameTypeTransaction(item.type) }}</td>
@@ -77,6 +79,7 @@ import NodeInfo from '@/components/Global/app-node-info'
 import { Address, QueryParams } from 'tsjs-xpx-chain-sdk'
 import AppExportFormat from '@/components/Global/app-export-format'
 import AppError from '@/components/Global/app-error'
+import AppFilter from '@/components/Global/app-filter'
 
 export default {
   name: 'Publickey',
@@ -87,7 +90,8 @@ export default {
     AppFold,
     NodeInfo,
     AppExportFormat,
-    AppError
+    AppError,
+    AppFilter
   },
 
   data () {
@@ -105,7 +109,31 @@ export default {
       errorMessage: Address,
       errorTitle: 'Address error.',
       errorText: 'The value provided is invalid or has not been found.',
-      errorActive: false
+      errorActive: false,
+      showType: [
+        16724,
+        16718,
+        16974,
+        17230,
+        16717,
+        16973,
+        16725,
+        16705,
+        16961,
+        16712,
+        16722,
+        16978,
+        16720,
+        16976,
+        17232,
+        16716,
+        16701,
+        16957,
+        17213,
+        16727,
+        16728,
+        16729
+      ]
     }
   },
 
@@ -147,6 +175,10 @@ export default {
 
     toggleNodeInfo () {
       this.nodeInfoVisible = !this.nodeInfoVisible
+    },
+
+    getTransactionType (data) {
+      this.showType = data
     }
   }
 }
