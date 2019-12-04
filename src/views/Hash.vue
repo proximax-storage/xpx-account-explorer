@@ -59,6 +59,11 @@
         </div>
 
         <div class="box-white txt-left">
+          <span class="bold fs20">Fee: </span>
+          <span class="fs20" v-html="$utils.fmtAmountValue(fee)"></span>
+        </div>
+
+        <div class="box-white txt-left">
           <p class="bold fs14">Timestamp: </p>
           <p class="fs14">{{ timestamp }}</p>
         </div>
@@ -98,7 +103,8 @@ export default {
       transaction: null,
       timestamp: null,
       block: null,
-      amount: 0
+      amount: 0,
+      fee: 0
     }
   },
 
@@ -133,6 +139,8 @@ export default {
         this.timestamp = this.$utils.fmtTime(
           block.timestamp.compact() + (Deadline.timestampNemesisBlock * 1000)
         )
+
+        this.fee = block.feeMultiplier * transactionInfo.size
       } catch (error) {
         console.warn(error)
       }
