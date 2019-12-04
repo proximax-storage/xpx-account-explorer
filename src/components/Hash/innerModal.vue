@@ -97,23 +97,21 @@ export default {
     getAmount (item) {
       console.log(item)
       let totalXPX = 0
-      if (item.mosaics !== 0) {
+      if (item.mosaics && item.mosaics.length !== 0) {
         item.mosaics.forEach(el => {
           console.log(el)
           if (el.id.toHex() === this.$config.coin.mosaic.id) {
-            totalXPX = el.amount
+            totalXPX = el.amount.compact()
           } else if (el.id.toHex() === this.$config.coin.namespace.id) {
             totalXPX = el.amount.compact()
           }
         })
       }
-
       this.calculateFee(item)
       return this.$utils.fmtAmountValue(totalXPX)
     },
 
     async calculateFee (item) {
-      console.log('LLEGA')
       try {
         this.block = item.transactionInfo.height.compact()
         let blockInfo = await this.$provider.blockHttp.getBlockByHeight(this.block).toPromise()
