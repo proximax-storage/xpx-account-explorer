@@ -36,7 +36,7 @@ export default {
       navList: [
         { name: 'Dashboard', class: 'nav-item-active', route: '', icon: 'icon-dashboard-on' },
         { name: 'Nodes', class: '', route: 'nodes', icon: 'icon-nodes-off' },
-        { name: 'Customizing', class: '', route: 'customizing', icon: 'icon-accounts-off' }
+        { name: 'Customize', class: '', route: 'customizing', icon: 'icon-accounts-off' }
       ]
     }
   },

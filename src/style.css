@@ -600,6 +600,22 @@ option {
   color: black;
 }
 
+.Error {
+  padding: 10px;
+}
+
+.error {
+  padding: 10px;
+  border: 2px solid red;
+  background: rgba(255, 0, 0, 0.445);
+  Border-radius: 20px;
+  color: white
+}
+
+.error > h1 {
+  margin: 0px;
+}
+
 
 
 /* ---------- END COMPONENTS ---------- */

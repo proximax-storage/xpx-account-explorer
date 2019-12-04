@@ -30,9 +30,15 @@
     <div v-if="nodeInfoVisible" class="animate fade">
       <node-info/>
     </div>
+
     <div class="separator"></div>
+
     <app-export-format :dataTx="trasform"/>
+
     <div class="separator"></div>
+
+    <app-error v-if="errorActive === true" :title="errorTitle" :text="errorText"/>
+
     <div class="accountInfo" v-if="accountInfo !== null">
       <h1 class="title txt-left">Transactions</h1>
       <table class="table-setting">
@@ -50,7 +56,7 @@
           <td class="txt-left">{{ $utils.getNameTypeTransaction(item.type) }}</td>
           <td class="txt-left">{{ item.block }}</td>
           <td class="txt-left" v-html="$utils.fmtAmountValue(item.totalAmount)"></td>
-          <td class="txt-left"><img class="icon20" :src="require('@/assets/icons/information.svg')"></td>
+          <td class="txt-left" @click="goToHash(item.transactionInfo.hash)"><img class="icon20" :src="require('@/assets/icons/icon-info-on.svg')"></td>
         </tr>
       </table>
     </div>
@@ -64,6 +70,7 @@ import AppFold from '@/components/Global/app-fold'
 import NodeInfo from '@/components/Global/app-node-info'
 import { PublicAccount, QueryParams } from 'tsjs-xpx-chain-sdk'
 import AppExportFormat from '@/components/Global/app-export-format'
+import AppError from '@/components/Global/app-error'
 
 export default {
   name: 'Publickey',
@@ -73,7 +80,8 @@ export default {
     AppSearchbar,
     AppFold,
     NodeInfo,
-    AppExportFormat
+    AppExportFormat,
+    AppError
   },
 
   data () {
@@ -87,7 +95,10 @@ export default {
       balance: 0,
       otherMosaics: null,
       transactions: null,
-      trasform: [{}]
+      trasform: [{}],
+      errorTitle: 'Public key error.',
+      errorText: 'The value provided is invalid or has not been found.',
+      errorActive: false
     }
   },
 
@@ -116,7 +127,13 @@ export default {
         this.trasform = dataStructure.structureCsv
       } catch (error) {
         console.warn(error)
+        this.errorActive = true
       }
+    },
+
+    goToHash (hash) {
+      let routeData = this.$router.resolve({ path: `/hash/${hash}` })
+      window.open(routeData.href, '_blank')
     },
 
     toggleNodeInfo () {

@@ -5,11 +5,11 @@
 
     <div class="fold">
       <div class="box-orange mb-10">
-        In this area you can add accounts to monitor,
+        Add Accounts here to monitor them
       </div>
 
       <form class="box-grey">
-        <input type="text" class="field" placeholder="Enter PublicKey" v-model="inputValue" @keyup="validate" @focusout="validate" @change="validate">
+        <input type="text" class="field" placeholder="Enter Public Key" v-model="inputValue" @keyup="validate" @focusout="validate" @change="validate">
         <div class="search-error" v-if="errorActive">{{ errorMessage }}</div>
         <input type="submit" class="proximax-btn" v-if="valid === true" @click.prevent="addAccount" value="Add Account">
         <input type="submit" class="proximax-btn-disabled" v-if="valid === false" @click.prevent="performSearch" value="Add Account">
@@ -33,7 +33,7 @@ export default {
 
   data () {
     return {
-      moduleName: 'Customizing',
+      moduleName: 'Customize',
       errorActive: false,
       errorMessage: '',
       inputValue: '',
