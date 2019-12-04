@@ -28,6 +28,7 @@
           <div class="txt-center subtitleHigh">Balance</div>
           <div class="txt-center valueHigh" v-if="balance == 0" v-html="this.$utils.fmtAmountValue(balance)"></div>
           <div class="txt-center valueHigh" v-if="balance !== 0" v-html="this.$utils.fmtAmountValue(balance)"></div>
+          <div class="txt-center valueHigh" >XPX</div>
         </div>
       </div>
     </div>
@@ -67,6 +68,12 @@
           <td class="txt-left" @click="goToHash(item.transactionInfo.hash)"><img class="icon20" :src="require('@/assets/icons/icon-info-on.svg')"></td>
         </tr>
       </table>
+    </div>
+     <div class="fold mb-10">
+      <button class="proximax-btn pointer" @click="loadmore()">
+        <span v-if="!loadActive">LOAD MORE</span>
+        <div v-if="loadActive"><img :src="require('@/assets/icons/loading.svg')" class="loader"></div>
+      </button>
     </div>
   </div>
 </template>
@@ -109,6 +116,7 @@ export default {
       errorTitle: 'Public key error.',
       errorText: 'The value provided is invalid or has not been found.',
       errorActive: false,
+      loadActive: false,
       showType: [
         16724,
         16718,
@@ -137,11 +145,10 @@ export default {
   },
 
   mounted () {
-    this.init()
+    this.loadTransactions()
   },
-
   methods: {
-    async init () {
+    async loadTransactions (id = null) {
       let publickey = this.$route.params.id
       let publicAccount = PublicAccount.createFromPublicKey(publickey, this.$config.network.number)
       try {
@@ -155,7 +162,9 @@ export default {
             this.balance = el.amount
           }
         })
-        let transactions = await this.$provider.accountHttp.transactions(publicAccount, new QueryParams(100)).toPromise()
+        const queryParams = 10
+        const query = (id) ? new QueryParams(queryParams, id) : new QueryParams(queryParams)
+        let transactions = await this.$provider.accountHttp.transactions(accountInfo.publicAccount, query).toPromise()
         const dataStructure = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
         this.transactions = dataStructure.transactions
         this.trasform = dataStructure.structureCsv
@@ -163,6 +172,31 @@ export default {
         console.warn(error)
         this.errorActive = true
       }
+    },
+    async loadmore () {
+      this.loadActive = true
+      const lastTransactionId = (this.transactions[0].length !== 0) ? this.transactions[this.transactions.length - 1].transactionInfo.id : null
+      console.log('lastTransactionId', lastTransactionId)
+      try {
+        const queryParams = 10
+        const query = (lastTransactionId) ? new QueryParams(queryParams, lastTransactionId) : new QueryParams(queryParams)
+        let transactions = await this.$provider.accountHttp.transactions(this.accountInfo.publicAccount, query).toPromise()
+        const dataStructure = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
+        setTimeout(() => {
+          console.log(dataStructure)
+          dataStructure.transactions.forEach(el => {
+            this.transactions.push(el)
+          })
+          dataStructure.structureCsv.forEach(el => {
+            this.trasform.push(el)
+          })
+          this.loadActive = false
+        }, 2000)
+      } catch (error) {
+        console.warn(error)
+        this.errorActive = true
+      }
+      // this.loadTransactions(lastTransactionId)
     },
 
     goToHash (hash) {
