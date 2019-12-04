@@ -1,5 +1,8 @@
 <template>
   <div class="account-transactions">
+
+    <app-filter />
+
     <div class="fold" v-if="mainActive === true">
       <table class="table-setting">
         <tr>
@@ -37,9 +40,14 @@
 
 <script>
 import { PublicAccount, QueryParams } from 'tsjs-xpx-chain-sdk'
+import AppFilter from '@/components/Global/app-filter'
 
 export default {
   name: 'MyAccountTrans',
+
+  components: {
+    AppFilter
+  },
 
   data () {
     return {

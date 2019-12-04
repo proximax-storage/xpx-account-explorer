@@ -29,8 +29,6 @@
     </div>
     <div class="separator"></div>
 
-    <app-filter/>
-
     <app-fold :description="foldLabel" :run="toggleNodeInfo"/>
     <div v-if="nodeInfoVisible">
       <node-info/>
@@ -47,7 +45,6 @@ import AppSearchbar from '@/components/Global/app-searchbar'
 import MyAccountTrans from '@/components/Home/home-my-account-trans'
 import AppFold from '@/components/Global/app-fold'
 import NodeInfo from '@/components/Global/app-node-info'
-import AppFilter from '@/components/Global/app-filter'
 
 export default {
   name: 'Home',
@@ -57,8 +54,7 @@ export default {
     AppSearchbar,
     MyAccountTrans,
     AppFold,
-    NodeInfo,
-    AppFilter
+    NodeInfo
   },
 
   data () {
