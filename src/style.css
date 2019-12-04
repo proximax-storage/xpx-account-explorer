@@ -17,6 +17,10 @@
   font-family: 'font2';
 }
 
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0px
 }
@@ -499,9 +503,9 @@ figure {
   outline: none;
   border: 1px solid grey;
   border-radius: 20px;
-  margin: 5px;
+  margin: 5px 0px;
   font-size: 17px;
-  width: 800px;
+  width: 100%;
 }
 
 .field:focus {
@@ -690,6 +694,12 @@ option {
 @media screen and (max-width: 960px) {
   .view-container > .view {
     width: 100%;
+  }
+}
+
+@media print and (min-width: 200px) {
+  .app-sidebar {
+    display: none;
   }
 }
 /* ---------- END MEDIA QUERIES ---------- */

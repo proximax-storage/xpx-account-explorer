@@ -16,7 +16,7 @@
           <td class="txt-left">{{ $utils.getNameTypeTransaction(item.type) }}</td>
           <td class="txt-left">{{ $utils.fmtTime(item.deadline.value) }}</td>
           <td class="txt-left" v-html="$utils.fmtAmountValue(item.totalAmount)"></td>
-          <td class="txt-left"><img class="icon20" :src="require('@/assets/icons/information.svg')"></td>
+          <td class="txt-left" @click="goToHash(item.transactionInfo.hash)"><img class="icon20" :src="require('@/assets/icons/icon-info-on.svg')"></td>
         </tr>
       </table>
     </div>
@@ -44,7 +44,7 @@ export default {
   data () {
     return {
       mainActive: null,
-      transactions: []
+      transactions: null
     }
   },
 
@@ -56,34 +56,35 @@ export default {
     async getAccounts () {
       let myAccounts = JSON.parse(this.$localStorage.get('myAccounts'))
       if (myAccounts !== null) {
-        let publicAccount = PublicAccount.createFromPublicKey(myAccounts[0].publicKey, this.$config.network.number)
+        let publicAccount = PublicAccount.createFromPublicKey(myAccounts[0].publicAccount.publicKey, this.$config.network.number)
         try {
-          let result = await this.$provider.accountHttp.transactions(publicAccount, new QueryParams(100)).toPromise()
-          // let filteredTransactions = result.filter(el => el.type === 16724 || el.type === 16961)
-          result.forEach(el => {
-            el.totalAmount = 0
-            if (el.type === 16724) {
-              el.mosaics.forEach(mosaic => {
-                mosaic.id = mosaic.id.toHex()
-                mosaic.amount = mosaic.amount.compact()
-                if (mosaic.id === this.$config.coin.mosaic.id) {
-                  el.totalAmount += mosaic.amount
-                } else if (mosaic.id === this.$config.coin.namespace.id) {
-                  el.totalAmount += mosaic.amount
-                }
-              })
+          let accountInfo = await this.$provider.accountHttp.getAccountInfo(publicAccount.address).toPromise()
+          this.accountInfo = accountInfo
+          let mosaics = accountInfo.mosaics
+          mosaics.forEach(el => {
+            el.amount = el.amount.compact()
+            el.id = el.id.toHex()
+            if (el.id === this.mosaicXPX || el.id === this.namespaceXPX) {
+              this.balance = el.amount
             }
           })
-
-          this.transactions = result
-
+          let transactions = await this.$provider.accountHttp.transactions(publicAccount, new QueryParams(100)).toPromise()
+          const dataStructure = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
+          this.transactions = dataStructure.transactions
+          this.trasform = dataStructure.structureCsv
           this.mainActive = true
         } catch (error) {
           console.warn(error)
+          this.mainActive = false
         }
       } else {
         this.mainActive = false
       }
+    },
+
+    goToHash (hash) {
+      let routeData = this.$router.resolve({ path: `/hash/${hash}` })
+      window.open(routeData.href, '_blank')
     }
   }
 }

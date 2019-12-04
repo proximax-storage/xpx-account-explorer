@@ -71,7 +71,7 @@ export default {
       let customNodes = JSON.parse(this.$localStorage.get('customNodes'))
       if (index > this.nodes.length && customNodes !== null) {
         console.log(index)
-        let realIndex = this.nodes.length - index
+        let realIndex = (this.nodes.length - 1) - index
         console.log(realIndex)
         console.log(customNodes)
         customNodes.splice(realIndex, 1)

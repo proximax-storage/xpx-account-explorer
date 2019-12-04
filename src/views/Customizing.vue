@@ -8,12 +8,28 @@
         Add Accounts here to monitor them
       </div>
 
-      <form class="box-grey">
+      <form class="box-grey mb-10">
+        <input type="text" class="field" placeholder="Account Name" v-model="accountName">
         <input type="text" class="field" placeholder="Enter Public Key" v-model="inputValue" @keyup="validate" @focusout="validate" @change="validate">
         <div class="search-error" v-if="errorActive">{{ errorMessage }}</div>
         <input type="submit" class="proximax-btn" v-if="valid === true" @click.prevent="addAccount" value="Add Account">
         <input type="submit" class="proximax-btn-disabled" v-if="valid === false" @click.prevent="performSearch" value="Add Account">
       </form>
+    </div>
+
+    <div class="fold" v-if="myCustomAccounts === null">
+      <h1 class="title txt-left">Custom Accounts</h1>
+      <div class="box-grey">
+        <span>You have not added a custom account yet!</span>
+      </div>
+    </div>
+
+    <div class="fold" v-if="myCustomAccounts !== null">
+      <h1 class="title txt-left">Custom Accounts</h1>
+      <div class="box-grey mb-10" v-for="(item, index) in myCustomAccounts" :key="index">
+        <p class="txt-left bold">{{ item.name }}</p>
+        <p class="txt-left">{{ item.publicAccount.publicKey }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -37,7 +53,9 @@ export default {
       errorActive: false,
       errorMessage: '',
       inputValue: '',
-      valid: false
+      valid: false,
+      myCustomAccounts: JSON.parse(this.$localStorage.get('myAccounts')),
+      accountName: ''
     }
   },
 
@@ -66,36 +84,52 @@ export default {
       this.valid = valid
     },
 
-    addAccount () {
-      let myAccounts = this.$localStorage.get('myAccounts')
+    async addAccount () {
       if (this.valid === true) {
         let publicAccount = PublicAccount.createFromPublicKey(this.inputValue, this.$config.network.number)
-        let newAccount = {
-          publicKey: publicAccount.publicKey,
-          address: publicAccount.address.address,
-          prettyAddress: publicAccount.address.pretty(),
-          networktype: publicAccount.address.networkType
-        }
 
-        let tmpObj = {
-          active: true,
-          type: 'success',
-          title: 'Account added',
-          message: 'Your account has been successfully added'
-        }
+        try {
+          let accountInfo = await this.$provider.accountHttp.getAccountInfo(publicAccount.address).toPromise()
+          console.log(accountInfo)
 
-        if (myAccounts === null) {
-          this.$localStorage.set('myAccounts', [newAccount])
+          let numberAccount = (this.myCustomAccounts === null) ? '1' : `${this.myCustomAccounts.length + 1}`
+
+          let newAccount = {
+            publicAccount: accountInfo.publicAccount,
+            name: (this.accountName === '') ? `Account${numberAccount}` : this.accountName
+          }
+
+          let tmpObj = {
+            active: true,
+            type: 'success',
+            title: 'Account added',
+            message: 'Your account has been successfully added'
+          }
+
+          if (this.myCustomAccounts === null) {
+            this.myCustomAccounts = [newAccount]
+            this.$localStorage.set('myAccounts', JSON.stringify(this.myCustomAccounts))
+          } else {
+            this.myCustomAccounts.push(newAccount)
+            this.$localStorage.set('myAccounts', JSON.stringify(this.myCustomAccounts))
+          }
+
           this.$store.dispatch('newNotification', tmpObj)
-        } else {
-          myAccounts = JSON.parse(myAccounts)
-          myAccounts.push(newAccount)
-          this.$localStorage.set('myAccounts', myAccounts)
+
+          this.inputValue = ''
+          this.valid = false
+        } catch (error) {
+          console.warn(error)
+
+          let tmpObj = {
+            active: true,
+            type: 'success',
+            title: 'Account declined',
+            message: 'Your account is invalid or no information has been found'
+          }
+
           this.$store.dispatch('newNotification', tmpObj)
         }
-
-        this.inputValue = ''
-        this.valid = false
       }
     }
   }
