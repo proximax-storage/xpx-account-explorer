@@ -7,7 +7,6 @@
     <app-searchbar/>
 
     <div class="separator"></div>
-
     <app-fold :description="foldLabel" :run="toggleNodeInfo"/>
     <div v-if="nodeInfoVisible" class="animate fade">
       <node-info/>
@@ -21,14 +20,13 @@
           <span class="txt-left bold value">Transaction type</span>:
           <span class="txt-left value">{{ $utils.getNameTypeTransaction(transaction.type) }}</span>
         </div>
-
         <div>
           <span class="txt-left bold value">Hash</span>:
           <span class="txt-left value">{{ $route.params.id }}</span>
         </div>
       </div>
       <div class="item-rigth">
-        <span>Export to:</span> <input type="button" value="PDF" class="proximax-btn">
+        <span>Export to: &nbsp; &nbsp;</span><button style="cursor: pointer;"  class='proximax-btn' v-on:click="createPDF()"> PDF </button>
       </div>
     </div>
 
@@ -140,6 +138,9 @@ export default {
 
     toggleNodeInfo () {
       this.nodeInfoVisible = !this.nodeInfoVisible
+    },
+    createPDF () {
+      window.print()
     }
   }
 }

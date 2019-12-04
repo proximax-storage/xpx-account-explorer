@@ -172,7 +172,6 @@ export default class Utils {
   }
 
   static async getStructureDashboard (transaction, config, provider) {
-    let dataStructure = []
     let structureCsv = []
     let structureTx = []
     let message = ''
@@ -214,7 +213,6 @@ export default class Utils {
           structureTx.push(element)
           break
         case TransactionType.AGGREGATE_BONDED:
-          console.log('AGGREGATE_BONDED:', element)
           element.totalAmount = 0
           if (element.innerTransactions.length > 0) {
             for (let init of element.innerTransactions) {
@@ -232,7 +230,6 @@ export default class Utils {
               }
             }
           }
-          console.log('element.type', element.innerTransactions[0].type)
           message = (element.innerTransactions[0].message.type === 0) ? element.innerTransactions[0].message.payload : '<encrypted>'
           transactionName = this.getNameTypeTransaction(element.type)
           structureCsv.push({
@@ -250,14 +247,12 @@ export default class Utils {
           break
       }
     })
-    console.log('dataStructure', dataStructure)
     return {
       transactions: structureTx,
       structureCsv: structureCsv
     }
   }
   static getStructureCsv (data) {
-    console.log('datadatadatadata', data.length)
     let dataStructure = []
     for (let element of data) {
       console.log('element', element)

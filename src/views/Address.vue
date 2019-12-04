@@ -66,6 +66,9 @@
         </tr>
       </table>
     </div>
+     <!-- <div class='cont-button'>
+            <button   style="cursor: pointer;"  class='proximax-btn' v-on:click="loadmore()">LOAD MORE  </button>
+          </div> -->
   </div>
 </template>
 
@@ -100,8 +103,8 @@ export default {
       namespaceXPX: this.$config.coin.namespace.id,
       balance: 0,
       otherMosaics: null,
-      transactions: null,
-      trasform: [{}],
+      transactions: [],
+      trasform: [],
       errorMessage: Address,
       errorTitle: 'Address error.',
       errorText: 'The value provided is invalid or has not been found.',
@@ -110,17 +113,14 @@ export default {
   },
 
   mounted () {
-    this.init()
+    this.loadTransactions()
   },
 
   methods: {
-    async init () {
+    async loadTransactions (id = null) {
       let address = Address.createFromRawAddress(this.$route.params.id, this.$config.network.number)
-      console.log(address)
-
       try {
         let accountInfo = await this.$provider.accountHttp.getAccountInfo(address).toPromise()
-        console.log(accountInfo)
         this.accountInfo = accountInfo
         let mosaics = accountInfo.mosaics
         mosaics.forEach(el => {
@@ -130,7 +130,9 @@ export default {
             this.balance = el.amount
           }
         })
-        let transactions = await this.$provider.accountHttp.transactions(accountInfo.publicAccount, new QueryParams(100)).toPromise()
+        const queryParams = 100
+        const query = (id) ? new QueryParams(queryParams, id) : new QueryParams(queryParams)
+        let transactions = await this.$provider.accountHttp.transactions(accountInfo.publicAccount, query).toPromise()
         const dataStructure = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
         this.transactions = dataStructure.transactions
         this.trasform = dataStructure.structureCsv
@@ -144,9 +146,13 @@ export default {
       let routeData = this.$router.resolve({ path: `/hash/${hash}` })
       window.open(routeData.href, '_blank')
     },
-
     toggleNodeInfo () {
       this.nodeInfoVisible = !this.nodeInfoVisible
+    },
+    loadmore () {
+      const lastTransactionId = (this.transactions[0].length > 0) ? this.transactions[0][this.transactions[0].length - 1].transactionInfo.id : null
+      console.log('lastTransactionId', lastTransactionId)
+      this.loadTransactions(lastTransactionId)
     }
   }
 }
