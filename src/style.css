@@ -701,5 +701,17 @@ option {
   .app-sidebar {
     display: none;
   }
+
+  .app-searchbar {
+    display: none;
+  }
+
+  .fold {
+    display: none;
+  }
+
+  .home-indicator {
+    display: none;
+  }
 }
 /* ---------- END MEDIA QUERIES ---------- */

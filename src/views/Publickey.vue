@@ -1,7 +1,13 @@
 <template>
   <div class="Publickey">
     <module-header :name="moduleName"/>
+
+    <div class="separator"></div>
+
     <app-searchbar/>
+
+    <div class="separator"></div>
+
     <div class="accountInfo" v-if="accountInfo !== null">
       <h1 class="title txt-left">Account Info</h1>
       <div class="accountInfo-cont">
