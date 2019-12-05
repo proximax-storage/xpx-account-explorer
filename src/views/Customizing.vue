@@ -90,7 +90,6 @@ export default {
 
         try {
           let accountInfo = await this.$provider.accountHttp.getAccountInfo(publicAccount.address).toPromise()
-          console.log(accountInfo)
 
           let numberAccount = (this.myCustomAccounts === null) ? '1' : `${this.myCustomAccounts.length + 1}`
 
@@ -110,22 +109,31 @@ export default {
             this.myCustomAccounts = [newAccount]
             this.$localStorage.set('myAccounts', JSON.stringify(this.myCustomAccounts))
           } else {
-            this.myCustomAccounts.push(newAccount)
-            this.$localStorage.set('myAccounts', JSON.stringify(this.myCustomAccounts))
-          }
+            let finding = this.myCustomAccounts.find(el => el.publicAccount.publicKey === newAccount.publicAccount.publicKey)
 
-          this.$store.dispatch('newNotification', tmpObj)
+            if ([undefined, null].includes(finding) === false) {
+              throw String('Existing account')
+            } else {
+              this.myCustomAccounts.push(newAccount)
+              this.$localStorage.set('myAccounts', JSON.stringify(this.myCustomAccounts))
+              this.$store.dispatch('newNotification', tmpObj)
+            }
+          }
 
           this.inputValue = ''
           this.valid = false
-        } catch (error) {
-          console.warn(error)
 
+          window.location.reload()
+        } catch (error) {
           let tmpObj = {
             active: true,
-            type: 'success',
+            type: 'error',
             title: 'Account declined',
             message: 'Your account is invalid or no information has been found'
+          }
+
+          if (error === 'Existing account') {
+            tmpObj.message = 'This account has already been added'
           }
 
           this.$store.dispatch('newNotification', tmpObj)

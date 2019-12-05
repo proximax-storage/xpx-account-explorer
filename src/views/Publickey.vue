@@ -25,10 +25,9 @@
     <div class="accountInfo" v-if="accountInfo !== null">
       <div>
         <div class="box-grey">
-          <div class="txt-center subtitleHigh">Balance</div>
+          <div class="txt-center subtitleHigh">Balance XPX</div>
           <div class="txt-center valueHigh" v-if="balance == 0" v-html="this.$utils.fmtAmountValue(balance)"></div>
           <div class="txt-center valueHigh" v-if="balance !== 0" v-html="this.$utils.fmtAmountValue(balance)"></div>
-          <div class="txt-center valueHigh" >XPX</div>
         </div>
       </div>
     </div>

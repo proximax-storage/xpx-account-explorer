@@ -74,9 +74,6 @@ export default {
           } else if (this.valueSearch.length === 40 || this.valueSearch.length === 46) {
             path = 'address'
             valid = true
-          } else if (this.isOnlyNumber(this.valueSearch) === true) {
-            path = 'block'
-            valid = true
           } else {
             valid = false
           }
