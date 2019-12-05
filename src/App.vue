@@ -1,43 +1,50 @@
 <template>
   <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
+
+    <!-- APP SIDEBAR -->
+    <app-sidebar/>
+    <!-- END APP SIDEBAR -->
+
+    <!-- VIEW CONTAINER -->
+    <div class="view-container">
+      <router-view class="view"/>
     </div>
-    <router-view/>
+    <!-- VIEW CONTAINER -->
+
+    <app-notification/>
   </div>
 </template>
 
 <script>
+// Components
+import AppSidebar from '@/components/Global/app-sidebar'
+import AppNotification from '@/components/Global/app-notification'
+
 export default {
+  components: {
+    AppSidebar,
+    AppNotification
+  },
+
   mounted () {
-    console.log('Welcome to ExplorerRRHH')
-    console.log('Config', this.$config)
-    console.log('Persistence', this.$localStorage)
-    console.log('Persistence', this.$sessionStorage)
+    this.runApp()
+    // this.example()
+  },
+
+  methods: {
+    runApp () {
+      let tmpObj = {
+        type: 'error',
+        active: false,
+        title: '',
+        message: ''
+      }
+      this.$store.dispatch('newNotification', tmpObj)
+    }
   }
 }
 </script>
 
-<style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
+<style lang="sass">
+@import url('./style.css')
 </style>
