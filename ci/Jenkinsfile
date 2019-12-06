@@ -7,6 +7,7 @@ pipeline {
 
   environment {
     npm_config_cache = "npm-cache"
+    DEPLOY_TO_MAINNET = false
   }
 
   options {
@@ -51,50 +52,59 @@ pipeline {
 
     
     stage('Promotion') {
-        when {
-            tag 'release-v*'
+      when {
+        tag 'release-v*'
+      }
+      steps {
+        script {
+          timeout(time:2, unit: 'HOURS') {
+            env.DEPLOY_TO_MAINNET  = input message: 'Deploy to mainnet?'
+          }
         }
-        steps {
-            timeout(time:2, unit: 'HOURS') {
-                input message: 'Deploy to Mainnet?'
-            }
-        }
+      }
     }
 
     stage('Deploy to Mainnet') {
-        steps {
-            withAWS(credentials: 'jenkins-ecr', region: 'ap-southeast-2'){
-              echo 'Deploying to Mainnet'
+      steps {
+        if (env.DEPLOY_TO_MAINNET){
+          echo 'Copy mainnet config file'
+          sh 'cp ci/env/mainnet-config.json dist/config/config.json'
 
-              echo 'Copy mainnet config file'
-              sh 'cp ci/env/mainnet-config.json dist/config/config.json'
+          withAWS(credentials: 'jenkins-ecr', region: 'ap-southeast-2'){
+            echo 'Deploying to Mainnet'
 
-              echo 'Managing S3'
-              echo 'Deleting old files'
-              s3Delete bucket: 'arcabots.xpxsirius.io', path: './'
+            
 
-              echo 'Uploading new files'
-              s3Upload bucket: 'arcabots.xpxsirius.io', acl: 'PublicRead', file: 'dist/', sseAlgorithm: 'AES256'
-            }
-            withAWS(credentials: 'jenkins-ecr'){
-              echo 'Managing CloudFront - Invalidating CloudFront'
-              cfInvalidate distribution: 'EN7KWBTSPWRPD', paths: ['/*']
-            }            
-        }
+            echo 'Managing S3'
+            echo 'Deleting old files'
+            s3Delete bucket: 'arcabots.xpxsirius.io', path: './'
 
-        post {
+            echo 'Uploading new files'
+            s3Upload bucket: 'arcabots.xpxsirius.io', acl: 'PublicRead', file: 'dist/', sseAlgorithm: 'AES256'
+          }
+
+          withAWS(credentials: 'jenkins-ecr'){
+            echo 'Managing CloudFront - Invalidating CloudFront'
+            cfInvalidate distribution: 'EN7KWBTSPWRPD', paths: ['/*']
+          }
+
+          post {
             success {
-                slackSend channel: '#devops',
-                color: 'good',
-                message: "Branch *${env.GIT_BRANCH}* STAGING deployment of *${currentBuild.fullDisplayName}* completed successfully :100:\nAvailable at http://bcstagingexplorer.xpxsirius.io"
+              slackSend channel: '#devops',
+              color: 'good',
+              message: "Branch *${env.GIT_BRANCH}* deployment of *${currentBuild.fullDisplayName}* completed successfully :100:\nAvailable at https://arcabots.xpxsirius.io"
             }
 
             failure {
-                slackSend channel: '#devops',
-                color: 'bad',
-                message: "Branch *${env.GIT_BRANCH}* STAGING deployment of *${currentBuild.fullDisplayName}* FAILED :scream:"
+              slackSend channel: '#devops',
+              color: 'bad',
+              message: "Branch *${env.GIT_BRANCH}* deployment of *${currentBuild.fullDisplayName}* FAILED :scream:"
             }
-        }
+            
+          }
+
+        }          
+      }
     }
   }
 }
