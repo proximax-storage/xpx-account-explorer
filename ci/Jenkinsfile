@@ -64,21 +64,22 @@ pipeline {
     stage('Deploy to Mainnet') {
         steps {
             withAWS(credentials: 'jenkins-ecr', region: 'ap-southeast-2'){
-                echo 'Deploying to Mainnet'
+              echo 'Deploying to Mainnet'
 
-                echo 'Copy mainnet config file'
-                sh 'cp ci/env/mainnet-config.json dist/config/config.json'
+              echo 'Copy mainnet config file'
+              sh 'cp ci/env/mainnet-config.json dist/config/config.json'
 
-                echo 'Managing S3'
-                echo 'Deleting old files'
-                s3Delete bucket: 'arcabots.xpxsirius.io', path: './'
+              echo 'Managing S3'
+              echo 'Deleting old files'
+              s3Delete bucket: 'arcabots.xpxsirius.io', path: './'
 
-                echo 'Uploading new files'
-                s3Upload bucket: 'arcabots.xpxsirius.io'
-
-                echo 'Managing CloudFront - Invalidating CloudFront'
-                cfInvalidate distribution: 'EN7KWBTSPWRPD', paths: ['/*']
+              echo 'Uploading new files'
+              s3Upload bucket: 'arcabots.xpxsirius.io', acl: 'PublicRead', file: 'dist/', sseAlgorithm: 'AES256'
             }
+            withAWS(credentials: 'jenkins-ecr'){
+              echo 'Managing CloudFront - Invalidating CloudFront'
+              cfInvalidate distribution: 'EN7KWBTSPWRPD', paths: ['/*']
+            }            
         }
 
         post {
