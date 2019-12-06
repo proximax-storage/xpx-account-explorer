@@ -66,7 +66,7 @@ pipeline {
 
     stage('Deploy to Mainnet') {
       when {
-        expression { return env.DEPLOY_TO_MAINNET }
+        expression { return env.DEPLOY_TO_MAINNET.toBoolean() }
       }
       steps {
         echo 'Copy mainnet config file'
@@ -102,7 +102,7 @@ pipeline {
             color: 'bad',
             message: "Branch *${env.GIT_BRANCH}* deployment of *${currentBuild.fullDisplayName}* FAILED :scream:"
           }
-        }          
+        }
       }
     }
   }
