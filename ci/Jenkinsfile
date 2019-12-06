@@ -1,0 +1,110 @@
+pipeline {
+  agent {
+    node {
+      label 'docker-t3a-small'
+    }
+  }
+
+  environment {
+    npm_config_cache = "npm-cache"
+    DEPLOY_TO_MAINNET = false
+  }
+
+  options {
+    timestamps()
+  }
+
+  stages {
+    stage('Build') {
+      steps {
+        echo 'Starting Docker Container'
+        withDockerContainer(image: 'node:13') {
+          echo 'remove package-lock.json'
+          sh 'rm -f package-lock.json'
+
+          echo 'Installing dependencies'
+          sh 'npm install'
+
+          echo 'Building'
+          sh 'npm run build'
+        }
+
+        echo 'Leaving Container'
+
+        echo 'Archiving Artifacts'
+        archiveArtifacts "dist/*"
+      }
+
+      post {
+        success {
+            slackSend channel: '#devops',
+            color: 'good',
+            message:  "Branch *${env.GIT_BRANCH}* build of *${currentBuild.fullDisplayName}* completed successfully :100:\nArtifact stored in S3 Artifact"
+        }
+
+        failure {
+            slackSend channel: '#devops',
+            color: 'bad',
+            message: "Branch *${env.GIT_BRANCH}* build of *${currentBuild.fullDisplayName}* FAILED :scream:"
+        }
+      }
+    }
+
+    
+    stage('Promotion') {
+      when {
+        tag 'release-v*'
+      }
+      steps {
+        script {
+          timeout(time:2, unit: 'HOURS') {
+            env.DEPLOY_TO_MAINNET  = input message: 'Deploy to mainnet?'
+          }
+        }
+      }
+    }
+
+    stage('Deploy to Mainnet') {
+      steps {
+        if (env.DEPLOY_TO_MAINNET){
+          echo 'Copy mainnet config file'
+          sh 'cp ci/env/mainnet-config.json dist/config/config.json'
+
+          withAWS(credentials: 'jenkins-ecr', region: 'ap-southeast-2'){
+            echo 'Deploying to Mainnet'
+
+            
+
+            echo 'Managing S3'
+            echo 'Deleting old files'
+            s3Delete bucket: 'arcabots.xpxsirius.io', path: './'
+
+            echo 'Uploading new files'
+            s3Upload bucket: 'arcabots.xpxsirius.io', acl: 'PublicRead', file: 'dist/', sseAlgorithm: 'AES256'
+          }
+
+          withAWS(credentials: 'jenkins-ecr'){
+            echo 'Managing CloudFront - Invalidating CloudFront'
+            cfInvalidate distribution: 'EN7KWBTSPWRPD', paths: ['/*']
+          }
+
+          post {
+            success {
+              slackSend channel: '#devops',
+              color: 'good',
+              message: "Branch *${env.GIT_BRANCH}* deployment of *${currentBuild.fullDisplayName}* completed successfully :100:\nAvailable at https://arcabots.xpxsirius.io"
+            }
+
+            failure {
+              slackSend channel: '#devops',
+              color: 'bad',
+              message: "Branch *${env.GIT_BRANCH}* deployment of *${currentBuild.fullDisplayName}* FAILED :scream:"
+            }
+            
+          }
+
+        }          
+      }
+    }
+  }
+}

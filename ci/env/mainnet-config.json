@@ -1,0 +1,43 @@
+{
+    "Coin": {
+        "name": "XPX",
+        "mosaic": {
+            "id": "402b2f579faebc59",
+            "name": "xpx"
+        },
+        "namespace": {
+            "id": "bffb42a19116bdf6",
+            "name": "prx.xpx"
+        }
+    },
+    "Nodes": [
+        "arcturus.xpxsirius.io",
+        "aldebaran.xpxsirius.io",
+        "betelgeuse.xpxsirius.io",
+        "bigcalvin.xpxsirius.io",
+        "westerlund.xpxsirius.io",
+        "canismajor.xpxsirius.io",
+        "coronaborealis.xpxsirius.io",
+        "delphinux.xpxsirius.io",
+        "eridanus.xpxsirius.io",
+        "lyrasithara.xpxsirius.io",
+        "swap.brimstone.xpxsirius.io"
+    ],
+    "NetworkType": {
+        "name": "Public",
+        "number": 184
+    },
+    "RentalFeeInfo": {
+        "namespaceRentalFee": {
+            "name": "Namespace Rental Fee Sink",
+            "address": "XA7KWF-N5CMLV-G7W3OH-Z5CV3G-3VYH3N-5EQQTK-OVJH",
+            "publicKey": "9FF38184F03950C09FFFF4A90C171E4C3C566985EEACA486A59CC8B607C10BF6"
+        },
+        "mosaicRentalFee": {
+            "name": "Mosaic Rental Fee Sink",
+            "address": "XBO3L3-K5AQTX-DXO6Z6-W6KAPO-RI4XHN-65J5VG-HOQU",
+            "publicKey": "94A9BB9660037E622C8F626E061DB1557CBBED0338402E82E796168E80EF9765"
+        }
+    },
+    "Version": "0.1.0"
+}
