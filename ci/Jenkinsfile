@@ -7,7 +7,6 @@ pipeline {
 
   environment {
     npm_config_cache = "npm-cache"
-    DEPLOY_TO_MAINNET = false
   }
 
   options {
@@ -58,7 +57,8 @@ pipeline {
       steps {
         script {
           timeout(time:2, unit: 'HOURS') {
-            env.DEPLOY_TO_MAINNET  = input message: 'Deploy to mainnet?'
+            env.DEPLOY_TO_MAINNET  = input message: 'User Input Required', 
+                parameters: [choice(name: 'Deploy to Mainnet', choices: 'no\nyes', description: 'Choose yes if you want to deploy to Mainnet')]
           }
         }
       }
@@ -66,7 +66,7 @@ pipeline {
 
     stage('Deploy to Mainnet') {
       when {
-        expression { return env.DEPLOY_TO_MAINNET.toBoolean() }
+        environment name: 'DEPLOY_TO_MAINNET', value: 'yes'
       }
       steps {
         echo 'Copy mainnet config file'
@@ -89,19 +89,19 @@ pipeline {
           echo 'Managing CloudFront - Invalidating CloudFront'
           cfInvalidate distribution: 'EN7KWBTSPWRPD', paths: ['/*']
         }
+      }
+      
+      post {
+        success {
+          slackSend channel: '#devops',
+          color: 'good',
+          message: "Branch *${env.GIT_BRANCH}* deployment of *${currentBuild.fullDisplayName}* completed successfully :100:\nAvailable at https://arcabots.xpxsirius.io"
+        }
 
-        post {
-          success {
-            slackSend channel: '#devops',
-            color: 'good',
-            message: "Branch *${env.GIT_BRANCH}* deployment of *${currentBuild.fullDisplayName}* completed successfully :100:\nAvailable at https://arcabots.xpxsirius.io"
-          }
-
-          failure {
-            slackSend channel: '#devops',
-            color: 'bad',
-            message: "Branch *${env.GIT_BRANCH}* deployment of *${currentBuild.fullDisplayName}* FAILED :scream:"
-          }
+        failure {
+          slackSend channel: '#devops',
+          color: 'bad',
+          message: "Branch *${env.GIT_BRANCH}* deployment of *${currentBuild.fullDisplayName}* FAILED :scream:"
         }
       }
     }
