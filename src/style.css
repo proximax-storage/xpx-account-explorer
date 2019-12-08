@@ -750,6 +750,28 @@ option {
   }
 }
 
+@media screen and (max-width: 560px) {
+  .view-container {
+    padding-left: 60px;
+  }
+
+  .view-container > .view {
+    width: 100%;
+  }
+
+  .app-sidebar {
+    width: 60px;
+  }
+
+  .project-name {
+    display: none;
+  }
+
+  .name {
+    display: none;
+  }
+}
+
 @media print and (min-width: 200px) {
   .app-sidebar {
     display: none;

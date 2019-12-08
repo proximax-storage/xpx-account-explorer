@@ -179,6 +179,8 @@ export default class Utils {
     transaction.forEach(async element => {
       try {
         let block = await provider.blockHttp.getBlockByHeight(element.transactionInfo.height.compact()).toPromise()
+        element.effectiveFee = block.feeMultiplier * element.size
+        console.log(element)
         element.block = this.fmtTime(block.timestamp.compact() + (Deadline.timestampNemesisBlock * 1000))
       } catch (error) {
         element.block = null
@@ -206,7 +208,7 @@ export default class Utils {
             Amount: this.amountFormatterSimple(element.totalAmount),
             Message: message,
             Hash: element.transactionInfo.hash,
-            Fee: this.amountFormatterSimple(element.maxFee.compact()),
+            Fee: this.amountFormatterSimple(element.effectiveFee),
             Mosaic: 'XPX',
             Timestamp: element.block
           })

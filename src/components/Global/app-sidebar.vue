@@ -9,7 +9,7 @@
 
     <div class="project-name">
       <div>Account Explorer</div>
-      <div>Administartion System</div>
+      <div>Administration System</div>
       <div class="separator"></div>
     </div>
 
