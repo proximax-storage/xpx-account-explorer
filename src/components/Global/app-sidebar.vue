@@ -77,12 +77,15 @@ export default {
     },
 
     changeClass (route) {
-      for (let i = 0; i < this.navList.length; i++) {
-        this.navList[i].class = ''
-        if (this.navList[i].route === route) {
-          this.navList[i].class = 'nav-item-active'
+      this.navList.forEach(el => {
+        el.class = ''
+        el.icon = el.icon.replace('-on', '-off')
+
+        if (el.route === route) {
+          el.class = 'nav-item-active'
+          el.icon = el.icon.replace('-off', '-on')
         }
-      }
+      })
     },
 
     redirectAction (itemRoute) {
@@ -94,13 +97,12 @@ export default {
     verifyRoute () {
       let currentPath = window.location.hash
       currentPath = currentPath.slice(2)
-      this.redirectAction(currentPath)
+      this.redirectAction(`/${currentPath}`)
       this.changeClass(currentPath)
     },
 
     loadCustomAccounts () {
       let myAccounts = JSON.parse(this.$localStorage.get('myAccounts'))
-      console.log(myAccounts)
 
       if (myAccounts !== null) {
         myAccounts.forEach(el => {
@@ -116,7 +118,6 @@ export default {
     },
 
     goToPublicKey (pk) {
-      console.log(pk)
       let routeData = this.$router.resolve({ path: `/publicKey/${pk}` })
       window.open(routeData.href, '_blank')
     }
