@@ -49,7 +49,8 @@ export default {
         { name: 'Dashboard', class: '', route: '', icon: 'icon-dashboard-off' },
         { name: 'Nodes', class: '', route: 'nodes', icon: 'icon-nodes-off' },
         { name: 'Customize', class: '', route: 'customizing', icon: 'icon-accounts-off' },
-        { name: 'Transactions', class: '', route: 'transactions', icon: 'icon-accounts-off' }
+        { name: 'Transactions', class: '', route: 'transactions', icon: 'icon-accounts-off' },
+        { name: 'Invoice', class: '', route: 'invoice', icon: 'icon-accounts-off' }
       ],
       customAccounts: []
     }

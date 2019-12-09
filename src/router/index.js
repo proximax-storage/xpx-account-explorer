@@ -43,6 +43,11 @@ const routes = [
     name: 'Transactions',
     component: load('Transactions')
   },
+  {
+    path: '/invoice',
+    name: 'Invoice',
+    component: load('Invoice')
+  },
   // {
   //   path: '/block/:id',
   //   name: 'Block',
