@@ -214,6 +214,10 @@ figure {
   margin-bottom: 10px;
 }
 
+.mt-10 {
+  margin-top: 10px;
+}
+
 .button-panel {
   display: flex;
   flex-flow: row;
@@ -676,6 +680,11 @@ option {
 .inner-position {
   display: flex;
   justify-content: center;
+}
+
+/* TRANSACTIONS */
+.transaction-cont {
+  padding: 10px;
 }
 
 /* ---------- END COMPONENTS ---------- */
