@@ -157,6 +157,8 @@ export default {
             }
           }
 
+          this.accountName = ''
+          this.passwordInput = ''
           this.inputValue = ''
           this.valid = false
 
