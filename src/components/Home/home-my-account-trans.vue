@@ -104,7 +104,7 @@ export default {
   methods: {
     async getAccounts (id = null) {
       let myAccounts = JSON.parse(this.$localStorage.get('myAccounts'))
-      if (myAccounts !== null) {
+      if (myAccounts !== null && myAccounts.length > 0) {
         let publicAccount = PublicAccount.createFromPublicKey(myAccounts[0].publicKey, this.$config.network.number)
         try {
           let accountInfo = await this.$provider.accountHttp.getAccountInfo(publicAccount.address).toPromise()
