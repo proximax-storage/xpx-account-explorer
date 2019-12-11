@@ -1,4 +1,4 @@
-import { TransactionType, Deadline } from 'tsjs-xpx-chain-sdk'
+import { TransactionType, Deadline, Address } from 'tsjs-xpx-chain-sdk'
 import CryptoJs from 'crypto-js'
 
 /**
@@ -279,6 +279,57 @@ export default class Utils {
       }
     }
     return dataStructure
+  }
+
+  static validateHeaderCsv (headerValidate) {
+    const headaer = ['RECEIPIENT', 'MESSAGE', 'AMOUNT']
+    return JSON.stringify(headaer) === JSON.stringify(headerValidate)
+  }
+
+  static validateDataCsv (data, config) {
+    let value = true
+    for (let index = 0; index < data.length; index++) {
+      const element = data[index]
+      if (!this.isEmpty(element)) {
+        value = false
+        break
+      }
+      try {
+        const address = Address.createFromRawAddress(element['RECEIPIENT'])
+        if (address) {
+          value = (address.networkType === config.network.number)
+        } else {
+          value = false
+          break
+        }
+        if (this.validateLengthMsj(element['MESSAGE'])) {
+          value = true
+        } else {
+          value = false
+          break
+        }
+      } catch (error) {
+        value = false
+        console.log(error)
+        break
+      }
+    }
+    return value
+  }
+
+  static validateLengthMsj (msj) {
+    return (msj.toString().length <= 1024)
+  }
+
+  static isEmpty (obj) {
+    let value = true
+    for (var key in obj) {
+      if (obj[key] === undefined || obj[key] == null || obj[key].length <= 0) {
+        value = false
+        break
+      }
+    }
+    return value
   }
 
   static encrypt (name, password) {
