@@ -104,18 +104,14 @@ export default {
     },
 
     loadCustomAccounts () {
-      // let myAccounts = JSON.parse(this.$localStorage.get('myAccounts'))
-      let myAccounts = null
+      let myAccounts = JSON.parse(this.$localStorage.get('myAccounts'))
 
       if (myAccounts !== null) {
         myAccounts.forEach(el => {
-          let tmpObj = {
-            name: el.name,
-            publicKey: el.publicAccount.publicKey,
-            class: '',
-            icon: 'icon-accounts-off'
-          }
-          this.customAccounts.push(tmpObj)
+          console.log(el)
+          el.class = ''
+          el.icon = 'icon-accounts-off'
+          this.customAccounts.push(el)
         })
       }
     },
