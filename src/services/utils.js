@@ -1,4 +1,5 @@
 import { TransactionType, Deadline, Address } from 'tsjs-xpx-chain-sdk'
+import CryptoJs from 'crypto-js'
 
 /**
  * Class to format the data in the explorer
@@ -255,6 +256,7 @@ export default class Utils {
       structureCsv: structureCsv
     }
   }
+
   static getStructureCsv (data) {
     let dataStructure = []
     for (let element of data) {
@@ -279,10 +281,12 @@ export default class Utils {
     }
     return dataStructure
   }
+
   static validateHeaderCsv (headerValidate) {
     const headaer = ['RECEIPIENT', 'MESSAGE', 'AMOUNT']
     return JSON.stringify(headaer) === JSON.stringify(headerValidate)
   }
+
   static validateDataCsv (data, config) {
     let value = true
     for (let index = 0; index < data.length; index++) {
@@ -317,6 +321,7 @@ export default class Utils {
     }
     return value
   }
+
   static validateLengthMsj (msj) {
     return (msj.toString().length <= 1024)
   }
@@ -334,5 +339,19 @@ export default class Utils {
       }
     }
     return value
+  }
+
+  static encrypt (name, password) {
+    let encrypted = CryptoJs.TripleDES.encrypt(name, password)
+    return encrypted.toString()
+  }
+
+  static decrypt (encrypted, password) {
+    var decryptBytes = CryptoJs.TripleDES.decrypt(encrypted, password)
+    var decrypted = decryptBytes.toString(CryptoJs.enc.Utf8)
+    return decrypted
+  }
+
+  static getAccountByName () {
   }
 }
