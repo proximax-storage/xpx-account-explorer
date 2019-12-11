@@ -104,7 +104,8 @@ export default {
     },
 
     loadCustomAccounts () {
-      let myAccounts = JSON.parse(this.$localStorage.get('myAccounts'))
+      // let myAccounts = JSON.parse(this.$localStorage.get('myAccounts'))
+      let myAccounts = null
 
       if (myAccounts !== null) {
         myAccounts.forEach(el => {

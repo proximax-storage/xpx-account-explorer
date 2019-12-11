@@ -9,11 +9,12 @@
       </div>
 
       <form class="box-grey mb-10">
-        <input type="text" class="field" placeholder="Account Name" v-model="accountName">
-        <input type="text" class="field" placeholder="Enter Public Key" v-model="inputValue" @keyup="validate" @focusout="validate" @change="validate">
+        <input type="text" class="field" placeholder="Account Name" v-model="accountName" @keyup="validate" @focusout="validate" @change="validate">
+        <input type="text" class="field" placeholder="Enter Private Key" v-model="inputValue" @keyup="validate" @focusout="validate" @change="validate">
+        <input type="password" class="field" placeholder="Enter Password" v-model="passwordInput" @keyup="validate" @focusout="validate" @change="validate">
         <div class="search-error" v-if="errorActive">{{ errorMessage }}</div>
         <input type="submit" class="proximax-btn" v-if="valid === true" @click.prevent="addAccount" value="Add Account">
-        <input type="submit" class="proximax-btn-disabled" v-if="valid === false" @click.prevent="performSearch" value="Add Account">
+        <input type="button" class="proximax-btn-disabled" v-if="valid === false"  value="Add Account">
       </form>
     </div>
 
@@ -28,7 +29,7 @@
       <h1 class="title txt-left">Custom Accounts</h1>
       <div class="box-grey mb-10" v-for="(item, index) in myCustomAccounts" :key="index">
         <p class="txt-left bold">{{ item.name }}</p>
-        <p class="txt-left">{{ item.publicAccount.publicKey }}</p>
+        <p class="txt-left">{{ item.publicKey }}</p>
       </div>
     </div>
   </div>
@@ -37,7 +38,7 @@
 <script>
 import ModuleHeader from '@/components/Global/module-header'
 import NodeInfo from '@/components/Global/app-node-info'
-import { PublicAccount } from 'tsjs-xpx-chain-sdk'
+import { Account } from 'tsjs-xpx-chain-sdk'
 
 export default {
   name: 'Customizing',
@@ -55,7 +56,8 @@ export default {
       inputValue: '',
       valid: false,
       myCustomAccounts: JSON.parse(this.$localStorage.get('myAccounts')),
-      accountName: ''
+      accountName: '',
+      passwordInput: null
     }
   },
 
@@ -66,36 +68,71 @@ export default {
     },
 
     validate () {
+      let passwordValid = false
+      let privateKeyValid = false
       let valid = false
+
       if (this.inputValue === '') {
-        this.errorActive = false
-        this.errorMessage = 'Invalid PublicKey'
-        valid = false
+        privateKeyValid = false
       } else if (this.inputValue.length === 64 && this.isHex(this.inputValue) === true) {
-        this.errorActive = false
-        this.errorMessage = ''
-        valid = true
+        privateKeyValid = true
       } else {
-        this.errorActive = true
-        this.errorMessage = 'Invalid PublicKey'
-        valid = false
+        privateKeyValid = false
       }
 
+      if (this.passwordInput && this.passwordInput.length >= 8 && this.passwordInput.length < 15) {
+        passwordValid = true
+      } else {
+        passwordValid = false
+      }
+
+      if (passwordValid === false) {
+        this.errorActive = true
+        this.errorMessage = 'Invalid Password'
+      } else if (privateKeyValid === false) {
+        this.errorActive = true
+        this.errorMessage = 'Invalid Private Key'
+      } else if ((passwordValid && privateKeyValid) === false) {
+        this.errorActive = true
+        this.errorMessage = 'Invalid Password or Private Key'
+      } else {
+        this.errorActive = false
+        this.errorMessage = ''
+      }
+
+      valid = (passwordValid && privateKeyValid)
       this.valid = valid
     },
 
     async addAccount () {
+      let numberAccount = (this.myCustomAccounts === null) ? '1' : `${this.myCustomAccounts.length + 1}`
+
       if (this.valid === true) {
-        let publicAccount = PublicAccount.createFromPublicKey(this.inputValue, this.$config.network.number)
+        let privateKey = this.inputValue
+
+        let account = Account.createFromPrivateKey(privateKey, this.$config.network.number)
+
+        let encrypted = this.$utils.encrypt(privateKey, this.passwordInput)
 
         try {
-          let accountInfo = await this.$provider.accountHttp.getAccountInfo(publicAccount.address).toPromise()
+          let multisigInfo
 
-          let numberAccount = (this.myCustomAccounts === null) ? '1' : `${this.myCustomAccounts.length + 1}`
+          // GET MULTISIG INFO
+          try {
+            multisigInfo = await this.$provider.accountHttp.getMultisigAccountInfo(account.publicAccount.address).toPromise()
+          } catch (multisigError) {
+            console.warn('No multisig information')
+            if (multisigError && multisigError.statusCode === 404) {
+              multisigInfo = null
+            }
+          }
 
           let newAccount = {
-            publicAccount: accountInfo.publicAccount,
-            name: (this.accountName === '') ? `Account${numberAccount}` : this.accountName
+            name: (this.accountName === '') ? `Account${numberAccount}` : this.accountName,
+            publicKey: account.publicAccount.publicKey,
+            address: account.publicAccount.address.address,
+            encrypted: encrypted,
+            multisigInfo: multisigInfo
           }
 
           let tmpObj = {
@@ -109,7 +146,7 @@ export default {
             this.myCustomAccounts = [newAccount]
             this.$localStorage.set('myAccounts', JSON.stringify(this.myCustomAccounts))
           } else {
-            let finding = this.myCustomAccounts.find(el => el.publicAccount.publicKey === newAccount.publicAccount.publicKey)
+            let finding = this.myCustomAccounts.find(el => el.publicKey === newAccount.publicKey)
 
             if ([undefined, null].includes(finding) === false) {
               throw String('Existing account')
@@ -123,7 +160,7 @@ export default {
           this.inputValue = ''
           this.valid = false
 
-          window.location.reload()
+          // window.location.reload(
         } catch (error) {
           let tmpObj = {
             active: true,

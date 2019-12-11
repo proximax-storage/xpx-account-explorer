@@ -1,4 +1,5 @@
 import { TransactionType, Deadline } from 'tsjs-xpx-chain-sdk'
+import CryptoJs from 'crypto-js'
 
 /**
  * Class to format the data in the explorer
@@ -254,6 +255,7 @@ export default class Utils {
       structureCsv: structureCsv
     }
   }
+
   static getStructureCsv (data) {
     let dataStructure = []
     for (let element of data) {
@@ -277,5 +279,16 @@ export default class Utils {
       }
     }
     return dataStructure
+  }
+
+  static encrypt (name, password) {
+    let encrypted = CryptoJs.TripleDES.encrypt(name, password)
+    return encrypted.toString()
+  }
+
+  static decrypt (encrypted, password) {
+    var decryptBytes = CryptoJs.TripleDES.decrypt(encrypted, password)
+    var decrypted = decryptBytes.toString(CryptoJs.enc.Utf8)
+    return decrypted
   }
 }
