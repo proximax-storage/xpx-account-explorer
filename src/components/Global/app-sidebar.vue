@@ -46,11 +46,11 @@ export default {
     return {
       softwareVersion: `v${this.$config.version}`,
       navList: [
-        { name: 'Dashboard', class: '', route: '', icon: 'icon-dashboard-off' },
+        { name: 'Dashboard', class: '', route: '', icon: 'icon-dash-off' },
         { name: 'Nodes', class: '', route: 'nodes', icon: 'icon-nodes-off' },
-        { name: 'Customize', class: '', route: 'customizing', icon: 'icon-accounts-off' },
-        { name: 'Transactions', class: '', route: 'transactions', icon: 'icon-accounts-off' },
-        { name: 'Invoice', class: '', route: 'invoice', icon: 'icon-accounts-off' }
+        { name: 'Accounts', class: '', route: 'customizing', icon: 'icon-accounts-off' },
+        { name: 'Transactions', class: '', route: 'transactions', icon: 'icon-trans-off' },
+        { name: 'Invoice', class: '', route: 'invoice', icon: 'icon-invoice-off' }
       ],
       customAccounts: []
     }

@@ -342,4 +342,7 @@ export default class Utils {
     var decrypted = decryptBytes.toString(CryptoJs.enc.Utf8)
     return decrypted
   }
+
+  static getAccountByName () {
+  }
 }

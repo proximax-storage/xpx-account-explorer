@@ -50,7 +50,7 @@ export default {
 
   data () {
     return {
-      moduleName: 'Customize',
+      moduleName: 'Accounts',
       errorActive: false,
       errorMessage: '',
       inputValue: '',

@@ -132,6 +132,7 @@ export default {
         this.mainActive = false
       }
     },
+
     async loadmore () {
       this.loadActive = true
       const lastTransactionId = (this.transactions[0].length !== 0) ? this.transactions[this.transactions.length - 1].transactionInfo.id : null
