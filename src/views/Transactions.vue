@@ -16,15 +16,13 @@
         <h1 class="title txt-left">File table</h1>
         <table class="table-setting">
           <tr>
-            <th v-for="keyx in parse_header" @click="sortBy(keyx)"  class="txt-left"  v-bind:key="keyx" >  {{ keyx | capitalize }} </th>
+            <th v-for="(keyx, index) in parse_header" @click="sortBy(keyx)" class="txt-left" :key="index">{{ keyx }}</th>
           </tr>
-          <tr v-for="csv in parse_csv" v-bind:key="csv">
-            <td v-for="keys in parse_header" v-bind:key="keys">
-              <span v-if="keys === 'AMOUNT'" v-html="$utils.fmtAmountValue(csv[keys])" >
-              </span>
-              <span v-else >
-                {{csv[keys]}}
-              </span>
+
+          <tr v-for="(csv, index) in parse_csv" :key="index">
+            <td v-for="(keys, index) in parse_header" :key="index" class="txt-left">
+              <span v-if="keys === 'AMOUNT'" v-html="$utils.fmtAmountValue(csv[keys])"></span>
+              <span v-else>{{csv[keys]}}</span>
             </td>
           </tr>
         </table>
@@ -35,17 +33,19 @@
         <table class="table-setting">
           <tr>
             <th class="txt-left">Recipient</th>
-            <th class="txt-left">message</th>
-            <th class="txt-left">amount</th>
+            <th class="txt-left">Message</th>
+            <th class="txt-left">Amount</th>
           </tr>
+
           <tr>
             <td class="txt-left">VDG2GN-DH7AED-67HTHX-WBOCD6-ZIL3XT-XFTVYE-PL3X</td>
-            <td class="txt-left">sample message</td>
+            <td class="txt-left">Sample message</td>
             <td class="txt-left">20100000</td>
           </tr>
+
            <tr>
             <td class="txt-left">VDG2GN-DH7AED-67HTHX-WBOCD6-ZIL3XT-XFTVYE-Z6DV</td>
-            <td class="txt-left">sample message</td>
+            <td class="txt-left">Sample message</td>
             <td class="txt-left">100000</td>
           </tr>
         </table>
@@ -69,7 +69,7 @@ export default {
 
   data () {
     return {
-      moduleName: 'Transactions (CSV file)',
+      moduleName: 'Transactions',
       fileName: null,
       fileExist: null,
       sortOrders: {},
@@ -88,22 +88,24 @@ export default {
         this.fileName = event.target.files[0].name
       }
     },
+
     csvJSON (csv) {
-      var vm = this
-      var lines = csv.split('\n')
-      var result = []
-      var headers = lines[0].split(',')
-      headers = headers.map(function (x) { return x.toUpperCase() })
-      vm.parse_header = lines[0].split(',')
-      vm.parse_header = vm.parse_header.map(function (x) { return x.toUpperCase() })
-      lines[0].split(',').forEach(function (key) {
-        vm.sortOrders[key] = 1
+      let lines = csv.split('\n')
+      let result = []
+      let headers = lines[0].split(',')
+      headers = headers.map((x) => x.toUpperCase())
+      this.parse_header = lines[0].split(',')
+      this.parse_header = this.parse_header.map((x) => x.toUpperCase())
+
+      lines[0].split(',').forEach((key) => {
+        this.sortOrders[key] = 1
       })
-      lines.map(function (line, indexLine) {
+
+      lines.map((line, indexLine) => {
         if (indexLine < 1) return // Jump header line
-        var obj = {}
-        var currentline = line.split(',')
-        headers.map(function (header, indexHeader) {
+        let obj = {}
+        let currentline = line.split(',')
+        headers.map((header, indexHeader) => {
           obj[header] = currentline[indexHeader]
         })
         result.push(obj)
@@ -111,57 +113,65 @@ export default {
       result.pop() // remove the last item because undefined values
       return result// JavaScript object
     },
+
     loadCSV (e) {
-      var vm = this
       let tmpObj = {
         active: true,
         type: 'error',
         title: 'load failed',
         message: 'file not allowed'
       }
+
       if ([undefined, null].includes(e.target.files) === false) {
-        vm.fileName = e.target.files[0].name
+        this.fileName = e.target.files[0].name
       }
+
       if (e.target.files[0].type !== 'text/csv') {
-        vm.parse_csv = []
-        return vm.$store.dispatch('newNotification', tmpObj)
+        this.parse_csv = []
+        return this.$store.dispatch('newNotification', tmpObj)
       }
+
       if (window.FileReader) {
-        var reader = new FileReader()
+        let reader = new FileReader()
         reader.readAsText(e.target.files[0])
         // Handle errors load
-        reader.onload = function (event) {
-          var csv = event.target.result
-          vm.parse_csv = vm.csvJSON(csv)
-          var validateHeader = vm.$utils.validateHeaderCsv(vm.parse_header)
+        reader.onload = (event) => {
+          let csv = event.target.result
+          this.parse_csv = this.csvJSON(csv)
+          let validateHeader = this.$utils.validateHeaderCsv(this.parse_header)
           if (!validateHeader) {
             tmpObj.message = 'Invalid CSV header, see example'
-            vm.parse_csv = []
-            return vm.$store.dispatch('newNotification', tmpObj)
+            this.parse_csv = []
+            return this.$store.dispatch('newNotification', tmpObj)
           }
-          var validateDataCsv = vm.$utils.validateDataCsv(vm.parse_csv, vm.$config)
+
+          let validateDataCsv = this.$utils.validateDataCsv(this.parse_csv, this.$config)
+
           if (validateDataCsv) {
             console.log('normal')
           } else {
             console.log('no papa')
           }
-          if (vm.parse_csv.length > 0) {
-            vm.fileExist = 'true'
+
+          if (this.parse_csv.length > 0) {
+            this.fileExist = 'true'
           } else {
-            vm.fileExist = null
+            this.fileExist = null
           }
         }
+
         reader.onerror = function (evt) {
           tmpObj.message = 'Cannot read file !'
           if (evt.target.error.name === 'NotReadableError') {
-            vm.$store.dispatch('newNotification', tmpObj)
+            this.$store.dispatch('newNotification', tmpObj)
           }
         }
       } else {
         tmpObj.message = 'FileReader are not supported in this browser.'
-        vm.$store.dispatch('newNotification', tmpObj)
+        this.$store.dispatch('newNotification', tmpObj)
       }
     },
+
     sendTx () {
       const signer = Account.createFromPrivateKey('60B9442B1145357CED1FA956ED5843BF3C042154685D1A4DDCC1BE107E372050', this.$config.network.number)
       if (this.parse_csv.length > 0) {

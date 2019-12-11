@@ -325,14 +325,16 @@ export default class Utils {
   static validateLengthMsj (msj) {
     return (msj.toString().length <= 1024)
   }
+
   static validateNumber (number) {
     let x = Number(number) / Math.pow(10, 6)
     console.log(x * Math.pow(10, 6))
     return isNaN(x)
   }
+
   static isEmpty (obj) {
     let value = true
-    for (var key in obj) {
+    for (let key in obj) {
       if (obj[key] === undefined || obj[key] === '' || obj[key] == null || obj[key].length <= 0) {
         value = false
         break
@@ -347,8 +349,8 @@ export default class Utils {
   }
 
   static decrypt (encrypted, password) {
-    var decryptBytes = CryptoJs.TripleDES.decrypt(encrypted, password)
-    var decrypted = decryptBytes.toString(CryptoJs.enc.Utf8)
+    let decryptBytes = CryptoJs.TripleDES.decrypt(encrypted, password)
+    let decrypted = decryptBytes.toString(CryptoJs.enc.Utf8)
     return decrypted
   }
 
@@ -364,6 +366,7 @@ export default class Utils {
     console.log(result)
     localStorage.setItem('myAccounts', JSON.stringify(result))
   }
+
   static createTxTransfer (recipient, amount, message, config) {
     console.log(config.coin)
     const mosaicId = new MosaicId(config.coin.mosaic.id)
@@ -375,12 +378,14 @@ export default class Utils {
       config.network.number
     )
   }
+
   static buildTx (accountSign, arrayTx, typeTx, networkGenerationHash, otherCosigners, config) {
     const innerTxn = []
     let arrayData = {
       sign: null,
       typeTx: typeTx
     }
+
     switch (typeTx) {
       case TransactionType.AGGREGATE_COMPLETE:
         arrayTx.forEach(element => {
