@@ -165,12 +165,16 @@ export default {
     sendTx () {
       const signer = Account.createFromPrivateKey('60B9442B1145357CED1FA956ED5843BF3C042154685D1A4DDCC1BE107E372050', this.$config.network.number)
       if (this.parse_csv.length > 0) {
-        let txs = []
-        for (let element of this.parse_csv) {
-          txs.push({ signer: signer, tx: this.$utils.createTxTransfer(element['RECEIPIENT'], element['AMOUNT'], element['MESSAGE'], this.$config) })
-        }
-        console.log('txstxs:', txs)
+        this.buildTx(signer)
       }
+    },
+    buildTx (signer){
+      let txs = []
+      for (let element of this.parse_csv) {
+        txs.push({ signer: signer, tx: this.$utils.createTxTransfer(element['RECEIPIENT'], element['AMOUNT'], element['MESSAGE'], this.$config) })
+      }
+      const generationHash = '56D112C98F7A7E34D1AEDC4BD01BC06CA2276DD546A93E36690B785E82439CA9'
+      console.log('generationHash:', generationHash)
     }
   }
 }

@@ -365,7 +365,8 @@ export default class Utils {
     localStorage.setItem('myAccounts', JSON.stringify(result))
   }
   static createTxTransfer (recipient, amount, message, config) {
-    const mosaicId = new MosaicId(config.Coin.mosaic.id)
+    console.log(config.coin)
+    const mosaicId = new MosaicId(config.coin.mosaic.id)
     return TransferTransaction.create(
       Deadline.create(5),
       Address.createFromRawAddress(recipient),
