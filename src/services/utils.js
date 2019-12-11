@@ -22,6 +22,7 @@ export default class Utils {
   }
   static amountFormatterSimple (amount) {
     const amountDivisibility = Number(amount) / Math.pow(10, 6)
+    console.log(amountDivisibility)
     return amountDivisibility.toLocaleString('en-us', {
       minimumFractionDigits: 6
     })
@@ -290,6 +291,10 @@ export default class Utils {
         value = false
         break
       }
+      if (this.validateNumber(element['AMOUNT'])) {
+        value = false
+        break
+      }
       try {
         const address = Address.createFromRawAddress(element['RECEIPIENT'])
         if (address) {
@@ -314,6 +319,11 @@ export default class Utils {
   }
   static validateLengthMsj (msj) {
     return (msj.toString().length <= 1024)
+  }
+  static validateNumber (number) {
+    let x = Number(number) / Math.pow(10, 6)
+    console.log(x * Math.pow(10, 6))
+    return isNaN(x)
   }
   static isEmpty (obj) {
     let value = true
