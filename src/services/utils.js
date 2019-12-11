@@ -1,4 +1,4 @@
-import { TransactionType, Deadline, Address } from 'tsjs-xpx-chain-sdk'
+import { TransactionType, Deadline, Address, AggregateTransaction, MosaicId, TransferTransaction, PlainMessage, UInt64, Mosaic } from 'tsjs-xpx-chain-sdk'
 import CryptoJs from 'crypto-js'
 
 /**
@@ -333,7 +333,7 @@ export default class Utils {
   static isEmpty (obj) {
     let value = true
     for (var key in obj) {
-      if (obj[key] === undefined || obj[key] == null || obj[key].length <= 0) {
+      if (obj[key] === undefined || obj[key] === '' || obj[key] == null || obj[key].length <= 0) {
         value = false
         break
       }
@@ -353,5 +353,42 @@ export default class Utils {
   }
 
   static getAccountByName () {
+  }
+  static createTxTransfer (recipient, amount, message, config) {
+    const mosaicId = new MosaicId(config.Coin.mosaic.id)
+    return TransferTransaction.create(
+      Deadline.create(5),
+      Address.createFromRawAddress(recipient),
+      [new Mosaic(mosaicId, UInt64.fromUint(Number(amount)))],
+      PlainMessage.create(message),
+      config.network.number
+    )
+  }
+  static buildTx (accountSign, arrayTx, typeTx, networkGenerationHash, otherCosigners, config) {
+    const innerTxn = []
+    let arrayData = {
+      sign: null,
+      typeTx: typeTx
+    }
+    switch (typeTx) {
+      case TransactionType.AGGREGATE_COMPLETE:
+        arrayTx.forEach(element => {
+          innerTxn.push(element.tx.toAggregate(accountSign))
+        })
+        const aggregateTransaction = AggregateTransaction.createComplete(
+          Deadline.create(),
+          innerTxn,
+          config.network.number,
+          []
+        )
+        if (otherCosigners.length > 0) {
+          arrayData.sign = accountSign.signTransactionWithCosignatories(aggregateTransaction, otherCosigners, networkGenerationHash)
+        } else {
+          arrayData.sign = accountSign.sign(aggregateTransaction, networkGenerationHash)
+        }
+        console.log('arrayData', arrayData)
+        break
+    }
+    return arrayData
   }
 }

@@ -31,19 +31,22 @@
       </div>
 
       <div v-if="fileExist === null">
-        <h1 class="title txt-left">Example table</h1>
+        <h1 class="title txt-left">Example (CSV FILE)</h1>
         <table class="table-setting">
           <tr>
             <th class="txt-left">Recipient</th>
-            <th class="txt-left">Privatekey</th>
             <th class="txt-left">message</th>
             <th class="txt-left">amount</th>
           </tr>
           <tr>
-            <td class="txt-left">hola</td>
-            <td class="txt-left">hola</td>
-            <td class="txt-left">hola</td>
-            <td class="txt-left">hola</td>
+            <td class="txt-left">VDG2GN-DH7AED-67HTHX-WBOCD6-ZIL3XT-XFTVYE-PL3X</td>
+            <td class="txt-left">sample message</td>
+            <td class="txt-left">20100000</td>
+          </tr>
+           <tr>
+            <td class="txt-left">VDG2GN-DH7AED-67HTHX-WBOCD6-ZIL3XT-XFTVYE-Z6DV</td>
+            <td class="txt-left">sample message</td>
+            <td class="txt-left">100000</td>
           </tr>
         </table>
       </div>
@@ -56,7 +59,7 @@
 
 <script>
 import ModuleHeader from '@/components/Global/module-header'
-
+import { Account } from 'tsjs-xpx-chain-sdk'
 export default {
   name: 'Transactions',
 
@@ -160,12 +163,13 @@ export default {
       }
     },
     sendTx () {
-      console.log('sdas', this.parse_csv)
-      for (let element of this.parse_csv) {
-        console.log(element)
-      }
+      const signer = Account.createFromPrivateKey('60B9442B1145357CED1FA956ED5843BF3C042154685D1A4DDCC1BE107E372050', this.$config.network.number)
       if (this.parse_csv.length > 0) {
-        console.log('this.parse_csv', this.parse_csv)
+        let txs = []
+        for (let element of this.parse_csv) {
+          txs.push({ signer: signer, tx: this.$utils.createTxTransfer(element['RECEIPIENT'], element['AMOUNT'], element['MESSAGE'], this.$config) })
+        }
+        console.log('txstxs:', txs)
       }
     }
   }
