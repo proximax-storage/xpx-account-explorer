@@ -352,7 +352,17 @@ export default class Utils {
     return decrypted
   }
 
-  static getAccountByName () {
+  static getAccountByName (name) {
+    let accounts = JSON.parse(localStorage.getItem('myAccounts'))
+    let result = accounts.find(el => el.name === name)
+    return result
+  }
+
+  static deleteAccountByName (name) {
+    let accounts = JSON.parse(localStorage.getItem('myAccounts'))
+    let result = accounts.filter(el => el.name !== name)
+    console.log(result)
+    localStorage.setItem('myAccounts', JSON.stringify(result))
   }
   static createTxTransfer (recipient, amount, message, config) {
     const mosaicId = new MosaicId(config.Coin.mosaic.id)
