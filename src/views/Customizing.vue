@@ -18,18 +18,19 @@
       </form>
     </div>
 
-    <div class="fold" v-if="myCustomAccounts === null">
+    <div class="fold" v-if="myCustomAccounts === null || myCustomAccounts.length === 0">
       <h1 class="title txt-left">Custom Accounts</h1>
       <div class="box-grey">
         <span>You have not added a custom account yet!</span>
       </div>
     </div>
 
-    <div class="fold" v-if="myCustomAccounts !== null">
+    <div class="fold" v-if="myCustomAccounts !== null && myCustomAccounts.length > 0">
       <h1 class="title txt-left">Custom Accounts</h1>
       <div class="box-grey mb-10" v-for="(item, index) in myCustomAccounts" :key="index">
         <p class="txt-left bold">{{ item.name }}</p>
         <p class="txt-left">{{ item.publicKey }}</p>
+        <div class="mt-10"><input type="button" value="Delete Account" class="proximax-btn-red" @click="deleteAccount(item.name)"></div>
       </div>
     </div>
   </div>
@@ -86,15 +87,17 @@ export default {
         passwordValid = false
       }
 
-      if (passwordValid === false) {
+      console.log(passwordValid, privateKeyValid)
+
+      if ((passwordValid && privateKeyValid) === false) {
+        this.errorActive = true
+        this.errorMessage = 'Invalid Password or Private Key'
+      } else if (passwordValid === false) {
         this.errorActive = true
         this.errorMessage = 'Invalid Password'
       } else if (privateKeyValid === false) {
         this.errorActive = true
         this.errorMessage = 'Invalid Private Key'
-      } else if ((passwordValid && privateKeyValid) === false) {
-        this.errorActive = true
-        this.errorMessage = 'Invalid Password or Private Key'
       } else {
         this.errorActive = false
         this.errorMessage = ''
@@ -162,7 +165,7 @@ export default {
           this.inputValue = ''
           this.valid = false
 
-          // window.location.reload(
+          window.location.reload()
         } catch (error) {
           let tmpObj = {
             active: true,
@@ -178,6 +181,12 @@ export default {
           this.$store.dispatch('newNotification', tmpObj)
         }
       }
+    },
+
+    deleteAccount (name) {
+      console.log(name)
+      this.$utils.deleteAccountByName(name)
+      window.location.reload()
     }
   }
 }
