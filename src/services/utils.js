@@ -364,6 +364,11 @@ export default class Utils {
     let accounts = JSON.parse(localStorage.getItem('myAccounts'))
     let result = accounts.filter(el => el.name !== name)
     console.log(result)
+
+    if (result.length === 0) {
+      result = null
+    }
+
     localStorage.setItem('myAccounts', JSON.stringify(result))
   }
 

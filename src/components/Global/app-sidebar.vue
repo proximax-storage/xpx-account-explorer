@@ -27,8 +27,8 @@
       <div class="separator"></div>
     </div>
 
-    <div class="accounts-list" v-if="customAccounts.length > 0">
-      <div class="nav-item" v-for="(item, index) in customAccounts" :key="index"
+    <div class="accounts-list" v-if="getMyAccounts.length > 0 || getMyAccounts !== null">
+      <div class="nav-item" v-for="(item, index) in getMyAccounts" :key="index"
       :class="item.class" :route="item.route" @click="goToPublicKey(item.publicKey)">
         <img :src="require(`@/assets/icons/${item.icon}.svg`)" class="icon">
         <div class="name">{{ item.name }}</div>
@@ -106,19 +106,41 @@ export default {
     loadCustomAccounts () {
       let myAccounts = JSON.parse(this.$localStorage.get('myAccounts'))
 
-      if (myAccounts !== null) {
-        myAccounts.forEach(el => {
-          console.log(el)
-          el.class = ''
-          el.icon = 'icon-accounts-off'
-          this.customAccounts.push(el)
-        })
-      }
+      // if (myAccounts !== null) {
+      //   myAccounts.forEach(el => {
+      //     console.log(el)
+      //     el.class = ''
+      //     el.icon = 'icon-accounts-off'
+      //     this.customAccounts.push(el)
+      //   })
+      // }
+
+      this.$store.dispatch('updateAccounts', myAccounts)
     },
 
     goToPublicKey (pk) {
       let routeData = this.$router.resolve({ path: `/publicKey/${pk}` })
       window.open(routeData.href, '_blank')
+    }
+  },
+
+  computed: {
+    getMyAccounts () {
+      let myAccounts = this.$store.state.accounts
+      let buildAccounts = []
+
+      if (myAccounts !== null) {
+        myAccounts.forEach(el => {
+          console.log(el)
+          el.class = ''
+          el.icon = 'icon-accounts-off'
+          buildAccounts.push(el)
+        })
+      }
+
+      console.log('LLEGA')
+
+      return buildAccounts
     }
   }
 }

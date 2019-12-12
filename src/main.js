@@ -8,12 +8,14 @@ import Utils from './services/utils'
 import axios from 'axios'
 import { Config } from './services/config'
 import { ConnectionData, Connections } from './services/connection'
+import { WSConnection } from './services/web-socket'
 import JsonCSV from 'vue-json-csv'
 let currentNode = localStorage.getItem('currentNode')
 
 Vue.config.productionTip = false
 Vue.prototype.$localStorage = new Persistence(localStorage)
 Vue.prototype.$sessionStorage = new Persistence(sessionStorage)
+Vue.prototype.$ws = new WSConnection()
 Vue.prototype.$utils = Utils
 Vue.component('downloadCsv', JsonCSV)
 const configIntegration = async (currentNodeExist = false) => {
