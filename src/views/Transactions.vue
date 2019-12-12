@@ -12,6 +12,15 @@
         </form>
       </div>
 
+      <div class="box-grey mb-10">
+        <h1 class="title txt-left">Account selection</h1>
+        <select v-if="myAccounts !== null || myAccounts.length > 0" name="Select Account" id="chooseAcc" placeholder="Select Account" class="proximax-btn-white">
+          <option value="" v-for="(item, index) in myAccounts" :key="index">
+            {{ item.name }}
+          </option>
+        </select>
+      </div>
+
       <div v-if="fileExist !== null">
         <h1 class="title txt-left">File table</h1>
         <table class="table-setting">
@@ -51,8 +60,11 @@
         </table>
       </div>
     </div>
+
     <div class="mt-10 fold">
-      <input type="button" @click="sendTx" value="Send">
+      <div class="box-grey">
+        <input type="button" class="proximax-btn" @click="sendTx" value="Send">
+      </div>
     </div>
   </div>
 </template>
@@ -76,14 +88,17 @@ export default {
       sortOrders: {},
       parse_csv: [],
       parse_header: [],
-      transactionHttp: new TransactionHttp(this.$localStorage.get('currentBuildNode'))
+      transactionHttp: new TransactionHttp(this.$localStorage.get('currentBuildNode')),
+      myAccounts: JSON.parse(this.$localStorage.get('myAccounts'))
     }
   },
+
   filters: {
     capitalize: function (str) {
       return str.charAt(0).toUpperCase() + str.slice(1)
     }
   },
+
   methods: {
     readFile (event) {
       if ([undefined, null].includes(event.target.files) === false) {
@@ -95,7 +110,7 @@ export default {
       let lines = csv.split('\n')
       let result = []
       let headers = lines[0].split(',')
-      headers = headers.map((x) => x.toUpperCase())
+      headers = headers.map((x) => x.toLowercase())
       this.parse_header = lines[0].split(',')
       this.parse_header = this.parse_header.map((x) => x.toUpperCase())
 

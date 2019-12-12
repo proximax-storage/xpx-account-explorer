@@ -112,14 +112,11 @@ export default {
 
       if (this.valid === true) {
         let privateKey = this.inputValue
-
         let account = Account.createFromPrivateKey(privateKey, this.$config.network.number)
-
         let encrypted = this.$utils.encrypt(privateKey, this.passwordInput)
 
         try {
           let multisigInfo
-
           // GET MULTISIG INFO
           try {
             multisigInfo = await this.$provider.accountHttp.getMultisigAccountInfo(account.publicAccount.address).toPromise()
@@ -148,6 +145,8 @@ export default {
           if (this.myCustomAccounts === null) {
             this.myCustomAccounts = [newAccount]
             this.$localStorage.set('myAccounts', JSON.stringify(this.myCustomAccounts))
+            this.$store.dispatch('updateAccounts', this.myCustomAccounts)
+            this.$store.dispatch('newNotification', tmpObj)
           } else {
             let finding = this.myCustomAccounts.find(el => el.publicKey === newAccount.publicKey)
 
@@ -156,6 +155,7 @@ export default {
             } else {
               this.myCustomAccounts.push(newAccount)
               this.$localStorage.set('myAccounts', JSON.stringify(this.myCustomAccounts))
+              this.$store.dispatch('updateAccounts', this.myCustomAccounts)
               this.$store.dispatch('newNotification', tmpObj)
             }
           }
@@ -165,7 +165,7 @@ export default {
           this.inputValue = ''
           this.valid = false
 
-          window.location.reload()
+          // window.location.reload()
         } catch (error) {
           let tmpObj = {
             active: true,
@@ -186,7 +186,10 @@ export default {
     deleteAccount (name) {
       console.log(name)
       this.$utils.deleteAccountByName(name)
-      window.location.reload()
+      let newAccounts = JSON.parse(this.$localStorage.get('myAccounts'))
+      this.$store.dispatch('updateAccounts', newAccounts)
+      this.myCustomAccounts = newAccounts
+      // window.location.reload()
     }
   }
 }
