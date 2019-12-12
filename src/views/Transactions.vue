@@ -59,7 +59,8 @@
 
 <script>
 import ModuleHeader from '@/components/Global/module-header'
-import { Account } from 'tsjs-xpx-chain-sdk'
+import { Account, TransactionType, TransactionHttp } from 'tsjs-xpx-chain-sdk'
+
 export default {
   name: 'Transactions',
 
@@ -74,7 +75,8 @@ export default {
       fileExist: null,
       sortOrders: {},
       parse_csv: [],
-      parse_header: []
+      parse_header: [],
+      transactionHttp: new TransactionHttp(this.$localStorage.get('currentBuildNode'))
     }
   },
   filters: {
@@ -150,7 +152,7 @@ export default {
           if (validateDataCsv) {
             console.log('normal')
           } else {
-            console.log('no papa')
+            this.parse_csv = []
           }
 
           if (this.parse_csv.length > 0) {
@@ -171,20 +173,35 @@ export default {
         this.$store.dispatch('newNotification', tmpObj)
       }
     },
-
     sendTx () {
+      console.log(this.transactionHttp)
       const signer = Account.createFromPrivateKey('60B9442B1145357CED1FA956ED5843BF3C042154685D1A4DDCC1BE107E372050', this.$config.network.number)
       if (this.parse_csv.length > 0) {
         this.buildTx(signer)
       }
     },
-    buildTx (signer){
+    buildTx (signer) {
       let txs = []
       for (let element of this.parse_csv) {
         txs.push({ signer: signer, tx: this.$utils.createTxTransfer(element['RECEIPIENT'], element['AMOUNT'], element['MESSAGE'], this.$config) })
       }
       const generationHash = '56D112C98F7A7E34D1AEDC4BD01BC06CA2276DD546A93E36690B785E82439CA9'
-      console.log('generationHash:', generationHash)
+      const signedTransaction = this.$utils.buildTx(signer, txs, TransactionType.AGGREGATE_COMPLETE, generationHash, [], this.$config)
+      this.transactionHttp.announce(signedTransaction.sign).subscribe(x => {
+        console.log(x)
+        setTimeout(() => {
+          this.getTransactionStatus(signedTransaction.sign.hash);
+        }, 1000)
+      }, err => {
+        console.log(err)
+      })
+    },
+    getTransactionStatus (hash) {
+      this.transactionHttp.getTransactionStatus(hash).subscribe(response => {
+        console.log('\n\n === STATUS TRANSACTION \n', response)
+      }, err => {
+        console.log('\n ERROR STATUS TRANSACTION', err)
+      })
     }
   }
 }
