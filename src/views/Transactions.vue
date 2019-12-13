@@ -222,7 +222,11 @@ export default {
           console.log(this.parse_csv)
           this.buildTx(signer)
         }
+        this.accountPassword = ''
+        this.buttonSendActive = false
       } catch (error) {
+        this.accountPassword = ''
+        this.buttonSendActive = false
         console.warn(error)
 
         let tmpObj = {
@@ -270,8 +274,6 @@ export default {
     },
 
     validatePassword () {
-      console.log(this.accountPassword)
-
       if (this.accountPassword.length >= 8 && this.accountPassword.length <= 15) {
         this.buttonSendActive = true
       } else {
