@@ -23,7 +23,6 @@ export default class Utils {
   }
   static amountFormatterSimple (amount) {
     const amountDivisibility = Number(amount) / Math.pow(10, 6)
-    console.log(amountDivisibility)
     return amountDivisibility.toLocaleString('en-us', {
       minimumFractionDigits: 6
     })
@@ -182,7 +181,6 @@ export default class Utils {
       try {
         let block = await provider.blockHttp.getBlockByHeight(element.transactionInfo.height.compact()).toPromise()
         element.effectiveFee = block.feeMultiplier * element.size
-        console.log(element)
         element.block = this.fmtTime(block.timestamp.compact() + (Deadline.timestampNemesisBlock * 1000))
       } catch (error) {
         element.block = null
@@ -260,7 +258,6 @@ export default class Utils {
   static getStructureCsv (data) {
     let dataStructure = []
     for (let element of data) {
-      console.log('element', element)
       switch (element.type) {
         case TransactionType.TRANSFER:
           const message = (element.message.type === 0) ? element.message.payload : '<encrypted>'
@@ -283,7 +280,6 @@ export default class Utils {
   }
 
   static validateHeaderCsv (headerValidate) {
-    console.log('headaer', headerValidate)
     const headaer = ['RECEIPIENT', 'MESSAGE', 'AMOUNT']
     return JSON.stringify(headaer) === JSON.stringify(headerValidate)
   }
@@ -292,12 +288,10 @@ export default class Utils {
     let value = true
     for (let index = 0; index < data.length; index++) {
       const element = data[index]
-      console.log(element)
       if (!this.isEmpty(element)) {
         value = false
         break
       }
-      console.log(element['AMOUNT'])
       if (this.validateNumber(element['AMOUNT'])) {
         value = false
         break
@@ -318,7 +312,6 @@ export default class Utils {
         }
       } catch (error) {
         value = false
-        console.log(error)
         break
       }
     }
@@ -330,11 +323,7 @@ export default class Utils {
   }
 
   static validateNumber (number) {
-    console.log(number)
     let x = Number(number) / Math.pow(10, 6)
-    console.log(x)
-    console.log(x * Math.pow(10, 6))
-    console.log(x)
     return isNaN(x)
   }
 
@@ -369,7 +358,6 @@ export default class Utils {
   static deleteAccountByName (name) {
     let accounts = JSON.parse(localStorage.getItem('myAccounts'))
     let result = accounts.filter(el => el.name !== name)
-    console.log(result)
 
     if (result.length === 0) {
       result = null
@@ -379,7 +367,6 @@ export default class Utils {
   }
 
   static createTxTransfer (recipient, amount, message, config) {
-    console.log(config.coin)
     const mosaicId = new MosaicId(config.coin.mosaic.id)
     return TransferTransaction.create(
       Deadline.create(5),
@@ -413,7 +400,6 @@ export default class Utils {
         } else {
           arrayData.sign = accountSign.sign(aggregateTransaction, networkGenerationHash)
         }
-        console.log('arrayData', arrayData)
         break
     }
     return arrayData
