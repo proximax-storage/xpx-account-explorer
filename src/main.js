@@ -15,7 +15,7 @@ let currentNode = localStorage.getItem('currentNode')
 Vue.config.productionTip = false
 Vue.prototype.$localStorage = new Persistence(localStorage)
 Vue.prototype.$sessionStorage = new Persistence(sessionStorage)
-Vue.prototype.$ws = new WSConnection()
+Vue.prototype.$ws = new WSConnection(store)
 Vue.prototype.$utils = Utils
 Vue.component('downloadCsv', JsonCSV)
 const configIntegration = async (currentNodeExist = false) => {

@@ -44,7 +44,7 @@ export default {
     },
 
     runWS () {
-      console.log(this.$ws.open())
+      console.log(this.$ws.connectnWs(''))
     }
   }
 }

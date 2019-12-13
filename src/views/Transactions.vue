@@ -205,7 +205,7 @@ export default {
       this.transactionHttp.announce(signedTransaction.sign).subscribe(x => {
         console.log(x)
         setTimeout(() => {
-          this.getTransactionStatus(signedTransaction.sign.hash);
+          this.getTransactionStatus(signedTransaction.sign.hash)
         }, 1000)
       }, err => {
         console.log(err)
