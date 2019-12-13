@@ -129,7 +129,7 @@ export default {
       let lines = csv.split('\n')
       let result = []
       let headers = lines[0].split(',')
-      headers = headers.map((x) => x)
+      headers = headers.map((x) => x.toUpperCase())
       this.parse_header = lines[0].split(',')
       this.parse_header = this.parse_header.map((x) => x.toUpperCase())
 
@@ -180,13 +180,14 @@ export default {
             this.parse_csv = []
             return this.$store.dispatch('newNotification', tmpObj)
           }
-
+          console.log(this.parse_csv)
           let validateDataCsv = this.$utils.validateDataCsv(this.parse_csv, this.$config)
 
           if (validateDataCsv) {
             console.log('normal')
           } else {
-            this.parse_csv = []
+            tmpObj.message = 'File  invalid'
+            this.$store.dispatch('newNotification', tmpObj)
           }
 
           if (this.parse_csv.length > 0) {
@@ -218,6 +219,7 @@ export default {
         const signer = Account.createFromPrivateKey(decryptAccount, this.$config.network.number)
 
         if (this.parse_csv.length > 0) {
+          console.log(this.parse_csv)
           this.buildTx(signer)
         }
       } catch (error) {

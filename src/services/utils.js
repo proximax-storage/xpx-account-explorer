@@ -283,6 +283,7 @@ export default class Utils {
   }
 
   static validateHeaderCsv (headerValidate) {
+    console.log('headaer', headerValidate)
     const headaer = ['RECEIPIENT', 'MESSAGE', 'AMOUNT']
     return JSON.stringify(headaer) === JSON.stringify(headerValidate)
   }
@@ -291,10 +292,12 @@ export default class Utils {
     let value = true
     for (let index = 0; index < data.length; index++) {
       const element = data[index]
+      console.log(element)
       if (!this.isEmpty(element)) {
         value = false
         break
       }
+      console.log(element['AMOUNT'])
       if (this.validateNumber(element['AMOUNT'])) {
         value = false
         break
@@ -327,8 +330,11 @@ export default class Utils {
   }
 
   static validateNumber (number) {
+    console.log(number)
     let x = Number(number) / Math.pow(10, 6)
+    console.log(x)
     console.log(x * Math.pow(10, 6))
+    console.log(x)
     return isNaN(x)
   }
 
