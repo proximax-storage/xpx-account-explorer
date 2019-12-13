@@ -12,10 +12,19 @@
         </form>
       </div>
 
-      <div class="box-grey mb-10">
+      <div class="box-orange mb-10" v-if="myAccounts === null">
         <h1 class="title txt-left">Account selection</h1>
-        <select v-if="myAccounts !== null || myAccounts.length > 0" name="Select Account" id="chooseAcc" placeholder="Select Account" class="proximax-btn-white">
-          <option value="" v-for="(item, index) in myAccounts" :key="index">
+        <p>You need to register an account to make transactions.</p>
+      </div>
+
+      <div class="box-grey mb-10" v-if="myAccounts !== null">
+        <h1 class="title txt-left">Account selection</h1>
+        <select name="Select Account" id="chooseAcc" placeholder="Select Account" class="proximax-btn-white"  @change="searchSender" v-model="accountName">
+          <option :value="null">
+            Select Account
+          </option>
+
+          <option v-for="(item, index) in myAccounts" :key="index" :value="item.name">
             {{ item.name }}
           </option>
         </select>
@@ -61,9 +70,16 @@
       </div>
     </div>
 
-    <div class="mt-10 fold">
+    <div class="mt-10 fold" v-if="selectedSender !== null">
       <div class="box-grey">
-        <input type="button" class="proximax-btn" @click="sendTx" value="Send">
+        <div class="mb-10">
+          <input type="password" class="field" placeholder="Enter account password" v-model="accountPassword" @keyup="validatePassword" @unfocus="validatePassword" @change="validatePassword">
+        </div>
+
+        <div>
+          <input v-if="buttonSendActive === true" type="button" class="proximax-btn" @click="sendTx" value="Send">
+          <input v-if="buttonSendActive === false" type="button" class="proximax-btn-disabled" value="Send">
+        </div>
       </div>
     </div>
   </div>
@@ -71,7 +87,7 @@
 
 <script>
 import ModuleHeader from '@/components/Global/module-header'
-import { Account, TransactionType, TransactionHttp } from 'tsjs-xpx-chain-sdk'
+import { Account, TransactionType } from 'tsjs-xpx-chain-sdk'
 
 export default {
   name: 'Transactions',
@@ -88,13 +104,16 @@ export default {
       sortOrders: {},
       parse_csv: [],
       parse_header: [],
-      transactionHttp: new TransactionHttp(this.$localStorage.get('currentBuildNode')),
-      myAccounts: JSON.parse(this.$localStorage.get('myAccounts'))
+      myAccounts: JSON.parse(this.$localStorage.get('myAccounts')),
+      selectedSender: null,
+      accountName: null,
+      buttonSendActive: false,
+      accountPassword: ''
     }
   },
 
   filters: {
-    capitalize: function (str) {
+    capitalize: (str) => {
       return str.charAt(0).toUpperCase() + str.slice(1)
     }
   },
@@ -110,7 +129,7 @@ export default {
       let lines = csv.split('\n')
       let result = []
       let headers = lines[0].split(',')
-      headers = headers.map((x) => x.toLowercase())
+      headers = headers.map((x) => x)
       this.parse_header = lines[0].split(',')
       this.parse_header = this.parse_header.map((x) => x.toUpperCase())
 
@@ -188,13 +207,33 @@ export default {
         this.$store.dispatch('newNotification', tmpObj)
       }
     },
+
     sendTx () {
-      console.log(this.transactionHttp)
-      const signer = Account.createFromPrivateKey('60B9442B1145357CED1FA956ED5843BF3C042154685D1A4DDCC1BE107E372050', this.$config.network.number)
-      if (this.parse_csv.length > 0) {
-        this.buildTx(signer)
+      console.log(this.accountPassword)
+
+      try {
+        let decryptAccount = this.$utils.decrypt(this.selectedSender.encrypted, this.accountPassword)
+        console.log(decryptAccount)
+
+        const signer = Account.createFromPrivateKey(decryptAccount, this.$config.network.number)
+
+        if (this.parse_csv.length > 0) {
+          this.buildTx(signer)
+        }
+      } catch (error) {
+        console.warn(error)
+
+        let tmpObj = {
+          active: true,
+          type: 'error',
+          title: 'Invalid Password',
+          message: 'Your password is wrong, please check and try again'
+        }
+
+        this.$store.dispatch('newNotification', tmpObj)
       }
     },
+
     buildTx (signer) {
       let txs = []
       for (let element of this.parse_csv) {
@@ -202,21 +241,40 @@ export default {
       }
       const generationHash = '56D112C98F7A7E34D1AEDC4BD01BC06CA2276DD546A93E36690B785E82439CA9'
       const signedTransaction = this.$utils.buildTx(signer, txs, TransactionType.AGGREGATE_COMPLETE, generationHash, [], this.$config)
-      this.transactionHttp.announce(signedTransaction.sign).subscribe(x => {
+      this.$provider.transactionHttp.announce(signedTransaction.sign).subscribe(x => {
         console.log(x)
         setTimeout(() => {
-          this.getTransactionStatus(signedTransaction.sign.hash);
+          this.getTransactionStatus(signedTransaction.sign.hash)
         }, 1000)
       }, err => {
         console.log(err)
       })
     },
+
     getTransactionStatus (hash) {
-      this.transactionHttp.getTransactionStatus(hash).subscribe(response => {
+      this.$provider.transactionHttp.getTransactionStatus(hash).subscribe(response => {
         console.log('\n\n === STATUS TRANSACTION \n', response)
       }, err => {
         console.log('\n ERROR STATUS TRANSACTION', err)
       })
+    },
+
+    searchSender () {
+      if (this.accountName !== null) {
+        this.selectedSender = this.$utils.getAccountByName(this.accountName)
+      } else {
+        this.selectedSender = null
+      }
+    },
+
+    validatePassword () {
+      console.log(this.accountPassword)
+
+      if (this.accountPassword.length >= 8 && this.accountPassword.length <= 15) {
+        this.buttonSendActive = true
+      } else {
+        this.buttonSendActive = false
+      }
     }
   }
 }

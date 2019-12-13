@@ -81,7 +81,7 @@ export default {
         privateKeyValid = false
       }
 
-      if (this.passwordInput && this.passwordInput.length >= 8 && this.passwordInput.length < 15) {
+      if (this.passwordInput && this.passwordInput.length >= 8 && this.passwordInput.length <= 15) {
         passwordValid = true
       } else {
         passwordValid = false
