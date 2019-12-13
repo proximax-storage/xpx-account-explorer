@@ -6,6 +6,7 @@ class WSConnection {
     this.connector = []
     this.currentWallet = null
   }
+
   connectnWs (node = '') {
     console.log(this.ws)
     this.connector = []
@@ -32,6 +33,7 @@ class WSConnection {
       })
     }
   }
+
   getUnConfirmedAddedSocket (connector, audio, address) {
     console.log('address', address)
     connector.unconfirmedAdded(address).subscribe(async unconfirmedAdded => {
@@ -43,6 +45,7 @@ class WSConnection {
       audio.play()
     })
   }
+
   getStatusSocket (connector, audio, address) {
     let tmpObj = {
       active: true,
@@ -59,9 +62,11 @@ class WSConnection {
       })
     })
   }
+
   setTransactionStatus (value) {
     this.store.dispatch('newNotification', value)
   }
+
   reconnect () {
     if (this.connector) {
       // console.log("Destruye conexion con el websocket");
@@ -72,6 +77,7 @@ class WSConnection {
     }
     this.connectnWs()
   }
+
   close () {
     if (this.connector.length > 0) {
       // console.log("Destruye conexion con el websocket");
