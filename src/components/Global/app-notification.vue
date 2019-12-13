@@ -9,6 +9,11 @@
       <div class="title white-color">{{ getNotification.title }}</div>
       <div class="value white-color">{{ getNotification.message }}</div>
     </div>
+
+    <div class="notif-cont info" v-if="getNotification.active && getNotification.type == 'info'">
+      <div class="title white-color">{{ getNotification.title }}</div>
+      <div class="value white-color">{{ getNotification.message }}</div>
+    </div>
   </div>
 </template>
 

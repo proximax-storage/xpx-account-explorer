@@ -158,6 +158,11 @@ export default {
             }
           }
 
+          this.$ws.close()
+          setTimeout(() => {
+            this.$ws.reconnect()
+          }, 1000)
+
           this.accountName = ''
           this.passwordInput = ''
           this.inputValue = ''
@@ -187,6 +192,11 @@ export default {
       let newAccounts = JSON.parse(this.$localStorage.get('myAccounts'))
       this.$store.dispatch('updateAccounts', newAccounts)
       this.myCustomAccounts = newAccounts
+
+      this.$ws.close()
+      setTimeout(() => {
+        this.$ws.reconnect()
+      }, 1000)
       // window.location.reload()
     }
   }

@@ -40,7 +40,7 @@ class WSConnection {
     connector.unconfirmedAdded(address).subscribe(async unconfirmedAdded => {
       let tmpObj = {
         active: true,
-        type: 'success',
+        type: 'info',
         title: 'unconfirmed',
         message: 'transaction unconfirmed'
       }
@@ -76,7 +76,7 @@ class WSConnection {
 
   reconnect () {
     if (this.connector) {
-      // console.log("Destruye conexion con el websocket");
+      console.log('Destruye conexion con el websocket')
       this.connector.forEach(element => {
         element.close()
         element.terminate()
@@ -87,7 +87,7 @@ class WSConnection {
 
   close () {
     if (this.connector.length > 0) {
-      // console.log("Destruye conexion con el websocket");
+      console.log('Destruye conexion con el websocket')
       this.connector.forEach(element => {
         element.close()
         element.terminate()

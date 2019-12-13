@@ -253,6 +253,10 @@ figure {
   background: green;
 }
 
+.info {
+  background: dodgerblue;
+}
+
 .table-width-480 {
   width: 480px;
 }
