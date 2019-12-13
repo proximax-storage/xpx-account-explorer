@@ -188,6 +188,7 @@ export default {
           } else {
             tmpObj.message = 'File  invalid'
             this.$store.dispatch('newNotification', tmpObj)
+            this.parse_csv = []
           }
 
           if (this.parse_csv.length > 0) {

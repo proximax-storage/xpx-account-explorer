@@ -23,6 +23,7 @@ class WSConnection {
         const address = Address.createFromRawAddress(element.address)
         connection.open().then(() => {
           this.getUnConfirmedAddedSocket(connection, audio, address)
+          this.getStatusSocket(connection, audio, address)
         }, (error) => {
           setTimeout(() => {
             console.error(error)
@@ -42,20 +43,44 @@ class WSConnection {
       audio.play()
     })
   }
-  setTransactionStatus (value) {
-    console.log(value)
+  getStatusSocket (connector, audio, address) {
     let tmpObj = {
       active: true,
       type: 'error',
       title: 'load failed',
-      message: value.type
+      message: 'file not allowed'
     }
-    this.store.dispatch('newNotification', tmpObj)
+    connector.status(address).subscribe(status => {
+      tmpObj.message = status.status.split('_').join(' ')
+      this.store.dispatch('newNotification', tmpObj)
+      this.setTransactionStatus({
+        type: 'status',
+        hash: status.transactionInfo.hash
+      })
+    })
   }
-  open () {
-    return this.ws
+  setTransactionStatus (value) {
+    this.store.dispatch('newNotification', value)
   }
-  close () {}
+  reconnect () {
+    if (this.connector) {
+      // console.log("Destruye conexion con el websocket");
+      this.connector.forEach(element => {
+        element.close()
+        element.terminate()
+      })
+    }
+    this.connectnWs()
+  }
+  close () {
+    if (this.connector.length > 0) {
+      // console.log("Destruye conexion con el websocket");
+      this.connector.forEach(element => {
+        element.close()
+        element.terminate()
+      })
+    }
+  }
 }
 
 export { WSConnection }
