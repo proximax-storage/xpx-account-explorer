@@ -8,7 +8,8 @@ export default new Vuex.Store({
     notification: {
       active: false
     },
-    accounts: null
+    accounts: null,
+    txStatusData: null
   },
 
   mutations: {
@@ -29,6 +30,15 @@ export default new Vuex.Store({
 
       state.accounts = data
       console.log(state.accounts)
+    },
+    UPDATE_STATUS_TX (state, data) {
+      state.txStatusData = data
+      console.log('state', state.txStatusData)
+      console.log('data', data)
+      if (data !== null && data.length === 0) {
+        data = null
+      }
+      state.txStatusData = data
     }
   },
 
@@ -39,12 +49,18 @@ export default new Vuex.Store({
 
     updateAccounts ({ commit }, data) {
       commit('UPDATE_ACCOUNTS', data)
+    },
+    statusTx ({ commit }, data) {
+      commit('UPDATE_STATUS_TX', data)
     }
   },
 
   getters: {
     getMyAccounts: state => {
       return state.accounts
+    },
+    getStatusTx: state => {
+      return state.txStatusData
     }
   },
 

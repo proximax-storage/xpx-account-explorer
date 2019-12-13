@@ -75,7 +75,6 @@
         <div class="mb-10">
           <input type="password" class="field" placeholder="Enter account password" v-model="accountPassword" @keyup="validatePassword" @unfocus="validatePassword" @change="validatePassword">
         </div>
-
         <div>
           <input v-if="buttonSendActive === true" type="button" class="proximax-btn" @click="sendTx" value="Send">
           <input v-if="buttonSendActive === false" type="button" class="proximax-btn-disabled" value="Send">
@@ -186,7 +185,7 @@ export default {
           if (validateDataCsv) {
             console.log('normal')
           } else {
-            tmpObj.message = 'File  invalid'
+            tmpObj.message = 'File invalid'
             this.$store.dispatch('newNotification', tmpObj)
             this.parse_csv = []
           }
@@ -211,17 +210,19 @@ export default {
     },
 
     sendTx () {
-      console.log(this.accountPassword)
-
+      let tmpObj = {
+        active: true,
+        type: 'error',
+        title: 'Invalid file',
+        message: 'upload a file'
+      }
       try {
         let decryptAccount = this.$utils.decrypt(this.selectedSender.encrypted, this.accountPassword)
-        console.log(decryptAccount)
-
         const signer = Account.createFromPrivateKey(decryptAccount, this.$config.network.number)
-
         if (this.parse_csv.length > 0) {
-          console.log(this.parse_csv)
           this.buildTx(signer)
+        } else {
+          this.$store.dispatch('newNotification', tmpObj)
         }
         this.accountPassword = ''
         this.buttonSendActive = false
@@ -229,14 +230,12 @@ export default {
         this.accountPassword = ''
         this.buttonSendActive = false
         console.warn(error)
-
         let tmpObj = {
           active: true,
           type: 'error',
           title: 'Invalid Password',
           message: 'Your password is wrong, please check and try again'
         }
-
         this.$store.dispatch('newNotification', tmpObj)
       }
     },
@@ -249,23 +248,20 @@ export default {
       const generationHash = '56D112C98F7A7E34D1AEDC4BD01BC06CA2276DD546A93E36690B785E82439CA9'
       const signedTransaction = this.$utils.buildTx(signer, txs, TransactionType.AGGREGATE_COMPLETE, generationHash, [], this.$config)
       this.$provider.transactionHttp.announce(signedTransaction.sign).subscribe(x => {
-        console.log(x)
         setTimeout(() => {
-          this.getTransactionStatus(signedTransaction.sign.hash)
+          console.log('asdasdasdasd', this.getStatusTx)
         }, 1000)
       }, err => {
         console.log(err)
       })
     },
-
-    getTransactionStatus (hash) {
-      this.$provider.transactionHttp.getTransactionStatus(hash).subscribe(response => {
-        console.log('\n\n === STATUS TRANSACTION \n', response)
-      }, err => {
-        console.log('\n ERROR STATUS TRANSACTION', err)
-      })
-    },
-
+    // getTransactionStatus (hash) {
+    //   this.$provider.transactionHttp.getTransactionStatus(hash).subscribe(response => {
+    //     console.log('\n\n === STATUS TRANSACTION \n', response)
+    //   }, err => {
+    //     console.log('\n ERROR STATUS TRANSACTION', err)
+    //   })
+    // },
     searchSender () {
       if (this.accountName !== null) {
         this.selectedSender = this.$utils.getAccountByName(this.accountName)
@@ -280,6 +276,11 @@ export default {
       } else {
         this.buttonSendActive = false
       }
+    }
+  },
+  computed: {
+    getStatusTx () {
+      return this.$store.state.txStatusData
     }
   }
 }
