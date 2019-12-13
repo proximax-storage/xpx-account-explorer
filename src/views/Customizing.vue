@@ -5,7 +5,7 @@
 
     <div class="fold">
       <div class="box-orange mb-10">
-        Add Accounts here to monitor them
+        <p>Add accounts here to monitor them and to enable transfer functionality.</p>
       </div>
 
       <form class="box-grey mb-10">
@@ -21,7 +21,7 @@
     <div class="fold" v-if="myCustomAccounts === null || myCustomAccounts.length === 0">
       <h1 class="title txt-left">Custom Accounts</h1>
       <div class="box-grey">
-        <span>You have not added a custom account yet!</span>
+        <p>You have not added a custom account yet!</p>
       </div>
     </div>
 
@@ -81,13 +81,11 @@ export default {
         privateKeyValid = false
       }
 
-      if (this.passwordInput && this.passwordInput.length >= 8 && this.passwordInput.length < 15) {
+      if (this.passwordInput && this.passwordInput.length >= 8 && this.passwordInput.length <= 15) {
         passwordValid = true
       } else {
         passwordValid = false
       }
-
-      console.log(passwordValid, privateKeyValid)
 
       if (passwordValid === false && privateKeyValid === true) {
         this.errorActive = true
