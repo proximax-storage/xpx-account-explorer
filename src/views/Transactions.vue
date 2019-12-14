@@ -46,27 +46,29 @@
         </table>
       </div>
 
-      <div v-if="fileExist === null">
-        <h1 class="title txt-left">Example (CSV FILE)</h1>
-        <table class="table-setting">
-          <tr>
-            <th class="txt-left">Recipient</th>
-            <th class="txt-left">Message</th>
-            <th class="txt-left">Amount</th>
-          </tr>
+      <div class="fold box-orange" v-if="fileExist === null">
+        <div>
+          <h1 class="title txt-left">Example (CSV FILE)</h1>
+          <table class="table-setting">
+            <tr>
+              <th class="txt-left">Recipient</th>
+              <th class="txt-left">Message</th>
+              <th class="txt-left">Amount</th>
+            </tr>
 
-          <tr>
-            <td class="txt-left">VDG2GN-DH7AED-67HTHX-WBOCD6-ZIL3XT-XFTVYE-PL3X</td>
-            <td class="txt-left">Sample message</td>
-            <td class="txt-left">20100000</td>
-          </tr>
+            <tr>
+              <td class="txt-left">VDG2GN-DH7AED-67HTHX-WBOCD6-ZIL3XT-XFTVYE-PL3X</td>
+              <td class="txt-left">Sample message</td>
+              <td class="txt-left">20100000</td>
+            </tr>
 
-           <tr>
-            <td class="txt-left">VDG2GN-DH7AED-67HTHX-WBOCD6-ZIL3XT-XFTVYE-Z6DV</td>
-            <td class="txt-left">Sample message</td>
-            <td class="txt-left">100000</td>
-          </tr>
-        </table>
+            <tr>
+              <td class="txt-left">VDG2GN-DH7AED-67HTHX-WBOCD6-ZIL3XT-XFTVYE-Z6DV</td>
+              <td class="txt-left">Sample message</td>
+              <td class="txt-left">100000</td>
+            </tr>
+          </table>
+        </div>
       </div>
     </div>
 

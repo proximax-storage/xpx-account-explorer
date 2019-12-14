@@ -220,14 +220,31 @@ export default class Utils {
             for (let init of element.innerTransactions) {
               if (init.type === TransactionType.TRANSFER) {
                 init.mosaics.forEach(mosaic => {
+                  init.amount = 0
                   mosaic.id = mosaic.id.toHex()
                   mosaic.amount = mosaic.amount.compact()
                   if (mosaic.id === config.coin.mosaic.id) {
-                    element.totalAmount += mosaic.amount
+                    // element.totalAmount += mosaic.amount
                     element.lllll = mosaic.amount
+                    init.amount += mosaic.amount
                   } else if (mosaic.id === config.coin.namespace.id) {
-                    element.totalAmount += mosaic.amount
+                    // element.totalAmount += mosaic.amount
+                    init.amount += mosaic.amount
                   }
+
+                  let tmpObj = {
+                    Sender: init.signer.address.pretty(),
+                    Recipient: init.recipient.address,
+                    Transaction: 'Aggregate bonded (Transfer)',
+                    Amount: this.amountFormatterSimple(init.amount),
+                    Message: (init.message.type === 0) ? init.message.payload : '<encrypted>',
+                    Hash: element.transactionInfo.hash,
+                    Fee: this.amountFormatterSimple(init.maxFee.compact()),
+                    Mosaic: 'XPX',
+                    Timestamp: init.block
+                  }
+
+                  structureCsv.push(tmpObj)
                 })
               }
             }
