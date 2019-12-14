@@ -214,6 +214,10 @@ figure {
   margin-bottom: 10px;
 }
 
+.mt-10 {
+  margin-top: 10px;
+}
+
 .button-panel {
   display: flex;
   flex-flow: row;
@@ -247,6 +251,10 @@ figure {
 
 .success {
   background: green;
+}
+
+.info {
+  background: dodgerblue;
 }
 
 .table-width-480 {
@@ -678,6 +686,11 @@ option {
   justify-content: center;
 }
 
+/* TRANSACTIONS */
+.transaction-cont {
+  padding: 10px;
+}
+
 /* ---------- END COMPONENTS ---------- */
 
 
@@ -747,6 +760,28 @@ option {
 @media screen and (max-width: 960px) {
   .view-container > .view {
     width: 100%;
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .view-container {
+    padding-left: 60px;
+  }
+
+  .view-container > .view {
+    width: 100%;
+  }
+
+  .app-sidebar {
+    width: 60px;
+  }
+
+  .project-name {
+    display: none;
+  }
+
+  .name {
+    display: none;
   }
 }
 

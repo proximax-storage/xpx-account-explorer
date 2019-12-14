@@ -38,6 +38,16 @@ const routes = [
     name: 'Hash',
     component: load('Hash')
   },
+  {
+    path: '/transactions',
+    name: 'Transactions',
+    component: load('Transactions')
+  },
+  {
+    path: '/invoice',
+    name: 'Invoice',
+    component: load('Invoice')
+  },
   // {
   //   path: '/block/:id',
   //   name: 'Block',

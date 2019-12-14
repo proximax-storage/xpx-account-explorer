@@ -9,7 +9,7 @@
 
     <div class="project-name">
       <div>Account Explorer</div>
-      <div>Administartion System</div>
+      <div>Administration System</div>
       <div class="separator"></div>
     </div>
 
@@ -27,8 +27,8 @@
       <div class="separator"></div>
     </div>
 
-    <div class="accounts-list" v-if="customAccounts.length > 0">
-      <div class="nav-item" v-for="(item, index) in customAccounts" :key="index"
+    <div class="accounts-list" v-if="getMyAccounts.length > 0 || getMyAccounts !== null">
+      <div class="nav-item" v-for="(item, index) in getMyAccounts" :key="index"
       :class="item.class" :route="item.route" @click="goToPublicKey(item.publicKey)">
         <img :src="require(`@/assets/icons/${item.icon}.svg`)" class="icon">
         <div class="name">{{ item.name }}</div>
@@ -46,9 +46,11 @@ export default {
     return {
       softwareVersion: `v${this.$config.version}`,
       navList: [
-        { name: 'Dashboard', class: '', route: '', icon: 'icon-dashboard-off' },
-        { name: 'Nodes', class: '', route: 'nodes', icon: 'icon-nodes-off' },
-        { name: 'Customize', class: '', route: 'customizing', icon: 'icon-accounts-off' }
+        { name: 'Dashboard', class: '', route: '', icon: 'icon-dash-off' },
+        { name: 'Transactions', class: '', route: 'transactions', icon: 'icon-trans-off' },
+        { name: 'Accounts', class: '', route: 'customizing', icon: 'icon-accounts-off' },
+        { name: 'Nodes', class: '', route: 'nodes', icon: 'icon-nodes-off' }
+        // { name: 'Invoice', class: '', route: 'invoice', icon: 'icon-invoice-off' }
       ],
       customAccounts: []
     }
@@ -77,12 +79,15 @@ export default {
     },
 
     changeClass (route) {
-      for (let i = 0; i < this.navList.length; i++) {
-        this.navList[i].class = ''
-        if (this.navList[i].route === route) {
-          this.navList[i].class = 'nav-item-active'
+      this.navList.forEach(el => {
+        el.class = ''
+        el.icon = el.icon.replace('-on', '-off')
+
+        if (el.route === route) {
+          el.class = 'nav-item-active'
+          el.icon = el.icon.replace('-off', '-on')
         }
-      }
+      })
     },
 
     redirectAction (itemRoute) {
@@ -94,31 +99,48 @@ export default {
     verifyRoute () {
       let currentPath = window.location.hash
       currentPath = currentPath.slice(2)
-      this.redirectAction(currentPath)
+      this.redirectAction(`/${currentPath}`)
       this.changeClass(currentPath)
     },
 
     loadCustomAccounts () {
       let myAccounts = JSON.parse(this.$localStorage.get('myAccounts'))
-      console.log(myAccounts)
 
-      if (myAccounts !== null) {
-        myAccounts.forEach(el => {
-          let tmpObj = {
-            name: el.name,
-            publicKey: el.publicAccount.publicKey,
-            class: '',
-            icon: 'icon-accounts-off'
-          }
-          this.customAccounts.push(tmpObj)
-        })
-      }
+      // if (myAccounts !== null) {
+      //   myAccounts.forEach(el => {
+      //     console.log(el)
+      //     el.class = ''
+      //     el.icon = 'icon-accounts-off'
+      //     this.customAccounts.push(el)
+      //   })
+      // }
+
+      this.$store.dispatch('updateAccounts', myAccounts)
     },
 
     goToPublicKey (pk) {
-      console.log(pk)
       let routeData = this.$router.resolve({ path: `/publicKey/${pk}` })
       window.open(routeData.href, '_blank')
+    }
+  },
+
+  computed: {
+    getMyAccounts () {
+      let myAccounts = this.$store.state.accounts
+      let buildAccounts = []
+
+      if (myAccounts !== null) {
+        myAccounts.forEach(el => {
+          console.log(el)
+          el.class = ''
+          el.icon = 'icon-accounts-off'
+          buildAccounts.push(el)
+        })
+      }
+
+      console.log('LLEGA')
+
+      return buildAccounts
     }
   }
 }

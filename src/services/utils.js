@@ -1,4 +1,5 @@
-import { TransactionType, Deadline } from 'tsjs-xpx-chain-sdk'
+import { TransactionType, Deadline, Address, AggregateTransaction, MosaicId, TransferTransaction, PlainMessage, UInt64, Mosaic } from 'tsjs-xpx-chain-sdk'
+import CryptoJs from 'crypto-js'
 
 /**
  * Class to format the data in the explorer
@@ -179,6 +180,7 @@ export default class Utils {
     transaction.forEach(async element => {
       try {
         let block = await provider.blockHttp.getBlockByHeight(element.transactionInfo.height.compact()).toPromise()
+        element.effectiveFee = block.feeMultiplier * element.size
         element.block = this.fmtTime(block.timestamp.compact() + (Deadline.timestampNemesisBlock * 1000))
       } catch (error) {
         element.block = null
@@ -206,7 +208,7 @@ export default class Utils {
             Amount: this.amountFormatterSimple(element.totalAmount),
             Message: message,
             Hash: element.transactionInfo.hash,
-            Fee: this.amountFormatterSimple(element.maxFee.compact()),
+            Fee: this.amountFormatterSimple(element.effectiveFee),
             Mosaic: 'XPX',
             Timestamp: element.block
           })
@@ -218,14 +220,31 @@ export default class Utils {
             for (let init of element.innerTransactions) {
               if (init.type === TransactionType.TRANSFER) {
                 init.mosaics.forEach(mosaic => {
+                  init.amount = 0
                   mosaic.id = mosaic.id.toHex()
                   mosaic.amount = mosaic.amount.compact()
                   if (mosaic.id === config.coin.mosaic.id) {
-                    element.totalAmount += mosaic.amount
+                    // element.totalAmount += mosaic.amount
                     element.lllll = mosaic.amount
+                    init.amount += mosaic.amount
                   } else if (mosaic.id === config.coin.namespace.id) {
-                    element.totalAmount += mosaic.amount
+                    // element.totalAmount += mosaic.amount
+                    init.amount += mosaic.amount
                   }
+
+                  let tmpObj = {
+                    Sender: init.signer.address.pretty(),
+                    Recipient: init.recipient.address,
+                    Transaction: 'Aggregate bonded (Transfer)',
+                    Amount: this.amountFormatterSimple(init.amount),
+                    Message: (init.message.type === 0) ? init.message.payload : '<encrypted>',
+                    Hash: element.transactionInfo.hash,
+                    Fee: this.amountFormatterSimple(init.maxFee.compact()),
+                    Mosaic: 'XPX',
+                    Timestamp: init.block
+                  }
+
+                  structureCsv.push(tmpObj)
                 })
               }
             }
@@ -252,10 +271,10 @@ export default class Utils {
       structureCsv: structureCsv
     }
   }
+
   static getStructureCsv (data) {
     let dataStructure = []
     for (let element of data) {
-      console.log('element', element)
       switch (element.type) {
         case TransactionType.TRANSFER:
           const message = (element.message.type === 0) ? element.message.payload : '<encrypted>'
@@ -275,5 +294,131 @@ export default class Utils {
       }
     }
     return dataStructure
+  }
+
+  static validateHeaderCsv (headerValidate) {
+    const headaer = ['RECEIPIENT', 'MESSAGE', 'AMOUNT']
+    return JSON.stringify(headaer) === JSON.stringify(headerValidate)
+  }
+
+  static validateDataCsv (data, config) {
+    let value = true
+    for (let index = 0; index < data.length; index++) {
+      const element = data[index]
+      if (!this.isEmpty(element)) {
+        value = false
+        break
+      }
+      if (this.validateNumber(element['AMOUNT'])) {
+        value = false
+        break
+      }
+      try {
+        const address = Address.createFromRawAddress(element['RECEIPIENT'])
+        if (address) {
+          value = (address.networkType === config.network.number)
+        } else {
+          value = false
+          break
+        }
+        if (this.validateLengthMsj(element['MESSAGE'])) {
+          value = true
+        } else {
+          value = false
+          break
+        }
+      } catch (error) {
+        value = false
+        break
+      }
+    }
+    return value
+  }
+
+  static validateLengthMsj (msj) {
+    return (msj.toString().length <= 1024)
+  }
+
+  static validateNumber (number) {
+    let x = Number(number) / Math.pow(10, 6)
+    return isNaN(x)
+  }
+
+  static isEmpty (obj) {
+    let value = true
+    for (let key in obj) {
+      if (obj[key] === undefined || obj[key] === '' || obj[key] == null || obj[key].length <= 0) {
+        value = false
+        break
+      }
+    }
+    return value
+  }
+
+  static encrypt (name, password) {
+    let encrypted = CryptoJs.TripleDES.encrypt(name, password)
+    return encrypted.toString()
+  }
+
+  static decrypt (encrypted, password) {
+    let decryptBytes = CryptoJs.TripleDES.decrypt(encrypted, password)
+    let decrypted = decryptBytes.toString(CryptoJs.enc.Utf8)
+    return decrypted
+  }
+
+  static getAccountByName (name) {
+    let accounts = JSON.parse(localStorage.getItem('myAccounts'))
+    let result = accounts.find(el => el.name === name)
+    return result
+  }
+
+  static deleteAccountByName (name) {
+    let accounts = JSON.parse(localStorage.getItem('myAccounts'))
+    let result = accounts.filter(el => el.name !== name)
+
+    if (result.length === 0) {
+      result = null
+    }
+
+    localStorage.setItem('myAccounts', JSON.stringify(result))
+  }
+
+  static createTxTransfer (recipient, amount, message, config) {
+    const mosaicId = new MosaicId(config.coin.mosaic.id)
+    return TransferTransaction.create(
+      Deadline.create(5),
+      Address.createFromRawAddress(recipient),
+      [new Mosaic(mosaicId, UInt64.fromUint(Number(amount)))],
+      PlainMessage.create(message),
+      config.network.number
+    )
+  }
+
+  static buildTx (accountSign, arrayTx, typeTx, networkGenerationHash, otherCosigners, config) {
+    const innerTxn = []
+    let arrayData = {
+      sign: null,
+      typeTx: typeTx
+    }
+
+    switch (typeTx) {
+      case TransactionType.AGGREGATE_COMPLETE:
+        arrayTx.forEach(element => {
+          innerTxn.push(element.tx.toAggregate(accountSign))
+        })
+        const aggregateTransaction = AggregateTransaction.createComplete(
+          Deadline.create(),
+          innerTxn,
+          config.network.number,
+          []
+        )
+        if (otherCosigners.length > 0) {
+          arrayData.sign = accountSign.signTransactionWithCosignatories(aggregateTransaction, otherCosigners, networkGenerationHash)
+        } else {
+          arrayData.sign = accountSign.sign(aggregateTransaction, networkGenerationHash)
+        }
+        break
+    }
+    return arrayData
   }
 }
