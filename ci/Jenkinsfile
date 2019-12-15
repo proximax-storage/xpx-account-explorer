@@ -52,7 +52,7 @@ pipeline {
     
     stage('Promotion') {
       when {
-        tag 'release-v*'
+        tag 'v*'
       }
       steps {
         script {
