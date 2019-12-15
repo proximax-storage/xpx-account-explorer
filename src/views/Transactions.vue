@@ -267,6 +267,9 @@ export default {
     searchSender () {
       if (this.accountName !== null) {
         this.selectedSender = this.$utils.getAccountByName(this.accountName)
+        // console.log(this.selectedSender)
+        // console.log('this.selectedSender', this.$utils.validateAccountTypeTx(this.selectedSender))
+        // const type = this.$utils.validateAccountTypeTx(this.selectedSender)
       } else {
         this.selectedSender = null
       }

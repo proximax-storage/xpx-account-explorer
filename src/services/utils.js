@@ -421,4 +421,27 @@ export default class Utils {
     }
     return arrayData
   }
+  /**
+   * Method validate account type and  TX type
+   * @param account account select sign
+   * @memberof validateAccountTypeTx
+   * 0 = Account simple
+   * 1 = Account consignee
+   * 2 = Account multi Sign
+   */
+  static validateAccountTypeTx (account) {
+    if (account.multisigInfo === null || account.multisigInfo === '' || account.multisigInfo === undefined) {
+      return { typeTx: TransactionType.AGGREGATE_COMPLETE, typeAccount: 0 }
+    }
+    if (this.isMultisig(account.multisigInfo)) {
+      return { typeTx: null, typeAccount: 2 }
+    }
+    if (account.multisigInfo.multisigAccounts) {
+      return { typeTx: TransactionType.AGGREGATE_BONDED, typeAccount: 1 }
+    }
+    // account
+  }
+  static isMultisig (multisigInfo) {
+    return multisigInfo.minRemoval !== 0 && multisigInfo.minApproval !== 0
+  }
 }
