@@ -278,14 +278,19 @@ export default {
       const generationHash = block.generationHash
       this.signedTransaction = this.$utils.buildTx(signerAccount, publicAccountToAggregate, txs, this.typeTx, generationHash, [], this.$config)
       if (this.typeTx === TransactionType.AGGREGATE_COMPLETE) {
-        this.announceTx(this.signedTransaction.sign)
+        this.announceTx(this.signedTransaction.sign, 'load transfer')
       }
       if (this.typeTx === TransactionType.AGGREGATE_BONDED) {
         this.hashLockSigned = this.$utils.buildHashLockTransaction(this.signedTransaction.sign, signerAccount, generationHash, this.$config)
-        this.announceTx(this.hashLockSigned)
+        this.announceTx(this.hashLockSigned, 'load block Fund')
       }
     },
-    announceTx (signedTransaction) {
+    announceTx (signedTransaction, typeTxText) {
+      let tmpObj = {
+        active: true,
+        text: typeTxText
+      }
+      this.$store.dispatch('changeLoaderState', tmpObj)
       this.$provider.transactionHttp.announce(signedTransaction).subscribe(x => {
         setTimeout(() => {
           console.log('announceTx', x)
@@ -294,7 +299,12 @@ export default {
         console.log(err)
       })
     },
-    announceAggregateBonded (signedTransaction) {
+    announceAggregateBonded (signedTransaction, typeTxText) {
+      let tmpObj = {
+        active: true,
+        text: typeTxText
+      }
+      this.$store.dispatch('changeLoaderState', tmpObj)
       this.$provider.transactionHttp.announceAggregateBonded(signedTransaction).subscribe(x => {
         setTimeout(() => {
           console.log('announceAggregateBonded', x)
@@ -347,10 +357,29 @@ export default {
           this.hashLockSigned = null
           setTimeout(() => {
             console.log('announceAggregateBonded')
-            this.announceAggregateBonded(this.signedTransaction.sign)
+            let tmpObj = {
+            active: false,
+            text: null
+            }
+            this.$store.dispatch('changeLoaderState', tmpObj)
+            this.announceAggregateBonded(this.signedTransaction.sign, 'loading')
           }, 500)
         } else if (newStatusTransaction['type'] === 'status' && match) {
           this.hashLockSigned = null
+        }
+      }
+      
+      if (newStatusTransaction !== null && newStatusTransaction !== undefined && this.signedTransaction.sign['hash'] !== null) {
+        const match = newStatusTransaction['hash'] === this.signedTransaction.sign['hash']
+        if (newStatusTransaction['type'] === 'unconfirmed' && match) {
+          let tmpObj = {
+            active: false,
+            text: null
+          }
+          this.$store.dispatch('changeLoaderState', tmpObj)
+          this.signedTransaction.sign['hash'] = null
+        } else if (newStatusTransaction['type'] === 'status' && match) {
+          this.signedTransaction.sign['hash'] = null
         }
       }
     }
