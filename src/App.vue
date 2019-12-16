@@ -5,6 +5,8 @@
     <app-sidebar/>
     <!-- END APP SIDEBAR -->
 
+    <app-superloader/>
+
     <!-- VIEW CONTAINER -->
     <div class="view-container">
       <router-view class="view"/>
@@ -20,11 +22,13 @@
 import AppSidebar from '@/components/Global/app-sidebar'
 import AppNotification from '@/components/Global/app-notification'
 import { PublicAccount } from 'tsjs-xpx-chain-sdk'
+import AppSuperloader from '@/components/Global/app-superloader'
 
 export default {
   components: {
     AppSidebar,
-    AppNotification
+    AppNotification,
+    AppSuperloader
   },
 
   mounted () {
@@ -71,6 +75,16 @@ export default {
         }
       })
     }
+
+    // ----- LOADER -----
+    // changeState () {
+    //   let tmpObj = {
+    //     active: true,
+    //     text: 'Cargando'
+    //   }
+
+    //   this.$store.dispatch('changeLoaderState', tmpObj)
+    // }
   }
 }
 </script>

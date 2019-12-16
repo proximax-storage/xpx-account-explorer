@@ -9,7 +9,11 @@ export default new Vuex.Store({
       active: false
     },
     accounts: null,
-    txStatusData: null
+    txStatusData: null,
+    superloader: {
+      active: false,
+      text: null
+    }
   },
 
   mutations: {
@@ -31,6 +35,7 @@ export default new Vuex.Store({
       state.accounts = data
       console.log(state.accounts)
     },
+
     UPDATE_STATUS_TX (state, data) {
       state.txStatusData = data
       console.log('state', state.txStatusData)
@@ -39,6 +44,10 @@ export default new Vuex.Store({
         data = null
       }
       state.txStatusData = data
+    },
+
+    CHANGE_LOADER_STATE (state, data) {
+      state.superloader = data
     }
   },
 
@@ -50,8 +59,13 @@ export default new Vuex.Store({
     updateAccounts ({ commit }, data) {
       commit('UPDATE_ACCOUNTS', data)
     },
+
     statusTx ({ commit }, data) {
       commit('UPDATE_STATUS_TX', data)
+    },
+
+    changeLoaderState ({ commit }, data) {
+      commit('CHANGE_LOADER_STATE', data)
     }
   },
 
