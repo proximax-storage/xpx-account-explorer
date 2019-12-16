@@ -24,6 +24,7 @@ class WSConnection {
         this.connector.push(connection)
         const address = Address.createFromRawAddress(element.address)
         connection.open().then(() => {
+          this.getConfirmedSocket(connection, audio, address)
           this.getUnConfirmedAddedSocket(connection, audio, address)
           this.getStatusSocket(connection, audio, address)
         }, (error) => {
@@ -33,6 +34,24 @@ class WSConnection {
         })
       })
     }
+  }
+
+  getConfirmedSocket (connector, audio, address) {
+    console.log('address', address)
+    connector.confirmed(address).subscribe(async confirmed => {
+      let tmpObj = {
+        active: true,
+        type: 'success',
+        title: 'confirmed',
+        message: 'transaction confirmed'
+      }
+      this.setTransactionStatus({
+        type: 'confirmed',
+        hash: confirmed.transactionInfo.hash
+      })
+      this.store.dispatch('newNotification', tmpObj)
+      audio.play()
+    })
   }
 
   getUnConfirmedAddedSocket (connector, audio, address) {
@@ -71,6 +90,7 @@ class WSConnection {
   }
 
   setTransactionStatus (value) {
+    console.log('statusTx')
     this.store.dispatch('statusTx', value)
   }
 
