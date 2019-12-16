@@ -42,7 +42,6 @@ export default {
       }
       this.$store.dispatch('newNotification', tmpObj)
     },
-
     runWS () {
       console.log(this.$ws.connectnWs(''))
     }
