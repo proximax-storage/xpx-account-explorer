@@ -115,7 +115,6 @@ class WSConnection {
     this.store.dispatch('statusTx', value)
   }
   validateBlock (blockInfo) {
-    console.log(blockInfo)
     if (blockInfo.numTransactions && blockInfo.numTransactions >= 1) {
       const blocksStorage = localStorage.getItem('sw-blocks')
       if (blocksStorage) {
