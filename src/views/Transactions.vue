@@ -372,6 +372,11 @@ export default {
             this.announceAggregateBonded(this.signedTransaction.sign, 'Waiting')
           }, 500)
         } else if (newStatusTransaction['type'] === 'status' && match) {
+          let tmpObj = {
+            active: false,
+            text: null
+          }
+          this.$store.dispatch('changeLoaderState', tmpObj)
           this.hashLockSigned = null
         }
       }
@@ -386,6 +391,11 @@ export default {
           this.$store.dispatch('changeLoaderState', tmpObj)
           this.signedTransaction.sign['hash'] = null
         } else if (newStatusTransaction['type'] === 'status' && match) {
+          let tmpObj = {
+            active: false,
+            text: null
+          }
+          this.$store.dispatch('changeLoaderState', tmpObj)
           this.signedTransaction.sign['hash'] = null
         }
       }
