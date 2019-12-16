@@ -282,9 +282,10 @@ export default {
       }
       if (this.typeTx === TransactionType.AGGREGATE_BONDED) {
         this.hashLockSigned = this.$utils.buildHashLockTransaction(this.signedTransaction.sign, signerAccount, generationHash, this.$config)
-        this.announceTx(this.hashLockSigned, 'load block Fund')
+        this.announceTx(this.hashLockSigned, 'Waiting Lock Fund')
       }
     },
+
     announceTx (signedTransaction, typeTxText) {
       let tmpObj = {
         active: true,
@@ -299,6 +300,7 @@ export default {
         console.log(err)
       })
     },
+
     announceAggregateBonded (signedTransaction, typeTxText) {
       let tmpObj = {
         active: true,
@@ -313,6 +315,7 @@ export default {
         console.log(err)
       })
     },
+
     searchSender () {
       this.accountMultisign = null
       this.selectedSender = null
@@ -333,9 +336,11 @@ export default {
         this.typeTx = type.typeTx
       }
     },
+
     searchSenderMultisign () {
       console.log(this.accountPkMultisign)
     },
+
     validatePassword () {
       if (this.accountPassword.length >= 8 && this.accountPassword.length <= 15) {
         this.buttonSendActive = true
@@ -344,11 +349,13 @@ export default {
       }
     }
   },
+
   computed: {
     getStatusTx () {
       return this.$store.state.txStatusData
     }
   },
+
   watch: {
     getStatusTx (newStatusTransaction, oldStatusTransaction) {
       if (newStatusTransaction !== null && newStatusTransaction !== undefined && this.hashLockSigned !== null) {
@@ -358,17 +365,17 @@ export default {
           setTimeout(() => {
             console.log('announceAggregateBonded')
             let tmpObj = {
-            active: false,
-            text: null
+              active: false,
+              text: null
             }
             this.$store.dispatch('changeLoaderState', tmpObj)
-            this.announceAggregateBonded(this.signedTransaction.sign, 'loading')
+            this.announceAggregateBonded(this.signedTransaction.sign, 'Waiting')
           }, 500)
         } else if (newStatusTransaction['type'] === 'status' && match) {
           this.hashLockSigned = null
         }
       }
-      
+
       if (newStatusTransaction !== null && newStatusTransaction !== undefined && this.signedTransaction.sign['hash'] !== null) {
         const match = newStatusTransaction['hash'] === this.signedTransaction.sign['hash']
         if (newStatusTransaction['type'] === 'unconfirmed' && match) {

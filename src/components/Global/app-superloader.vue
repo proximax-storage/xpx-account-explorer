@@ -1,8 +1,8 @@
 <template>
   <div class="superloader" v-if="getLoaderInfo.active">
     <div class="loader-cont">
-      <img :src="require('@/assets/icons/loading.svg')" alt="Loader" class="loader mb-10" width="100">
-      <p>{{ (getLoaderInfo.text !== null) ? getLoaderInfo.text : 'Loading' }}</p>
+      <img :src="require('@/assets/icons/icon-loading.svg')" alt="Loader" class="loader mb-10" width="100">
+      <p>{{ (getLoaderInfo.text !== null) ? getLoaderInfo.text : 'Waiting' }}</p>
     </div>
   </div>
 </template>

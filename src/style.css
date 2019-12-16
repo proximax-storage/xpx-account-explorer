@@ -235,6 +235,7 @@ figure {
   bottom: 0px;
   width: 100%;
   box-sizing: border-box;
+  z-index: 10000;
 }
 
 .notif-cont > .title {
