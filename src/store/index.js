@@ -33,13 +33,10 @@ export default new Vuex.Store({
       }
 
       state.accounts = data
-      console.log(state.accounts)
     },
 
     UPDATE_STATUS_TX (state, data) {
       state.txStatusData = data
-      console.log('state', state.txStatusData)
-      console.log('data', data)
       if (data !== null && data.length === 0) {
         data = null
       }

@@ -260,7 +260,7 @@ export default {
       }
     },
 
-    buildTx (signer) {
+    async buildTx (signer) {
       let txs = []
       let signerAccount = signer
       let publicAccountToAggregate = null
@@ -273,15 +273,15 @@ export default {
       if (this.typeTx === TransactionType.AGGREGATE_BONDED) {
         publicAccountToAggregate = PublicAccount.createFromPublicKey(this.accountPkMultisign, this.$config.network.number)
       }
-      const generationHash = '56D112C98F7A7E34D1AEDC4BD01BC06CA2276DD546A93E36690B785E82439CA9'
+      let block = await this.$provider.blockHttp.getBlockByHeight(1).toPromise()
+      console.log('block:', block.generationHash)
+      const generationHash = block.generationHash
       this.signedTransaction = this.$utils.buildTx(signerAccount, publicAccountToAggregate, txs, this.typeTx, generationHash, [], this.$config)
       if (this.typeTx === TransactionType.AGGREGATE_COMPLETE) {
         this.announceTx(this.signedTransaction.sign)
       }
       if (this.typeTx === TransactionType.AGGREGATE_BONDED) {
-        console.log('buildHashLockTransaction')
         this.hashLockSigned = this.$utils.buildHashLockTransaction(this.signedTransaction.sign, signerAccount, generationHash, this.$config)
-        console.log('oooo', this.hashLockSigned)
         this.announceTx(this.hashLockSigned)
       }
     },
@@ -304,6 +304,9 @@ export default {
       })
     },
     searchSender () {
+      this.accountMultisign = null
+      this.selectedSender = null
+      this.accountPkMultisign = null
       if (this.accountName !== null) {
         this.selectedSender = this.$utils.getAccountByName(this.accountName)
         console.log(this.selectedSender)
@@ -318,10 +321,6 @@ export default {
           this.accountMultisign = this.selectedSender.multisigInfo.multisigAccounts
         }
         this.typeTx = type.typeTx
-      } else {
-        this.accountMultisign = null
-        this.selectedSender = null
-        this.accountPkMultisign = null
       }
     },
     searchSenderMultisign () {
@@ -349,8 +348,7 @@ export default {
           setTimeout(() => {
             console.log('announceAggregateBonded')
             this.announceAggregateBonded(this.signedTransaction.sign)
-          }, 20000)
-          console.log('confirmado papa')
+          }, 500)
         } else if (newStatusTransaction['type'] === 'status' && match) {
           this.hashLockSigned = null
         }
