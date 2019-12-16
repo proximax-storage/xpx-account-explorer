@@ -278,7 +278,7 @@ export default {
       const generationHash = block.generationHash
       this.signedTransaction = this.$utils.buildTx(signerAccount, publicAccountToAggregate, txs, this.typeTx, generationHash, [], this.$config)
       if (this.typeTx === TransactionType.AGGREGATE_COMPLETE) {
-        this.announceTx(this.signedTransaction.sign, 'load transfer')
+        this.announceTx(this.signedTransaction.sign, 'Load Transfer')
       }
       if (this.typeTx === TransactionType.AGGREGATE_BONDED) {
         this.hashLockSigned = this.$utils.buildHashLockTransaction(this.signedTransaction.sign, signerAccount, generationHash, this.$config)
