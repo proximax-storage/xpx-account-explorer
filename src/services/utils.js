@@ -439,6 +439,7 @@ export default class Utils {
     }
     return arrayData
   }
+
   /**
    * Method validate account type and  TX type
    * @param account account select sign
@@ -459,6 +460,7 @@ export default class Utils {
     }
     // account
   }
+
   static buildHashLockTransaction (signedTransaction, signer, generationHash, config) {
     const hashLockTransaction = HashLockTransaction.create(
       Deadline.create(),
@@ -468,9 +470,11 @@ export default class Utils {
       config.network.number)
     return signer.sign(hashLockTransaction, generationHash)
   }
+
   static isMultisig (multisigInfo) {
     return multisigInfo.minRemoval !== 0 && multisigInfo.minApproval !== 0
   }
+
   static orderArray (array) {
     array.sort((a, b) => {
       a = new Date(a.block)
@@ -478,5 +482,20 @@ export default class Utils {
       return a > b ? -1 : a < b ? 1 : 0
     })
     return array
+  }
+
+  static formatTransaction (transactions, config, provider) {
+    console.log(transactions, transactions.length)
+    console.log('OTHERS', config, provider)
+
+    for (let i = 0; i < transactions.length; i++) {
+      console.log(transactions[i])
+
+      let tmpObj = {
+        address: transactions[i].signer.address.pretty()
+      }
+
+      console.log(tmpObj)
+    }
   }
 }

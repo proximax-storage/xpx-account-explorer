@@ -165,6 +165,7 @@ export default {
         const query = (id) ? new QueryParams(queryParams, id) : new QueryParams(queryParams)
         console.log('query', query)
         let transactions = await this.$provider.accountHttp.transactions(accountInfo.publicAccount, query).toPromise()
+        // this.$utils.formatTransaction(transactions, this.$config, this.$provider)
         const dataStructure = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
         this.transactions = this.$utils.orderArray(dataStructure.transactions)
         this.trasform = this.$utils.orderArray(dataStructure.structureCsv)
@@ -182,6 +183,7 @@ export default {
         const queryParams = 10
         const query = (lastTransactionId) ? new QueryParams(queryParams, lastTransactionId) : new QueryParams(queryParams)
         let transactions = await this.$provider.accountHttp.transactions(this.accountInfo.publicAccount, query).toPromise()
+        // this.$utils.formatTransaction(transactions, this.$config, this.$provider)
         const dataStructure = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
         setTimeout(() => {
           this.$utils.orderArray(dataStructure.transactions).forEach(el => {

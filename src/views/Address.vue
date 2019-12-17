@@ -89,7 +89,7 @@ import AppError from '@/components/Global/app-error'
 import AppFilter from '@/components/Global/app-filter'
 
 export default {
-  name: 'Publickey',
+  name: 'Address',
 
   components: {
     ModuleHeader,
