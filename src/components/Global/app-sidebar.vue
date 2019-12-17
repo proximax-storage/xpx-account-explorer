@@ -138,8 +138,6 @@ export default {
         })
       }
 
-      console.log('LLEGA')
-
       return buildAccounts
     }
   }

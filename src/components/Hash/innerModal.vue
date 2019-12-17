@@ -20,18 +20,28 @@
             <p>{{ params.transaction.signer.address.pretty() }}</p>
           </div>
 
+          <div class="box-grey txt-left mb-10" v-if="params.transaction.recipient">
+            <p class="bold">Recipient: </p>
+            <p>{{ params.transaction.recipient.pretty() }}</p>
+          </div>
+
           <div class="box-grey txt-left mb-10">
             <p class="bold">Signature: </p>
             <p>{{ params.transaction.signature }}</p>
           </div>
 
-          <div class="box-grey txt-left mb-10" v-if="params.transaction.recipient">
-            <p class="bold">Recipient: </p>
-            <p>{{ params.transaction.recipient.pretty() }}</p>
+          <div class="box-grey txt-left mb-10">
+            <p class="bold">Aggregate Hash: </p>
+            <p>{{ params.transaction.transactionInfo.aggregateHash }}</p>
           </div>
         </div>
 
         <div>
+          <div class="box-white txt-left">
+            <p class="bold fs14">Timestamp: </p>
+            <p class="fs14">{{ timestamp }}</p>
+          </div>
+
           <div class="box-white txt-left">
             <span class="bold fs20">Amount: </span>
             <span class="fs20" v-html="getAmount(params.transaction)"></span>
@@ -42,9 +52,9 @@
             <span class="fs20" v-html="$utils.fmtAmountValue(fee)"></span>
           </div>
 
-          <div class="box-white txt-left">
-            <p class="bold fs14">Timestamp: </p>
-            <p class="fs14">{{ timestamp }}</p>
+          <div class="box-white txt-left" v-if="[undefined, null].includes(params.transaction.message) === false">
+            <span class="bold">Message: </span>
+            <span class="fs20">{{ (params.transaction.message.type === 0) ? params.transaction.message.payload : 'Encrypted' }}</span>
           </div>
 
           <div class="box-white txt-left mb-10">
@@ -95,7 +105,7 @@ export default {
 
   methods: {
     getAmount (item) {
-      console.log(item)
+      console.log('AQUI', item)
       let totalXPX = 0
       if (item.mosaics && item.mosaics.length !== 0) {
         item.mosaics.forEach(el => {

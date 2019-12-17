@@ -1,4 +1,4 @@
-import { TransactionType, Deadline, Address, AggregateTransaction, MosaicId, TransferTransaction, PlainMessage, UInt64, Mosaic } from 'tsjs-xpx-chain-sdk'
+import { TransactionType, Deadline, HashLockTransaction, Address, AggregateTransaction, MosaicId, TransferTransaction, PlainMessage, UInt64, Mosaic } from 'tsjs-xpx-chain-sdk'
 import CryptoJs from 'crypto-js'
 
 /**
@@ -379,7 +379,6 @@ export default class Utils {
     if (result.length === 0) {
       result = null
     }
-
     localStorage.setItem('myAccounts', JSON.stringify(result))
   }
 
@@ -394,7 +393,7 @@ export default class Utils {
     )
   }
 
-  static buildTx (accountSign, arrayTx, typeTx, networkGenerationHash, otherCosigners, config) {
+  static buildTx (accountSign, publicAccountToAggregate, arrayTx, typeTx, networkGenerationHash, otherCosigners, config) {
     const innerTxn = []
     let arrayData = {
       sign: null,
@@ -403,8 +402,9 @@ export default class Utils {
 
     switch (typeTx) {
       case TransactionType.AGGREGATE_COMPLETE:
+        console.log('AGGREGATE_COMPLETE')
         arrayTx.forEach(element => {
-          innerTxn.push(element.tx.toAggregate(accountSign))
+          innerTxn.push(element.tx.toAggregate(publicAccountToAggregate))
         })
         const aggregateTransaction = AggregateTransaction.createComplete(
           Deadline.create(),
@@ -418,7 +418,84 @@ export default class Utils {
           arrayData.sign = accountSign.sign(aggregateTransaction, networkGenerationHash)
         }
         break
+      case TransactionType.AGGREGATE_BONDED:
+        console.log('AGGREGATE_BONDED')
+        arrayTx.forEach(element => {
+          innerTxn.push(element.tx.toAggregate(publicAccountToAggregate))
+        })
+        const aggregateTransactionBonded = AggregateTransaction.createBonded(
+          Deadline.create(),
+          innerTxn,
+          config.network.number,
+          []
+        )
+        if (otherCosigners.length > 0) {
+          arrayData.sign = accountSign.signTransactionWithCosignatories(aggregateTransactionBonded, otherCosigners, networkGenerationHash)
+        } else {
+          arrayData.sign = accountSign.sign(aggregateTransactionBonded, networkGenerationHash)
+        }
+
+        break
     }
     return arrayData
+  }
+
+  /**
+   * Method validate account type and  TX type
+   * @param account account select sign
+   * @memberof validateAccountTypeTx
+   * 0 = Account simple
+   * 1 = Account consignee
+   * 2 = Account multi Sign
+   */
+  static validateAccountTypeTx (account) {
+    if (account.multisigInfo === null || account.multisigInfo === '' || account.multisigInfo === undefined) {
+      return { typeTx: TransactionType.AGGREGATE_COMPLETE, typeAccount: 0 }
+    }
+    if (this.isMultisig(account.multisigInfo)) {
+      return { typeTx: null, typeAccount: 2 }
+    }
+    if (account.multisigInfo.multisigAccounts) {
+      return { typeTx: TransactionType.AGGREGATE_BONDED, typeAccount: 1 }
+    }
+    // account
+  }
+
+  static buildHashLockTransaction (signedTransaction, signer, generationHash, config) {
+    const hashLockTransaction = HashLockTransaction.create(
+      Deadline.create(),
+      new Mosaic(new MosaicId(config.coin.mosaic.id), UInt64.fromUint(Number(10000000))),
+      UInt64.fromUint(11520),
+      signedTransaction,
+      config.network.number)
+    return signer.sign(hashLockTransaction, generationHash)
+  }
+
+  static isMultisig (multisigInfo) {
+    return multisigInfo.minRemoval !== 0 && multisigInfo.minApproval !== 0
+  }
+
+  static orderArray (array) {
+    array.sort((a, b) => {
+      a = new Date(a.block)
+      b = new Date(b.block)
+      return a > b ? -1 : a < b ? 1 : 0
+    })
+    return array
+  }
+
+  static formatTransaction (transactions, config, provider) {
+    console.log(transactions, transactions.length)
+    console.log('OTHERS', config, provider)
+
+    for (let i = 0; i < transactions.length; i++) {
+      console.log(transactions[i])
+
+      let tmpObj = {
+        address: transactions[i].signer.address.pretty()
+      }
+
+      console.log(tmpObj)
+    }
   }
 }

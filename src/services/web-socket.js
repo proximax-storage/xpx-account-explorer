@@ -5,10 +5,10 @@ class WSConnection {
     this.store = store
     this.connector = []
     this.currentWallet = null
+    this.block = null
   }
 
   connectnWs (node = '') {
-    console.log(this.ws)
     this.connector = []
     const route = (node === '') ? localStorage.getItem('currentNode') : node
     const protocol = (window.location.protocol === 'http:') ? 'ws' : 'wss'
@@ -24,8 +24,10 @@ class WSConnection {
         this.connector.push(connection)
         const address = Address.createFromRawAddress(element.address)
         connection.open().then(() => {
+          this.getConfirmedSocket(connection, audio, address)
           this.getUnConfirmedAddedSocket(connection, audio, address)
           this.getStatusSocket(connection, audio, address)
+          this.getBlockSocket(connection)
         }, (error) => {
           setTimeout(() => {
             console.error(error)
@@ -35,8 +37,24 @@ class WSConnection {
     }
   }
 
+  getConfirmedSocket (connector, audio, address) {
+    connector.confirmed(address).subscribe(async confirmed => {
+      let tmpObj = {
+        active: true,
+        type: 'success',
+        title: 'confirmed',
+        message: 'transaction confirmed'
+      }
+      this.setTransactionStatus({
+        type: 'confirmed',
+        hash: confirmed.transactionInfo.hash
+      })
+      this.store.dispatch('newNotification', tmpObj)
+      audio.play()
+    })
+  }
+
   getUnConfirmedAddedSocket (connector, audio, address) {
-    console.log('address', address)
     connector.unconfirmedAdded(address).subscribe(async unconfirmedAdded => {
       let tmpObj = {
         active: true,
@@ -70,10 +88,44 @@ class WSConnection {
     })
   }
 
+  getBlockSocket (connector) {
+    connector.newBlock().subscribe((blockInfo) => {
+      this.saveBlockInfo(blockInfo)
+    }, err => {
+      let tmpObj = {
+        active: true,
+        type: 'error',
+        title: 'load failed',
+        message: err
+      }
+      this.store.dispatch('newNotification', tmpObj)
+    })
+  }
+
+  saveBlockInfo (blockInfo) { // Update-sdk-dragon
+    if (blockInfo !== null) {
+      this.block = blockInfo.height.compact()
+      this.validateBlock(blockInfo)
+      return
+    }
+    this.block = null
+  }
+
   setTransactionStatus (value) {
     this.store.dispatch('statusTx', value)
   }
-
+  validateBlock (blockInfo) {
+    if (blockInfo.numTransactions && blockInfo.numTransactions >= 1) {
+      const blocksStorage = localStorage.getItem('sw-blocks')
+      if (blocksStorage) {
+        const parsedData = JSON.parse(blocksStorage)
+        parsedData.unshift(blockInfo)
+        localStorage.setItem('sw-blocks', JSON.stringify(parsedData.slice(0, 100)))
+      } else {
+        localStorage.setItem('sw-blocks', JSON.stringify([blockInfo]))
+      }
+    }
+  }
   reconnect () {
     if (this.connector) {
       console.log('Destruye conexion con el websocket')

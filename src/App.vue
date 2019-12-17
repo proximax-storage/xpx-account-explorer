@@ -5,6 +5,8 @@
     <app-sidebar/>
     <!-- END APP SIDEBAR -->
 
+    <app-superloader/>
+
     <!-- VIEW CONTAINER -->
     <div class="view-container">
       <router-view class="view"/>
@@ -19,16 +21,20 @@
 // Components
 import AppSidebar from '@/components/Global/app-sidebar'
 import AppNotification from '@/components/Global/app-notification'
+import { PublicAccount } from 'tsjs-xpx-chain-sdk'
+import AppSuperloader from '@/components/Global/app-superloader'
 
 export default {
   components: {
     AppSidebar,
-    AppNotification
+    AppNotification,
+    AppSuperloader
   },
 
   mounted () {
     this.runApp()
-    this.runWS()
+    // this.runWS()
+    this.updateAccountsInfo()
     // this.example()
   },
 
@@ -40,12 +46,45 @@ export default {
         title: '',
         message: ''
       }
+
       this.$store.dispatch('newNotification', tmpObj)
     },
 
-    runWS () {
-      console.log(this.$ws.connectnWs(''))
+    updateAccountsInfo () {
+      let myAccounts = JSON.parse(this.$localStorage.get('myAccounts'))
+      let updateInfo = []
+
+      myAccounts.forEach(async (account, index) => {
+        let publicAccount = PublicAccount.createFromPublicKey(account.publicKey, this.$config.network.number)
+        let multisigInfo = null
+
+        try {
+          multisigInfo = await this.$provider.accountHttp.getMultisigAccountInfo(publicAccount.address).toPromise()
+          account.multisigInfo = multisigInfo
+          updateInfo.push(account)
+        } catch (e) {
+          console.warn('No Multisig Info')
+          account.multisigInfo = multisigInfo
+          updateInfo.push(account)
+        }
+
+        if (index + 1 === myAccounts.length) {
+          console.log('TERMINADO', updateInfo)
+          this.$localStorage.set('myAccounts', JSON.stringify(updateInfo))
+          this.$ws.connectnWs('')
+        }
+      })
     }
+
+    // ----- LOADER -----
+    // changeState () {
+    //   let tmpObj = {
+    //     active: true,
+    //     text: 'Cargando'
+    //   }
+
+    //   this.$store.dispatch('changeLoaderState', tmpObj)
+    // }
   }
 }
 </script>

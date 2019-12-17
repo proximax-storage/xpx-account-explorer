@@ -39,18 +39,23 @@
           <p>{{ this.transaction.signer.address.pretty() }}</p>
         </div>
 
-        <div class="box-grey txt-left mb-10">
-          <p class="bold">Signature: </p>
-          <p>{{ this.transaction.signature }}</p>
-        </div>
-
         <div class="box-grey txt-left mb-10" v-if="this.transaction.recipient">
           <p class="bold">Recipient: </p>
           <p>{{ this.transaction.recipient.pretty() }}</p>
         </div>
+
+        <div class="box-grey txt-left mb-10">
+          <p class="bold">Signature: </p>
+          <p>{{ this.transaction.signature }}</p>
+        </div>
       </div>
 
       <div>
+        <div class="box-white txt-left">
+          <p class="bold fs14">Timestamp: </p>
+          <p class="fs14">{{ timestamp }}</p>
+        </div>
+
         <div class="box-white txt-left">
           <span class="bold fs20">Amount: </span>
           <span class="fs20" v-html="$utils.fmtAmountValue(amount)"></span>
@@ -61,9 +66,9 @@
           <span class="fs20" v-html="$utils.fmtAmountValue(fee)"></span>
         </div>
 
-        <div class="box-white txt-left">
-          <p class="bold fs14">Timestamp: </p>
-          <p class="fs14">{{ timestamp }}</p>
+        <div class="box-white txt-left" v-if="message !== null">
+          <span class="bold">Message: </span>
+          <span class="fs20">{{ this.message }}</span>
         </div>
 
         <div class="box-white txt-left mb-10">
@@ -130,7 +135,8 @@ export default {
       amount: 0,
       fee: 0,
       innerTrans: null,
-      innerParams: null
+      innerParams: null,
+      message: null
     }
   },
 
@@ -145,6 +151,8 @@ export default {
         let transactionInfo = await this.$provider.transactionHttp.getTransaction(hash).toPromise()
         console.log(transactionInfo)
         this.transaction = transactionInfo
+
+        this.getMessage(this.transaction)
 
         if ([undefined, null].includes(transactionInfo.mosaics) === false) {
           transactionInfo.mosaics.forEach(mosaic => {
@@ -197,6 +205,19 @@ export default {
     modalCom (data) {
       console.log(data)
       this.innerParams = data
+    },
+
+    getMessage (transaction) {
+      console.log(transaction.message)
+      if ([undefined, null].includes(transaction.message) === false) {
+        if (transaction.message.type === 0) {
+          this.message = transaction.message.payload
+        } else {
+          this.message = 'Encrypted'
+        }
+      } else {
+        this.message = null
+      }
     }
   }
 }

@@ -29,6 +29,18 @@
           </option>
         </select>
       </div>
+      <div class="box-grey mb-10" v-if="accountMultisign !== null">
+        <h1 class="title txt-left">Account selection (Multisign)</h1>
+        <select name="Select Account" id="chooseAcc" placeholder="Select Account" class="proximax-btn-white"  @change="searchSenderMultisign" v-model="accountPkMultisign">
+          <option :value="null">
+            Select Account
+          </option>
+
+          <option v-for="(item, index) in accountMultisign" :key="index" :value="item.publicKey">
+            {{ $utils.maskAddress(item.address.address) }}
+          </option>
+        </select>
+      </div>
 
       <div v-if="fileExist !== null">
         <h1 class="title txt-left">File table</h1>
@@ -88,7 +100,7 @@
 
 <script>
 import ModuleHeader from '@/components/Global/module-header'
-import { Account, TransactionType } from 'tsjs-xpx-chain-sdk'
+import { Account, TransactionType, PublicAccount } from 'tsjs-xpx-chain-sdk'
 
 export default {
   name: 'Transactions',
@@ -106,10 +118,15 @@ export default {
       parse_csv: [],
       parse_header: [],
       myAccounts: JSON.parse(this.$localStorage.get('myAccounts')),
+      accountMultisign: null,
       selectedSender: null,
       accountName: null,
+      accountPkMultisign: null,
       buttonSendActive: false,
-      accountPassword: ''
+      accountPassword: '',
+      typeTx: null,
+      hashLockSigned: null,
+      signedTransaction: null
     }
   },
 
@@ -221,6 +238,7 @@ export default {
       try {
         let decryptAccount = this.$utils.decrypt(this.selectedSender.encrypted, this.accountPassword)
         const signer = Account.createFromPrivateKey(decryptAccount, this.$config.network.number)
+        console.log(signer)
         if (this.parse_csv.length > 0) {
           this.buildTx(signer)
         } else {
@@ -242,34 +260,85 @@ export default {
       }
     },
 
-    buildTx (signer) {
+    async buildTx (signer) {
       let txs = []
+      let signerAccount = signer
+      let publicAccountToAggregate = null
       for (let element of this.parse_csv) {
-        txs.push({ signer: signer, tx: this.$utils.createTxTransfer(element['RECEIPIENT'], element['AMOUNT'], element['MESSAGE'], this.$config) })
+        txs.push({ signer: signerAccount, tx: this.$utils.createTxTransfer(element['RECEIPIENT'], element['AMOUNT'], element['MESSAGE'], this.$config) })
       }
-      const generationHash = '56D112C98F7A7E34D1AEDC4BD01BC06CA2276DD546A93E36690B785E82439CA9'
-      const signedTransaction = this.$utils.buildTx(signer, txs, TransactionType.AGGREGATE_COMPLETE, generationHash, [], this.$config)
-      this.$provider.transactionHttp.announce(signedTransaction.sign).subscribe(x => {
+      if (this.typeTx === TransactionType.AGGREGATE_COMPLETE) {
+        publicAccountToAggregate = signerAccount.publicAccount
+      }
+      if (this.typeTx === TransactionType.AGGREGATE_BONDED) {
+        publicAccountToAggregate = PublicAccount.createFromPublicKey(this.accountPkMultisign, this.$config.network.number)
+      }
+      let block = await this.$provider.blockHttp.getBlockByHeight(1).toPromise()
+      console.log('block:', block.generationHash)
+      const generationHash = block.generationHash
+      this.signedTransaction = this.$utils.buildTx(signerAccount, publicAccountToAggregate, txs, this.typeTx, generationHash, [], this.$config)
+      if (this.typeTx === TransactionType.AGGREGATE_COMPLETE) {
+        this.announceTx(this.signedTransaction.sign, 'Load Transfer')
+      }
+      if (this.typeTx === TransactionType.AGGREGATE_BONDED) {
+        this.hashLockSigned = this.$utils.buildHashLockTransaction(this.signedTransaction.sign, signerAccount, generationHash, this.$config)
+        this.announceTx(this.hashLockSigned, 'Waiting Lock Fund')
+      }
+    },
+
+    announceTx (signedTransaction, typeTxText) {
+      let tmpObj = {
+        active: true,
+        text: typeTxText
+      }
+      this.$store.dispatch('changeLoaderState', tmpObj)
+      this.$provider.transactionHttp.announce(signedTransaction).subscribe(x => {
         setTimeout(() => {
-          console.log('asdasdasdasd', this.getStatusTx)
+          console.log('announceTx', x)
         }, 1000)
       }, err => {
         console.log(err)
       })
     },
-    // getTransactionStatus (hash) {
-    //   this.$provider.transactionHttp.getTransactionStatus(hash).subscribe(response => {
-    //     console.log('\n\n === STATUS TRANSACTION \n', response)
-    //   }, err => {
-    //     console.log('\n ERROR STATUS TRANSACTION', err)
-    //   })
-    // },
+
+    announceAggregateBonded (signedTransaction, typeTxText) {
+      let tmpObj = {
+        active: true,
+        text: typeTxText
+      }
+      this.$store.dispatch('changeLoaderState', tmpObj)
+      this.$provider.transactionHttp.announceAggregateBonded(signedTransaction).subscribe(x => {
+        setTimeout(() => {
+          console.log('announceAggregateBonded', x)
+        }, 1000)
+      }, err => {
+        console.log(err)
+      })
+    },
+
     searchSender () {
+      this.accountMultisign = null
+      this.selectedSender = null
+      this.accountPkMultisign = null
       if (this.accountName !== null) {
         this.selectedSender = this.$utils.getAccountByName(this.accountName)
-      } else {
-        this.selectedSender = null
+        console.log(this.selectedSender)
+        // console.log('this.selectedSender', this.$utils.validateAccountTypeTx(this.selectedSender))
+        const type = this.$utils.validateAccountTypeTx(this.selectedSender)
+        console.log('type', type)
+        if (!type.typeTx) {
+          this.accountMultisign = null
+          return console.log('isMuntisig')
+        }
+        if (type.typeAccount === 1) {
+          this.accountMultisign = this.selectedSender.multisigInfo.multisigAccounts
+        }
+        this.typeTx = type.typeTx
       }
+    },
+
+    searchSenderMultisign () {
+      console.log(this.accountPkMultisign)
     },
 
     validatePassword () {
@@ -280,9 +349,56 @@ export default {
       }
     }
   },
+
   computed: {
     getStatusTx () {
       return this.$store.state.txStatusData
+    }
+  },
+
+  watch: {
+    getStatusTx (newStatusTransaction, oldStatusTransaction) {
+      if (newStatusTransaction !== null && newStatusTransaction !== undefined && this.hashLockSigned !== null) {
+        const match = newStatusTransaction['hash'] === this.hashLockSigned.hash
+        if (newStatusTransaction['type'] === 'confirmed' && match) {
+          this.hashLockSigned = null
+          setTimeout(() => {
+            console.log('announceAggregateBonded')
+            let tmpObj = {
+              active: false,
+              text: null
+            }
+            this.$store.dispatch('changeLoaderState', tmpObj)
+            this.announceAggregateBonded(this.signedTransaction.sign, 'Waiting')
+          }, 500)
+        } else if (newStatusTransaction['type'] === 'status' && match) {
+          let tmpObj = {
+            active: false,
+            text: null
+          }
+          this.$store.dispatch('changeLoaderState', tmpObj)
+          this.hashLockSigned = null
+        }
+      }
+
+      if (newStatusTransaction !== null && newStatusTransaction !== undefined && this.signedTransaction.sign['hash'] !== null) {
+        const match = newStatusTransaction['hash'] === this.signedTransaction.sign['hash']
+        if (newStatusTransaction['type'] === 'unconfirmed' && match) {
+          let tmpObj = {
+            active: false,
+            text: null
+          }
+          this.$store.dispatch('changeLoaderState', tmpObj)
+          this.signedTransaction.sign['hash'] = null
+        } else if (newStatusTransaction['type'] === 'status' && match) {
+          let tmpObj = {
+            active: false,
+            text: null
+          }
+          this.$store.dispatch('changeLoaderState', tmpObj)
+          this.signedTransaction.sign['hash'] = null
+        }
+      }
     }
   }
 }

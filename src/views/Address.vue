@@ -89,7 +89,7 @@ import AppError from '@/components/Global/app-error'
 import AppFilter from '@/components/Global/app-filter'
 
 export default {
-  name: 'Publickey',
+  name: 'Address',
 
   components: {
     ModuleHeader,
@@ -167,8 +167,8 @@ export default {
         const query = (id) ? new QueryParams(queryParams, id) : new QueryParams(queryParams)
         let transactions = await this.$provider.accountHttp.transactions(accountInfo.publicAccount, query).toPromise()
         const dataStructure = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
-        this.transactions = dataStructure.transactions
-        this.trasform = dataStructure.structureCsv
+        this.transactions = this.$utils.orderArray(dataStructure.transactions)
+        this.trasform = this.$utils.orderArray(dataStructure.structureCsv)
       } catch (error) {
         console.warn(error)
         this.errorActive = true
@@ -186,19 +186,18 @@ export default {
 
     async loadmore () {
       this.loadActive = true
+      this.transactions = this.$utils.orderArray(this.transactions)
       const lastTransactionId = (this.transactions[0].length !== 0) ? this.transactions[this.transactions.length - 1].transactionInfo.id : null
-      console.log('lastTransactionId', lastTransactionId)
       try {
         const queryParams = 10
         const query = (lastTransactionId) ? new QueryParams(queryParams, lastTransactionId) : new QueryParams(queryParams)
         let transactions = await this.$provider.accountHttp.transactions(this.accountInfo.publicAccount, query).toPromise()
         const dataStructure = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
         setTimeout(() => {
-          console.log(dataStructure)
-          dataStructure.transactions.forEach(el => {
+          this.$utils.orderArray(dataStructure.transactions).forEach(el => {
             this.transactions.push(el)
           })
-          dataStructure.structureCsv.forEach(el => {
+          this.$utils.orderArray(dataStructure.structureCsv).forEach(el => {
             this.trasform.push(el)
           })
           this.loadActive = false
