@@ -471,4 +471,12 @@ export default class Utils {
   static isMultisig (multisigInfo) {
     return multisigInfo.minRemoval !== 0 && multisigInfo.minApproval !== 0
   }
+  static orderArray (array) {
+    array.sort((a, b) => {
+      a = new Date(a.block)
+      b = new Date(b.block)
+      return a > b ? -1 : a < b ? 1 : 0
+    })
+    return array
+  }
 }
