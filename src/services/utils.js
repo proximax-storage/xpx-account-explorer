@@ -297,7 +297,7 @@ export default class Utils {
   }
 
   static validateHeaderCsv (headerValidate) {
-    const headaer = ['RECEIPIENT', 'MESSAGE', 'AMOUNT']
+    const headaer = ['RECIPIENT', 'MESSAGE', 'AMOUNT']
     return JSON.stringify(headaer) === JSON.stringify(headerValidate)
   }
 
@@ -314,7 +314,7 @@ export default class Utils {
         break
       }
       try {
-        const address = Address.createFromRawAddress(element['RECEIPIENT'])
+        const address = Address.createFromRawAddress(element['RECIPIENT'])
         if (address) {
           value = (address.networkType === config.network.number)
         } else {

@@ -198,7 +198,6 @@ export default {
             this.parse_csv = []
             return this.$store.dispatch('newNotification', tmpObj)
           }
-          console.log(this.parse_csv)
           let validateDataCsv = this.$utils.validateDataCsv(this.parse_csv, this.$config)
 
           if (validateDataCsv) {
@@ -265,7 +264,7 @@ export default {
       let signerAccount = signer
       let publicAccountToAggregate = null
       for (let element of this.parse_csv) {
-        txs.push({ signer: signerAccount, tx: this.$utils.createTxTransfer(element['RECEIPIENT'], element['AMOUNT'], element['MESSAGE'], this.$config) })
+        txs.push({ signer: signerAccount, tx: this.$utils.createTxTransfer(element['RECIPIENT'], element['AMOUNT'], element['MESSAGE'], this.$config) })
       }
       if (this.typeTx === TransactionType.AGGREGATE_COMPLETE) {
         publicAccountToAggregate = signerAccount.publicAccount
