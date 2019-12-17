@@ -167,29 +167,18 @@ export default {
         let transactions = await this.$provider.accountHttp.transactions(accountInfo.publicAccount, query).toPromise()
         // this.$utils.formatTransaction(transactions, this.$config, this.$provider)
         const dataStructure = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
-        this.transactions = this.orderArray(dataStructure.transactions)
-        this.trasform = dataStructure.structureCsv
+        this.transactions = this.$utils.orderArray(dataStructure.transactions)
+        this.trasform = this.$utils.orderArray(dataStructure.structureCsv)
       } catch (error) {
         console.warn(error)
         this.errorActive = true
       }
     },
-    orderArray (array) {
-      array.sort((a, b) => {
-        a = new Date(a.block)
-        b = new Date(b.block)
-        return a > b ? -1 : a < b ? 1 : 0
-      })
-      return array
-    },
     async loadmore () {
       console.log('loadmore')
       this.loadActive = true
-      this.transactions = this.orderArray(this.transactions)
+      this.transactions = this.$utils.orderArray(this.transactions)
       const lastTransactionId = (this.transactions[0].length !== 0) ? this.transactions[this.transactions.length - 1].transactionInfo.id : null
-      console.log(this.transactions[this.transactions.length - 1])
-      console.log('lastTransactionId', lastTransactionId)
-      console.log('esto es lo que tiene que ser : 5DF8F423DC623A00011DA528')
       try {
         const queryParams = 10
         const query = (lastTransactionId) ? new QueryParams(queryParams, lastTransactionId) : new QueryParams(queryParams)
@@ -197,10 +186,10 @@ export default {
         // this.$utils.formatTransaction(transactions, this.$config, this.$provider)
         const dataStructure = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
         setTimeout(() => {
-          dataStructure.transactions.forEach(el => {
+          this.$utils.orderArray(dataStructure.transactions).forEach(el => {
             this.transactions.push(el)
           })
-          dataStructure.structureCsv.forEach(el => {
+          this.$utils.orderArray(dataStructure.structureCsv).forEach(el => {
             this.trasform.push(el)
           })
           this.loadActive = false

@@ -475,6 +475,15 @@ export default class Utils {
     return multisigInfo.minRemoval !== 0 && multisigInfo.minApproval !== 0
   }
 
+  static orderArray (array) {
+    array.sort((a, b) => {
+      a = new Date(a.block)
+      b = new Date(b.block)
+      return a > b ? -1 : a < b ? 1 : 0
+    })
+    return array
+  }
+
   static formatTransaction (transactions, config, provider) {
     console.log(transactions, transactions.length)
     console.log('OTHERS', config, provider)
