@@ -494,7 +494,11 @@ export default class Utils {
       console.log(transactions[i])
 
       let tmpObj = {
-        address: transactions[i].signer.address.pretty()
+        address: transactions[i].signer.address.pretty(),
+        recipient: ([undefined, null].includes(transactions[i].recipient) === false) ? transactions[i].recipient.address.pretty() : 'No Available',
+        type: transactions[i].type,
+        block: transactions[i].transactionInfo.height.compact(),
+        hash: transactions[i].transactionInfo.hash
       }
 
       console.log(tmpObj)
