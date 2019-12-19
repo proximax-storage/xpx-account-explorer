@@ -49,8 +49,8 @@ export default {
         { name: 'Dashboard', class: '', route: '', icon: 'icon-dash-off' },
         { name: 'Transactions', class: '', route: 'transactions', icon: 'icon-trans-off' },
         { name: 'Accounts', class: '', route: 'customizing', icon: 'icon-accounts-off' },
-        { name: 'Nodes', class: '', route: 'nodes', icon: 'icon-nodes-off' }
-        // { name: 'Invoice', class: '', route: 'invoice', icon: 'icon-invoice-off' }
+        { name: 'Nodes', class: '', route: 'nodes', icon: 'icon-nodes-off' },
+        { name: 'Invoice', class: '', route: 'invoice/inapp', icon: 'icon-invoice-off' }
       ],
       customAccounts: []
     }

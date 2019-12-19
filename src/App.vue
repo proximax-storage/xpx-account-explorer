@@ -75,16 +75,6 @@ export default {
         }
       })
     }
-
-    // ----- LOADER -----
-    // changeState () {
-    //   let tmpObj = {
-    //     active: true,
-    //     text: 'Cargando'
-    //   }
-
-    //   this.$store.dispatch('changeLoaderState', tmpObj)
-    // }
   }
 }
 </script>

@@ -44,7 +44,7 @@ const routes = [
     component: load('Transactions')
   },
   {
-    path: '/invoice',
+    path: '/invoice/:view',
     name: 'Invoice',
     component: load('Invoice')
   },
