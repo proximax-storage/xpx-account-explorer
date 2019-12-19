@@ -347,9 +347,11 @@ export default class Utils {
   static isEmpty (obj) {
     let value = true
     for (let key in obj) {
-      if (obj[key] === undefined || obj[key] === '' || obj[key] == null || obj[key].length <= 0) {
-        value = false
-        break
+      if (key !== 'MESSAGE') {
+        if (obj[key] === undefined || obj[key] === '' || obj[key] == null || obj[key].length <= 0) {
+          value = false
+          break
+        }
       }
     }
     return value

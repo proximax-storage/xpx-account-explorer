@@ -48,6 +48,11 @@ const routes = [
     name: 'Invoice',
     component: load('Invoice')
   },
+  {
+    path: '/loadInvoice',
+    name: 'Load-Invoice',
+    component: load('loadInvoice')
+  },
   // {
   //   path: '/block/:id',
   //   name: 'Block',
