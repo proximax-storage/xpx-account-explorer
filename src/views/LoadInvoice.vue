@@ -10,9 +10,8 @@
           <div class="mt-10 fold" v-if="fileName !== null">{{ fileName }}</div>
         </form>
       </div>
-    </div>
 
-    <div class="box-orange mb-10" v-if="myAccounts === null">
+      <div class="box-orange mb-10" v-if="myAccounts === null">
         <h1 class="title txt-left">Account selection</h1>
         <p>You need to register an account to make transactions.</p>
       </div>
@@ -29,6 +28,7 @@
           </option>
         </select>
       </div>
+
       <div class="box-grey mb-10" v-if="accountMultisign !== null">
         <h1 class="title txt-left">Account selection (Multisign)</h1>
         <select name="Select Account" id="chooseAcc" placeholder="Select Account" class="proximax-btn-white"  @change="searchSenderMultisign" v-model="accountPkMultisign">
@@ -42,8 +42,8 @@
         </select>
       </div>
 
-    <div v-if="fileExist !== null">
-      <h1 class="title txt-left">File table</h1>
+      <div v-if="fileExist !== null">
+        <h1 class="title txt-left">File table</h1>
         <table class="table-setting">
           <tr>
             <th v-for="(keyx, index) in parse_header" @click="sortBy(keyx)" class="txt-left" :key="index">{{ keyx }}</th>
@@ -57,7 +57,9 @@
           </tr>
         </table>
       </div>
-      <div class="mt-10 fold" v-if="selectedSender !== null">
+    </div>
+
+    <div class="mt-10 fold" v-if="selectedSender !== null">
       <div class="box-grey">
         <div class="mb-10">
           <input type="password" class="field" placeholder="Enter account password" v-model="accountPassword" @keyup="validatePassword" @unfocus="validatePassword" @change="validatePassword">
@@ -78,9 +80,11 @@ import JsZip from 'jszip'
 
 export default {
   name: 'LoadInvoice',
+
   components: {
     ModuleHeader
   },
+
   data () {
     return {
       moduleName: 'Load invoice',
@@ -101,6 +105,7 @@ export default {
       signedTransaction: null
     }
   },
+
   methods: {
     loadFile (e) {
       const files = e.target.files[0]
@@ -152,6 +157,7 @@ export default {
         this.$store.dispatch('newNotification', tmpObj)
       }
     },
+
     csvJSON (csv) {
       let lines = csv.split('\n')
       let result = []
@@ -176,6 +182,7 @@ export default {
       result.pop() // remove the last item because undefined values
       return result// JavaScript object
     },
+
     searchSender () {
       this.accountMultisign = null
       this.selectedSender = null
@@ -196,6 +203,7 @@ export default {
         this.typeTx = type.typeTx
       }
     },
+
     sendTx () {
       let tmpObj = {
         active: true,
@@ -227,6 +235,7 @@ export default {
         this.$store.dispatch('newNotification', tmpObj)
       }
     },
+
     validatePassword () {
       if (this.accountPassword.length >= 8 && this.accountPassword.length <= 15) {
         this.buttonSendActive = true
@@ -234,6 +243,7 @@ export default {
         this.buttonSendActive = false
       }
     },
+
     async buildTx (signer) {
       let txs = []
       let signerAccount = signer
@@ -289,12 +299,15 @@ export default {
         console.log(err)
       })
     },
+
     getFileExtension (filename) {
       return filename.split('.').pop()
     },
+
     searchSenderMultisign () {
     }
   },
+
   computed: {
     getStatusTx () {
       return this.$store.state.txStatusData
