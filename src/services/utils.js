@@ -347,9 +347,11 @@ export default class Utils {
   static isEmpty (obj) {
     let value = true
     for (let key in obj) {
-      if (obj[key] === undefined || obj[key] === '' || obj[key] == null || obj[key].length <= 0) {
-        value = false
-        break
+      if (key !== 'MESSAGE') {
+        if (obj[key] === undefined || obj[key] === '' || obj[key] == null || obj[key].length <= 0) {
+          value = false
+          break
+        }
       }
     }
     return value
@@ -445,7 +447,7 @@ export default class Utils {
    * @param account account select sign
    * @memberof validateAccountTypeTx
    * 0 = Account simple
-   * 1 = Account consignee
+   * 1 = Account consignee`0${d
    * 2 = Account multi Sign
    */
   static validateAccountTypeTx (account) {
@@ -501,5 +503,8 @@ export default class Utils {
 
       console.log(tmpObj)
     }
+  }
+  static getRandom (length) {
+    return Math.floor(Math.pow(10, length - 1) + Math.random() * 9 * Math.pow(10, length - 1))
   }
 }

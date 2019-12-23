@@ -169,6 +169,7 @@ export default {
         const dataStructure = await this.$utils.getStructureDashboard(transactions, this.$config, this.$provider)
         this.transactions = this.$utils.orderArray(dataStructure.transactions)
         this.trasform = this.$utils.orderArray(dataStructure.structureCsv)
+        console.log(JSON.stringify(this.trasform))
       } catch (error) {
         console.warn(error)
         this.errorActive = true
