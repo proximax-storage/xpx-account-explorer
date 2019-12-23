@@ -31,10 +31,10 @@
             <div class="search-error" v-if="publicKeyError">Invalid Public Key (64 characters / Hexadecimal)</div>
           </div>
 
-          <div class="box-grey mb-10">
+          <!-- <div class="box-grey mb-10">
             <p class="title txt-left">Description</p>
             <input class="field mb-10" placeholder="Invoice Message" maxlength="1024" v-model="message">
-          </div>
+          </div> -->
 
           <div class="box-grey mb-10">
             <p class="title txt-left">Amount XPX</p>
