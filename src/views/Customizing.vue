@@ -11,6 +11,7 @@
       <form class="box-grey mb-10">
         <input type="text" class="field" placeholder="Account Name" v-model="accountName" @keyup="validate" @focusout="validate" @change="validate">
         <input type="text" class="field" placeholder="Enter Private Key" v-model="inputValue" @keyup="validate" @focusout="validate" @change="validate">
+        <div class="search-error" v-if="errorPublicKey">{{ errorPublicKeyMessage }}</div>
         <input type="password" class="field" placeholder="Enter Password (8 - 15 characters)" v-model="passwordInput" @keyup="validate" @focusout="validate" @change="validate">
         <div class="search-error" v-if="errorActive">{{ errorMessage }}</div>
         <input type="submit" class="proximax-btn mt-10" v-if="valid === true" @click.prevent="addAccount" value="Add Account">
@@ -52,13 +53,19 @@ export default {
   data () {
     return {
       moduleName: 'Accounts',
+
+      accountName: '',
+
+      passwordInput: null,
       errorActive: false,
       errorMessage: '',
+
       inputValue: '',
+      errorPublicKey: false,
+      errorPublicKeyMessage: '',
+
       valid: false,
-      myCustomAccounts: JSON.parse(this.$localStorage.get('myAccounts')),
-      accountName: '',
-      passwordInput: null
+      myCustomAccounts: JSON.parse(this.$localStorage.get('myAccounts'))
     }
   },
 
@@ -72,6 +79,8 @@ export default {
       let passwordValid = false
       let privateKeyValid = false
       let valid = false
+      this.errorPublicKey = false
+      this.errorActive = false
 
       if (this.inputValue === '') {
         privateKeyValid = false
@@ -91,11 +100,13 @@ export default {
         this.errorActive = true
         this.errorMessage = 'Invalid Password'
       } else if (privateKeyValid === false && passwordValid === true) {
-        this.errorActive = true
-        this.errorMessage = 'Invalid Private Key'
+        this.errorPublicKey = true
+        this.errorPublicKeyMessage = 'Invalid Private Key'
       } else if ((passwordValid && privateKeyValid) === false) {
         this.errorActive = true
-        this.errorMessage = 'Invalid Password or Private Key'
+        this.errorPublicKey = true
+        this.errorMessage = 'Invalid Password'
+        this.errorPublicKeyMessage = 'Invalid Private Key'
       } else {
         this.errorActive = false
         this.errorMessage = ''

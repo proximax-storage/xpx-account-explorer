@@ -32,6 +32,11 @@
           </div>
 
           <div class="box-grey mb-10">
+            <p class="title txt-left">Description</p>
+            <input class="field mb-10" placeholder="Invoice Message" maxlength="1024" v-model="message">
+          </div>
+
+          <div class="box-grey mb-10">
             <p class="title txt-left">Amount XPX</p>
             <input type="text" class="field mb-10 txt-right" placeholder="Amount XPX" maxlength="20" @keyup="formatAmount()" v-model="amount">
           </div>
@@ -84,6 +89,8 @@ export default {
       publicKey: '',
       publicKeyError: false,
       publicKeyValid: false,
+
+      message: '',
       amountValid: false,
       imgInvoice: null,
       dateForm: null,
@@ -167,6 +174,7 @@ export default {
 
       return result
     },
+
     async buildPdf () {
       const date = new Date()
       this.dateForm = `${date.getFullYear()}-${('00' + (date.getMonth() + 1)).slice(-2)}-${('00' + (date.getDate())).slice(-2)}`
@@ -204,6 +212,7 @@ export default {
       this.zip.file(filePdfname, doc.output('blob'))
       // doc.save('sample.pdf')
     },
+
     builSCV () {
       const rows = [
         ['RECIPIENT', 'MESSAGE', 'AMOUNT'],
@@ -214,6 +223,7 @@ export default {
       const blob = new Blob([data], { type: 'text/csv;charset=utf-8' })
       this.zip.file(filePdfname, blob)
     },
+
     generateInvoice () {
       let tmpObj = {
         active: true,
@@ -238,6 +248,7 @@ export default {
         }
       }, 1000)
     },
+
     exportToCsv (filename, rows) {
       let csvFile = ''
       for (let i = 0; i < rows.length; i++) {
@@ -245,6 +256,7 @@ export default {
       }
       return csvFile
     },
+
     processRow (row) {
       let finalVal = ''
       for (let j = 0; j < row.length; j++) {
@@ -263,6 +275,7 @@ export default {
       }
       return finalVal + '\n'
     },
+
     clearForm () {
       this.first = ''
       this.firstError = false
@@ -279,6 +292,7 @@ export default {
       this.formatedAmount = null
     }
   },
+
   watch: {
     first (nv, ov) {
       if (nv.length >= 2 && nv.length <= 11) {
@@ -328,12 +342,17 @@ export default {
         this.publicKeyValid = false
       }
     },
+
     amount (nv, ol) {
       if (Number(this.extractRealAmount(nv)) > 0) {
         this.amountValid = true
       } else {
         this.amountValid = false
       }
+    },
+
+    message (nv, ol) {
+      console.log(nv)
     }
   },
 

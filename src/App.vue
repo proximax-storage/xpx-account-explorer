@@ -54,26 +54,28 @@ export default {
       let myAccounts = JSON.parse(this.$localStorage.get('myAccounts'))
       let updateInfo = []
 
-      myAccounts.forEach(async (account, index) => {
-        let publicAccount = PublicAccount.createFromPublicKey(account.publicKey, this.$config.network.number)
-        let multisigInfo = null
+      if (myAccounts !== null) {
+        myAccounts.forEach(async (account, index) => {
+          let publicAccount = PublicAccount.createFromPublicKey(account.publicKey, this.$config.network.number)
+          let multisigInfo = null
 
-        try {
-          multisigInfo = await this.$provider.accountHttp.getMultisigAccountInfo(publicAccount.address).toPromise()
-          account.multisigInfo = multisigInfo
-          updateInfo.push(account)
-        } catch (e) {
-          console.warn('No Multisig Info')
-          account.multisigInfo = multisigInfo
-          updateInfo.push(account)
-        }
+          try {
+            multisigInfo = await this.$provider.accountHttp.getMultisigAccountInfo(publicAccount.address).toPromise()
+            account.multisigInfo = multisigInfo
+            updateInfo.push(account)
+          } catch (e) {
+            console.warn('No Multisig Info')
+            account.multisigInfo = multisigInfo
+            updateInfo.push(account)
+          }
 
-        if (index + 1 === myAccounts.length) {
-          console.log('TERMINADO', updateInfo)
-          this.$localStorage.set('myAccounts', JSON.stringify(updateInfo))
-          this.$ws.connectnWs('')
-        }
-      })
+          if (index + 1 === myAccounts.length) {
+            console.log('TERMINADO', updateInfo)
+            this.$localStorage.set('myAccounts', JSON.stringify(updateInfo))
+            this.$ws.connectnWs('')
+          }
+        })
+      }
     }
   }
 }
