@@ -18,9 +18,7 @@ pipeline {
       steps {
         echo 'Starting Docker Container'
         withDockerContainer(image: 'node:13') {
-          echo 'remove package-lock.json'
-          sh 'rm -f package-lock.json'
-
+          
           echo 'Installing dependencies'
           sh 'npm install'
 
