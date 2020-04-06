@@ -53,6 +53,16 @@ const routes = [
     name: 'Load-Invoice',
     component: load('LoadInvoice')
   },
+  {
+    path: '/delivered',
+    name: 'Gift-Manager',
+    component: load('GiftManager')
+  },
+  {
+    path: '/generation',
+    name: 'Gift-Manager',
+    component: load('GiftGeneration')
+  },
   // {
   //   path: '/block/:id',
   //   name: 'Block',

@@ -8,8 +8,8 @@
     <!-- END LOGO -->
 
     <div class="project-name">
-      <div>Account Explorer</div>
-      <div>Administration System</div>
+      <div>Country Government of</div>
+      <div>LAKIPIA</div>
       <div class="separator"></div>
     </div>
 
@@ -47,11 +47,13 @@ export default {
       softwareVersion: `v${this.$config.version}`,
       navList: [
         { name: 'Dashboard', class: '', route: '', icon: 'icon-dash-off' },
-        { name: 'Transactions', class: '', route: 'transactions', icon: 'icon-trans-off' },
+        { name: 'Card Generated', class: '', route: 'generation', icon: 'icon-gen-off' },
+        { name: 'Delivered Carepacks', class: '', route: 'delivered', icon: 'icon-card-off' },
+        // { name: 'Transactions', class: '', route: 'transactions', icon: 'icon-trans-off' },
         { name: 'Accounts', class: '', route: 'customizing', icon: 'icon-accounts-off' },
-        { name: 'Nodes', class: '', route: 'nodes', icon: 'icon-nodes-off' },
-        { name: 'Invoice', class: '', route: 'invoice/inapp', icon: 'icon-invoice-off' },
-        { name: 'Load Invoice', class: '', route: 'loadInvoice', icon: 'icon-nodes-off' }
+        { name: 'Nodes', class: '', route: 'nodes', icon: 'icon-nodes-off' }
+        // { name: 'Invoice', class: '', route: 'invoice/inapp', icon: 'icon-invoice-off' },
+        // { name: 'Load Invoice', class: '', route: 'loadInvoice', icon: 'icon-nodes-off' },
       ],
       customAccounts: []
     }

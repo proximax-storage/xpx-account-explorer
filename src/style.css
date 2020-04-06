@@ -355,6 +355,7 @@ figure {
   height: 100%;
   background: #000;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .main-logo {
@@ -372,14 +373,14 @@ figure {
 .project-name > div:first-child {
   color: white;
   font-family: 'font1';
-  font-size: 16px;
+  font-size: 10px;
   text-align: left;
 }
 
 .project-name > div:nth-child(2) {
   color: white;
   font-family: 'font1';
-  font-size: 10px;
+  font-size: 20px;
   text-align: left;
   padding-bottom: 10px;
 }
@@ -684,6 +685,7 @@ option {
   height: 100%;
   top: 0px;
   left: 0px;
+  overflow-y: auto;
 }
 
 .inner-position {
@@ -786,6 +788,10 @@ option {
   .view-container > .view {
     width: 100%;
   }
+
+  .transaction-info {
+    min-width: 1024px;
+  }
 }
 
 @media screen and (max-width: 1024px) {
@@ -798,6 +804,10 @@ option {
 
   .view-container > .view {
     width: 100%
+  }
+
+  .transaction-info {
+    min-width: initial;
   }
 }
 

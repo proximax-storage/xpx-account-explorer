@@ -1,4 +1,16 @@
-import { TransactionType, Deadline, HashLockTransaction, Address, AggregateTransaction, MosaicId, TransferTransaction, PlainMessage, UInt64, Mosaic } from 'tsjs-xpx-chain-sdk'
+import {
+  TransactionType,
+  Deadline,
+  HashLockTransaction,
+  Address,
+  AggregateTransaction,
+  MosaicId,
+  TransferTransaction,
+  PlainMessage,
+  UInt64,
+  Mosaic,
+  Convert
+} from 'tsjs-xpx-chain-sdk'
 import CryptoJs from 'crypto-js'
 
 /**
@@ -272,6 +284,210 @@ export default class Utils {
     }
   }
 
+  static async getStructureGift (transaction, config, provider) {
+    let structureCsv = []
+    let structureTx = []
+    // let message = ''
+    // let transactionName = ''
+    transaction.forEach(async element => {
+      try {
+        let block = await provider.blockHttp.getBlockByHeight(element.transactionInfo.height.compact()).toPromise()
+        element.effectiveFee = block.feeMultiplier * element.size
+        element.block = this.fmtTime(block.timestamp.compact() + (Deadline.timestampNemesisBlock * 1000))
+      } catch (error) {
+        element.block = null
+        console.warn('Error in block', error)
+      }
+      switch (element.type) {
+        case TransactionType.AGGREGATE_BONDED:
+          element.totalAmount = 0
+          if (element.innerTransactions.length > 0) {
+            for (let init of element.innerTransactions) {
+              if (init.type === TransactionType.TRANSFER) {
+                if (init.message.type === 0) {
+                  try {
+                    let msg = init.message.payload
+                    msg = JSON.parse(msg)
+                    if (msg.type === 'gift') {
+                      element.gift = true
+                      element.msgData = (this.unSerialize(msg.msg)).dni
+                    }
+                  } catch (error) {
+                    console.log('Simple Msg')
+                  }
+                }
+
+                init.mosaics.forEach(mosaic => {
+                  init.amount = 0
+                  mosaic.id = mosaic.id.toHex()
+                  mosaic.amount = mosaic.amount.compact()
+                  if (mosaic.id === config.coin.mosaic.id) {
+                    element.totalAmount += mosaic.amount
+                    element.lllll = mosaic.amount
+                    init.amount += mosaic.amount
+                  } else if (mosaic.id === config.coin.namespace.id) {
+                    element.totalAmount += mosaic.amount
+                    init.amount += mosaic.amount
+                  }
+                })
+              }
+            }
+          }
+
+          if (element.gift === true) {
+            structureTx.push(element)
+          }
+          break
+        case TransactionType.AGGREGATE_COMPLETE:
+          element.totalAmount = 0
+          if (element.innerTransactions.length > 0) {
+            for (let init of element.innerTransactions) {
+              if (init.type === TransactionType.TRANSFER) {
+                if (init.message.type === 0) {
+                  try {
+                    let msg = init.message.payload
+                    msg = JSON.parse(msg)
+                    if (msg.type === 'gift') {
+                      element.gift = true
+                      element.msgData = (this.unSerialize(msg.msg)).dni
+                    }
+                  } catch (error) {
+                    console.log('Simple Msg')
+                  }
+                }
+
+                init.mosaics.forEach(mosaic => {
+                  init.amount = 0
+                  mosaic.id = mosaic.id.toHex()
+                  mosaic.amount = mosaic.amount.compact()
+                  if (mosaic.id === config.coin.mosaic.id) {
+                    element.totalAmount += mosaic.amount
+                    element.lllll = mosaic.amount
+                    init.amount += mosaic.amount
+                  } else if (mosaic.id === config.coin.namespace.id) {
+                    element.totalAmount += mosaic.amount
+                    init.amount += mosaic.amount
+                  }
+                })
+              }
+            }
+          }
+
+          if (element.gift === true) {
+            structureTx.push(element)
+          }
+          break
+      }
+    })
+    return {
+      transactions: structureTx,
+      structureCsv: structureCsv
+    }
+  }
+
+  static async getStructureGeneration (transaction, config, provider) {
+    let structureCsv = []
+    let structureTx = []
+    console.log('Bonded Type', TransactionType.AGGREGATE_BONDED)
+    console.log('Complete Type', TransactionType.AGGREGATE_COMPLETE)
+
+    // let message = ''
+    // let transactionName = ''
+    transaction.forEach(async element => {
+      try {
+        let block = await provider.blockHttp.getBlockByHeight(element.transactionInfo.height.compact()).toPromise()
+        element.effectiveFee = block.feeMultiplier * element.size
+        element.block = this.fmtTime(block.timestamp.compact() + (Deadline.timestampNemesisBlock * 1000))
+      } catch (error) {
+        element.block = null
+        console.warn('Error in block', error)
+      }
+      switch (element.type) {
+        case TransactionType.AGGREGATE_BONDED:
+          element.totalAmount = 0
+          element.quantityCards = element.innerTransactions.length - 1
+          if (element.innerTransactions.length > 0) {
+            for (let init of element.innerTransactions) {
+              if (init.type === TransactionType.TRANSFER) {
+                if (init.message.type === 0) {
+                  try {
+                    let msg = init.message.payload
+                    msg = JSON.parse(msg)
+                    if (msg.type === 'giftCard') {
+                      element.giftCard = true
+                    }
+                  } catch (error) {
+                    console.log('Simple Msg')
+                  }
+                }
+
+                init.mosaics.forEach(mosaic => {
+                  init.amount = 0
+                  mosaic.id = mosaic.id.toHex()
+                  mosaic.amount = mosaic.amount.compact()
+                  if (mosaic.id === config.coin.mosaic.id) {
+                    element.totalAmount += mosaic.amount
+                    element.lllll = mosaic.amount
+                    init.amount += mosaic.amount
+                  } else if (mosaic.id === config.coin.namespace.id) {
+                    element.totalAmount += mosaic.amount
+                    init.amount += mosaic.amount
+                  }
+                })
+              }
+            }
+          }
+
+          if (element.giftCard === true) {
+            structureTx.push(element)
+          }
+          break
+        case TransactionType.AGGREGATE_COMPLETE:
+          element.totalAmount = 0
+          if (element.innerTransactions.length > 0) {
+            for (let init of element.innerTransactions) {
+              if (init.type === TransactionType.TRANSFER) {
+                if (init.message.type === 0) {
+                  try {
+                    let msg = init.message.payload
+                    msg = JSON.parse(msg)
+                    if (msg.type === 'giftCard') {
+                      element.gift = true
+                    }
+                  } catch (error) {
+                    console.log('Simple Msg')
+                  }
+                }
+
+                init.mosaics.forEach(mosaic => {
+                  init.amount = 0
+                  mosaic.id = mosaic.id.toHex()
+                  mosaic.amount = mosaic.amount.compact()
+                  if (mosaic.id === config.coin.mosaic.id) {
+                    element.totalAmount += mosaic.amount
+                    element.lllll = mosaic.amount
+                    init.amount += mosaic.amount
+                  } else if (mosaic.id === config.coin.namespace.id) {
+                    element.totalAmount += mosaic.amount
+                    init.amount += mosaic.amount
+                  }
+                })
+              }
+            }
+          }
+
+          if (element.giftCard === true) {
+            structureTx.push(element)
+          }
+          break
+      }
+    })
+    return {
+      transactions: structureTx,
+      structureCsv: structureCsv
+    }
+  }
+
   static getStructureCsv (data) {
     let dataStructure = []
     for (let element of data) {
@@ -504,7 +720,34 @@ export default class Utils {
       console.log(tmpObj)
     }
   }
+
   static getRandom (length) {
     return Math.floor(Math.pow(10, length - 1) + Math.random() * 9 * Math.pow(10, length - 1))
+  }
+
+  static unSerialize (hex) {
+    const dataUin8 = Convert.hexToUint8(hex)
+
+    const codeUin8 = new Uint8Array(6)
+    const dniUin8 = new Uint8Array(8)
+
+    codeUin8.set(new Uint8Array(dataUin8.subarray(0, 6)), 0)
+    dniUin8.set(new Uint8Array(dataUin8.subarray(6, dataUin8.byteLength)), 0)
+
+    const code = this.hexToString(Convert.uint8ToHex(codeUin8))
+    const dni = UInt64.fromHex(Convert.uint8ToHex(dniUin8))
+
+    return {
+      code: code,
+      dni: dni.compact()
+    }
+  }
+
+  static hexToString (hex) {
+    var string = ''
+    for (var i = 0; i < hex.length; i += 2) {
+      string += String.fromCharCode(parseInt(hex.substr(i, 2), 16))
+    }
+    return string
   }
 }

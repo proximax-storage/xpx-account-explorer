@@ -27,7 +27,7 @@ export default new Vuex.Store({
 
     UPDATE_ACCOUNTS (state, data) {
       state.accounts = null
-
+      console.log(state.accounts)
       if (data !== null && data.length === 0) {
         data = null
       }

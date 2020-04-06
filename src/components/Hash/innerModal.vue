@@ -15,7 +15,7 @@
 
       <div class="transaction-info" v-if="params.transaction !== null">
         <div>
-          <div class="box-grey txt-left mb-10">
+          <div class="box-grey txt-left mb-10" v-if="isGift === false">
             <p class="bold">Sender: </p>
             <p>{{ params.transaction.signer.address.pretty() }}</p>
           </div>
@@ -25,12 +25,12 @@
             <p>{{ params.transaction.recipient.pretty() }}</p>
           </div>
 
-          <div class="box-grey txt-left mb-10">
+          <div class="box-grey txt-left mb-10" v-if="isGift === false">
             <p class="bold">Signature: </p>
             <p>{{ params.transaction.signature }}</p>
           </div>
 
-          <div class="box-grey txt-left mb-10">
+          <div class="box-grey txt-left mb-10" v-if="isGift === false">
             <p class="bold">Aggregate Hash: </p>
             <p>{{ params.transaction.transactionInfo.aggregateHash }}</p>
           </div>
@@ -47,14 +47,20 @@
             <span class="fs20" v-html="getAmount(params.transaction)"></span>
           </div>
 
-          <div class="box-white txt-left">
+          <div class="box-white txt-left" v-if="isGift === false">
             <span class="bold fs20">Fee: </span>
             <span class="fs20" v-html="$utils.fmtAmountValue(fee)"></span>
           </div>
 
-          <div class="box-white txt-left" v-if="[undefined, null].includes(params.transaction.message) === false">
+          <div class="box-white txt-left" v-if="[undefined, null].includes(params.transaction.message) === false && isGift === false">
             <span class="bold">Message: </span>
             <span class="fs20">{{ (params.transaction.message.type === 0) ? params.transaction.message.payload : 'Encrypted' }}</span>
+          </div>
+
+          <div class="box-white txt-left" v-if="msgGiftActive">
+            <p class="bold">Gift Card Message: </p>
+            <p class="fs20">{{ `Gift Card Code: ${giftDataUnserialize.code}` }}</p>
+            <p class="fs20">{{ `Gift Card DNI: ${giftDataUnserialize.dni}` }}</p>
           </div>
 
           <div class="box-white txt-left mb-10">
@@ -73,7 +79,7 @@
 
 <script>
 import ModuleHeader from '@/components/Global/module-header'
-import { Deadline } from 'tsjs-xpx-chain-sdk'
+import { Deadline, Convert, UInt64 } from 'tsjs-xpx-chain-sdk'
 
 export default {
   name: 'InnerModal',
@@ -91,7 +97,9 @@ export default {
           transaction: null
         }
       }
-    }
+    },
+
+    isGift: Boolean
   },
 
   data () {
@@ -99,7 +107,9 @@ export default {
       moduleName: 'Inner Transaction',
       fee: 0,
       timestamp: 0,
-      block: 0
+      block: 0,
+      msgGiftActive: false,
+      giftDataUnserialize: {}
     }
   },
 
@@ -140,6 +150,39 @@ export default {
         active: false,
         transaction: null
       })
+    },
+
+    unSerialize (hex) {
+      const dataUin8 = Convert.hexToUint8(hex)
+
+      const codeUin8 = new Uint8Array(8)
+      const dniUin8 = new Uint8Array(8)
+
+      codeUin8.set(new Uint8Array(dataUin8.subarray(0, 8)), 0)
+      dniUin8.set(new Uint8Array(dataUin8.subarray(8, 16)), 0)
+
+      const code = UInt64.fromHex(Convert.uint8ToHex(codeUin8))
+      const dni = UInt64.fromHex(Convert.uint8ToHex(dniUin8))
+      this.giftDataUnserialize.code = code.toHex()
+      this.giftDataUnserialize.dni = dni.compact()
+    }
+  },
+
+  watch: {
+    params (nv, ov) {
+      if (nv.transaction !== null) {
+        try {
+          const tmpMsj = JSON.parse(nv.transaction.message.payload)
+          if (nv.transaction.message.type === 0 && tmpMsj.type === 'gift') {
+            console.log('GIFT', tmpMsj)
+            this.unSerialize(tmpMsj.msg)
+            this.msgGiftActive = true
+            nv.transaction.message.payload = 'Gift Card'
+          }
+        } catch (error) {
+          console.log('Simple Msg')
+        }
+      }
     }
   }
 }
