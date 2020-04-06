@@ -8,8 +8,8 @@
     <!-- END LOGO -->
 
     <div class="project-name">
-      <div>Country Government of</div>
-      <div>LAKIPIA</div>
+      <div>County Government of</div>
+      <div>LAIKIPIA</div>
       <div class="separator"></div>
     </div>
 

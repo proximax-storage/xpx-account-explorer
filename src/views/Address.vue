@@ -151,9 +151,16 @@ export default {
 
   methods: {
     async loadTransactions (id = null) {
+      const prohibitedPublicKey = '0000000000000000000000000000000000000000000000000000000000000000'
       let address = Address.createFromRawAddress(this.$route.params.id, this.$config.network.number)
       try {
         let accountInfo = await this.$provider.accountHttp.getAccountInfo(address).toPromise()
+        console.log('ACCOUNTINFO')
+
+        if (accountInfo.publicKey === prohibitedPublicKey) {
+          throw String('Prohibited PublicKey')
+        }
+
         this.accountInfo = accountInfo
         let mosaics = accountInfo.mosaics
         mosaics.forEach(el => {

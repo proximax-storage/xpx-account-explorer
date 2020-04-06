@@ -71,12 +71,12 @@
           <span class="fs20">{{ this.message }}</span>
         </div>
 
-        <div class="box-white txt-left" v-if="messageGift !== null">
+        <div class="box-white txt-left" v-if="activateGift !== null">
           <span class="bold">Message: </span>
           <span class="fs14">Gift Card</span>
         </div>
 
-        <div class="box-white txt-left" v-if="messageGift !== null">
+        <div class="box-white txt-left" v-if="activateGift !== null">
           <p class="bold">Gift Card Message: </p>
           <p class="fs14 value">{{ `Card ID: ${code}` }}</p>
           <p class="fs14 value">{{ `Card Message (National ID): ${dni}` }}</p>
@@ -107,51 +107,54 @@
           <p class="fs14">{{ block }}</p>
         </div>
 
-        <!-- <div class="box-white txt-left mb-10">
-          <p class="bold fs14">Card Quantity (per card): </p>
-          <p class="fs14" v-html="$utils.fmtAmountValue(cardAmount)"></p>
-        </div> -->
-
-        <div class="box-white txt-left mb-10">
+        <div class="box-white txt-left mb-10" v-if="innName === 'Gift Cards'">
           <p class="bold fs14">MosaicID: </p>
           <p class="fs14">{{ cardMosaicID }}</p>
         </div>
 
-        <div class="box-white txt-left mb-10">
+        <div class="box-white txt-left mb-10" v-if="innName === 'Gift Cards'">
           <p class="bold fs14">Mosaic Amount (per card): </p>
           <p class="fs14" v-html="cardMosaicAmount"></p>
         </div>
 
-        <div class="box-white txt-left mb-10">
+        <div class="box-white txt-left mb-10" v-if="innName === 'Gift Cards'">
           <p class="bold fs14">Total Cards: </p>
           <p class="fs14">{{ totalCards }}</p>
         </div>
       </div>
     </div>
 
-    <div class="inner" v-if="innerTrans !== null && messageGift === null">
+    <div class="inner" v-if="innerTrans !== null && activateGift === null">
       <h1 class="title txt-left mb-10">{{ `Inner ${innName}` }}</h1>
       <div class="box-grey mb-10 innerCard" v-for="(item, index) in innerTrans" :key="index" @click="activeModal(index)">
         <div>
           <div class="title">#</div>
           <div class="value">{{ index }}</div>
         </div>
-        <div>
+        <div v-if="activateGeneration === true">
+          <div class="title">Type</div>
+          <div class="value">{{ 'Gift Card' }}</div>
+        </div>
+        <div v-if="item.recipient !== undefined && activateGeneration === true" style="width: 400px">
+          <div class="title">Card Address</div>
+          <div class="value">{{ item.recipient.pretty() }}</div>
+        </div>
+        <div v-if="activateGeneration === false">
           <div class="title">Type</div>
           <div class="value">{{ $utils.getNameTypeTransaction(item.type) }}</div>
         </div>
-        <div>
+        <div v-if="activateGeneration === false">
           <div class="title">Height</div>
           <div class="value">{{ item.transactionInfo.height.compact() }}</div>
         </div>
-        <div>
+        <div v-if="activateGeneration === false">
           <div class="title">Version</div>
           <div class="value">{{ item.version }}</div>
         </div>
       </div>
     </div>
 
-    <inner-modal :params="innerParams" @closeTransaction="modalCom" :isGift="messageGift"/>
+    <inner-modal :params="innerParams" @closeTransaction="modalCom" :isGift="innName === 'Gift Cards'"/>
 
   </div>
 </template>
@@ -189,6 +192,8 @@ export default {
       innerTrans: null,
       innerParams: null,
       message: null,
+      activateGift: null,
+      activateGeneration: null,
       messageGift: null,
       code: null,
       dni: null,
@@ -294,101 +299,107 @@ export default {
       } catch (error) {
         console.log(error)
       }
-    }
-  },
+    },
 
-  watch: {
-    transaction (nv, ov) {
+    giftView (msgdata, arr) {
       let recipients = []
       let currentAccount = this.$store.getters.getMyAccounts
 
-      if ([16961, 16705].includes(nv.type)) {
-        nv.innerTransactions.forEach(elem => {
-          try {
-            const msgOne = JSON.parse(elem.message.payload)
-            console.log('Message', msgOne)
+      recipients = arr.map(rec => rec.recipient.address)
 
-            if (msgOne.type === 'gift') {
-              const data = this.$utils.unSerialize(msgOne.msg)
-              this.code = data.code
-              this.dni = data.dni
-              this.messageGift = true
-              recipients.push(elem.recipient.address)
-            }
-          } catch (error) {
-            console.log('Simple Msg')
+      console.log(msgdata)
+
+      const data = this.$utils.unSerialize(msgdata)
+      this.code = data.code
+      this.dni = data.dni
+
+      if (currentAccount != null) {
+        currentAccount.forEach(elem => {
+          if (recipients.includes(elem.address)) {
+            this.destination = `${elem.address} (${elem.name})`
+            let tmpIndex = recipients.indexOf(elem.address)
+            recipients.splice(tmpIndex, 1)
+            this.distributor = recipients[0]
           }
         })
 
-        console.log(currentAccount)
-        if (currentAccount != null) {
-          currentAccount.forEach(elem => {
-            console.log(elem)
-            console.log(this.destination)
-            console.log(this.distributor)
-
-            if (recipients.includes(elem.address)) {
-              this.destination = `${elem.address} (${elem.name})`
-              let tmpIndex = recipients.indexOf(elem.address)
-              recipients.splice(tmpIndex, 1)
-              this.distributor = recipients[0]
-            }
-          })
-
-          if (this.destination === null || this.distributor === null) {
-            this.default1 = recipients[0]
-            this.default2 = recipients[1]
-          }
-        } else {
-          console.log('AQUI')
-          console.log(recipients)
+        if (this.destination === null || this.distributor === null) {
           this.default1 = recipients[0]
           this.default2 = recipients[1]
         }
-
-        console.log(this.destination, this.distributor)
+      } else {
+        this.default1 = recipients[0]
+        this.default2 = recipients[1]
       }
 
-      if ([16961, 16705].includes(nv.type)) {
-        let mosaics = []
-        this.totalCards = nv.innerTransactions.length - 1
-        nv.innerTransactions.forEach((elem, index) => {
-          if (elem.mosaics.length > 0) {
-            console.log(elem.mosaics)
+      console.log('giftView', msgdata)
+      console.log(this.destination, this.distributor)
+      console.log(this.default1, this.default2)
+    },
+
+    generationView (arr) {
+      console.warn('Generate view')
+      let mosaics = []
+
+      arr.forEach((elem2, index) => {
+        console.log(elem2)
+
+        try {
+          if (elem2.mosaics.length > 0) {
+            console.log(elem2.mosaics)
             let tmpObj1 = {
-              id: elem.mosaics[0].id.toHex(),
-              amount: elem.mosaics[0].amount.compact()
+              id: elem2.mosaics[0].id.toHex(),
+              amount: elem2.mosaics[0].amount.compact(),
+              index: index
             }
 
             let tmpObj2 = {
-              id: elem.mosaics[1].id.toHex(),
-              amount: elem.mosaics[1].amount.compact()
+              id: elem2.mosaics[1].id.toHex(),
+              amount: elem2.mosaics[1].amount.compact(),
+              index: index
             }
 
             mosaics.push(tmpObj1)
             mosaics.push(tmpObj2)
           }
+          let xpx = mosaics.find(elem => elem.id === this.$config.coin.mosaic.id)
+          this.cardAmount = xpx.amount
+          let other = mosaics.find(elem => elem.id !== this.$config.coin.mosaic.id)
+          this.cardMosaicID = other.id
+          this.innName = 'Gift Cards'
+          this.getMosaicDivisibility(other)
+        } catch (error) {
+          console.log(error)
+        }
+      })
+      console.warn('Generate view mosaics', mosaics)
+    }
+  },
 
+  watch: {
+    transaction (nv, ov) {
+      if ([16961, 16705].includes(nv.type)) {
+        nv.innerTransactions.forEach((elem, index) => {
           try {
-            const msgOne = JSON.parse(elem.message.payload)
-            console.log('Message', msgOne)
-
-            if (msgOne.type === 'giftCard') {
-              this.innName = 'Gift Cards'
-              recipients.push(elem.recipient.address)
+            console.log('elem', elem.message.payload)
+            let msg = JSON.parse(elem.message.payload)
+            if (msg.type === 'gift') {
+              this.activateGift = true
+              // let clearArr = nv.innerTransactions.splice(index, 1)
+              this.giftView(msg.msg, nv.innerTransactions)
+              return
+            } else if (msg.type === 'giftCard') {
+              this.activateGeneration = true
+              this.totalCards = msg.number
+              this.generationView(nv.innerTransactions)
+              return
+            } else {
+              console.warn('Simple Msg')
             }
           } catch (error) {
             console.log('Simple Msg')
           }
         })
-
-        console.log(this.$config.coin.mosaic.id)
-
-        let xpx = mosaics.find(elem => elem.id === this.$config.coin.mosaic.id)
-        this.cardAmount = xpx.amount
-        let other = mosaics.find(elem => elem.id !== this.$config.coin.mosaic.id)
-        this.cardMosaicID = other.id
-        this.getMosaicDivisibility(other)
       }
     }
   }

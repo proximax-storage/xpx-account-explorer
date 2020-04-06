@@ -309,8 +309,12 @@ export default class Utils {
                     let msg = init.message.payload
                     msg = JSON.parse(msg)
                     if (msg.type === 'gift') {
+                      console.log(msg)
+
                       element.gift = true
                       element.msgData = (this.unSerialize(msg.msg)).dni
+                      console.log(element.msgData)
+                      console.log(element.msgData)
                     }
                   } catch (error) {
                     console.log('Simple Msg')
@@ -348,8 +352,12 @@ export default class Utils {
                     let msg = init.message.payload
                     msg = JSON.parse(msg)
                     if (msg.type === 'gift') {
+                      console.log(msg)
+
                       element.gift = true
                       element.msgData = (this.unSerialize(msg.msg)).dni
+                      console.log(element.msgData)
+                      console.log(element.msgData)
                     }
                   } catch (error) {
                     console.log('Simple Msg')
@@ -388,9 +396,6 @@ export default class Utils {
   static async getStructureGeneration (transaction, config, provider) {
     let structureCsv = []
     let structureTx = []
-    console.log('Bonded Type', TransactionType.AGGREGATE_BONDED)
-    console.log('Complete Type', TransactionType.AGGREGATE_COMPLETE)
-
     // let message = ''
     // let transactionName = ''
     transaction.forEach(async element => {
@@ -413,8 +418,11 @@ export default class Utils {
                   try {
                     let msg = init.message.payload
                     msg = JSON.parse(msg)
+                    console.log(msg)
+
                     if (msg.type === 'giftCard') {
                       element.giftCard = true
+                      element.giftNumbers = msg.number
                     }
                   } catch (error) {
                     console.log('Simple Msg')
@@ -451,8 +459,10 @@ export default class Utils {
                   try {
                     let msg = init.message.payload
                     msg = JSON.parse(msg)
+                    console.log(msg)
                     if (msg.type === 'giftCard') {
-                      element.gift = true
+                      element.giftCard = true
+                      element.giftNumbers = msg.number
                     }
                   } catch (error) {
                     console.log('Simple Msg')
@@ -728,18 +738,18 @@ export default class Utils {
   static unSerialize (hex) {
     const dataUin8 = Convert.hexToUint8(hex)
 
-    const codeUin8 = new Uint8Array(6)
-    const dniUin8 = new Uint8Array(8)
+    const codeUin8 = new Uint8Array(3)
+    const dniUin8 = new Uint8Array(10)
 
-    codeUin8.set(new Uint8Array(dataUin8.subarray(0, 6)), 0)
-    dniUin8.set(new Uint8Array(dataUin8.subarray(6, dataUin8.byteLength)), 0)
+    codeUin8.set(new Uint8Array(dataUin8.subarray(0, 3)), 0)
+    dniUin8.set(new Uint8Array(dataUin8.subarray(3, 13)), 0)
 
-    const code = this.hexToString(Convert.uint8ToHex(codeUin8))
-    const dni = UInt64.fromHex(Convert.uint8ToHex(dniUin8))
+    const code = Convert.uint8ToHex(codeUin8)
+    const dni = this.hexToString(Convert.uint8ToHex(dniUin8))
 
     return {
       code: code,
-      dni: dni.compact()
+      dni: dni
     }
   }
 

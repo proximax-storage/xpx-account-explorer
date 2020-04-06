@@ -20,7 +20,7 @@
             <p>{{ params.transaction.signer.address.pretty() }}</p>
           </div>
 
-          <div class="box-grey txt-left mb-10" v-if="params.transaction.recipient">
+          <div class="box-grey txt-left mb-10" v-if="params.transaction.recipient && isGift === false">
             <p class="bold">Recipient: </p>
             <p>{{ params.transaction.recipient.pretty() }}</p>
           </div>
@@ -37,14 +37,19 @@
         </div>
 
         <div>
-          <div class="box-white txt-left">
+          <div class="box-white txt-left" v-if="isGift === false">
             <p class="bold fs14">Timestamp: </p>
             <p class="fs14">{{ timestamp }}</p>
           </div>
 
-          <div class="box-white txt-left">
+          <div class="box-white txt-left" v-if="isGift === false">
             <span class="bold fs20">Amount: </span>
             <span class="fs20" v-html="getAmount(params.transaction)"></span>
+          </div>
+
+          <div class="box-white txt-left" v-if="params.transaction.recipient && isGift === true">
+            <p class="bold fs20">Recipient: </p>
+            <p class="fs20">{{ params.transaction.recipient.pretty() }}</p>
           </div>
 
           <div class="box-white txt-left" v-if="isGift === false">
@@ -65,7 +70,7 @@
 
           <div class="box-white txt-left mb-10">
             <p class="bold fs14">Block Heigh: </p>
-            <p class="fs14">{{ block }}</p>
+            <p class="fs14">{{ params.transaction.transactionInfo.height.compact() }}</p>
           </div>
         </div>
       </div>

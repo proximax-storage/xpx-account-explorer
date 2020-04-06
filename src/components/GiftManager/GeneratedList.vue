@@ -18,7 +18,7 @@
         <tr v-for="(item, index) in transactions" :key="index" v-show="item.giftCard === true">
           <td class="txt-left">{{ $utils.maskAddress(item.signer.address.pretty()) }}</td>
           <!-- <td class="txt-left">{{ (item.recipient) ? $utils.maskAddress(item.recipient.pretty()) : 'No Recipient' }}</td> -->
-          <td class="txt-left">{{ `Gift Cards (${item.quantityCards})` }}</td>
+          <td class="txt-left">{{ `Gift Cards (${item.giftNumbers + 1})` }}</td>
           <td class="txt-left">{{ $utils.fmtTime(item.deadline.value) }}</td>
           <td class="txt-left" v-html="$utils.fmtAmountValue(item.totalAmount)"></td>
           <td class="txt-left" @click="goToHash(item.transactionInfo.hash)"><img class="icon20" :src="require('@/assets/icons/icon-info-on.svg')"></td>
@@ -71,6 +71,7 @@ export default {
       transactions: null,
       trasform: [{}],
       loadActive: false,
+      lastTx: null,
       showType: [
         16724,
         16718,
@@ -122,6 +123,14 @@ export default {
           const queryParams = 50
           const query = (id) ? new QueryParams(queryParams, id) : new QueryParams(queryParams)
           let transactions = await this.$provider.accountHttp.transactions(accountInfo.publicAccount, query).toPromise()
+          this.lastTx = (transactions.length !== 0) ? transactions[transactions.length - 1].transactionInfo.id : null
+          console.warn(this.lastTx)
+          this.pageSize = this.pageSize++
+
+          if (this.lastTx === null) {
+            throw String('The account has no transactions')
+          }
+
           const dataStructure = await this.$utils.getStructureGeneration(transactions, this.$config, this.$provider)
           this.transactions = dataStructure.transactions
           this.trasform = dataStructure.structureCsv
@@ -140,12 +149,28 @@ export default {
 
     async loadmore () {
       this.loadActive = true
-      const lastTransactionId = (this.transactions[0].length !== 0) ? this.transactions[this.transactions.length - 1].transactionInfo.id : null
-      console.log('lastTransactionId', lastTransactionId)
+      console.log('AQUI')
+
       try {
+        let lastTransactionId = (this.transactions.length !== 0) ? this.transactions[this.transactions.length - 1].transactionInfo.id : null
+        if (lastTransactionId === null) {
+          lastTransactionId = this.lastTx
+          if (this.lastTx === null) {
+            throw String('The account has no transactions')
+          }
+        }
+
+        console.log(lastTransactionId)
+
         const queryParams = 100
         const query = (lastTransactionId) ? new QueryParams(queryParams, lastTransactionId) : new QueryParams(queryParams)
         let transactions = await this.$provider.accountHttp.transactions(this.accountInfo.publicAccount, query).toPromise()
+        this.lastTx = (transactions.length !== 0) ? transactions[0].transactionInfo.id : null
+        console.warn(this.lastTx)
+
+        if (this.lastTx === null) {
+          throw String('The account has no transactions')
+        }
         const dataStructure = await this.$utils.getStructureGeneration(transactions, this.$config, this.$provider)
         setTimeout(() => {
           console.log(dataStructure)
